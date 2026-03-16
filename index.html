@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Currículos</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --bg-color: #f4f7f6;
+            --form-bg: #ffffff;
+            --text-color: #333;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--form-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        input[type="text"], input[type="date"], input[type="email"], 
+        input[type="tel"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #1a252f;
+        }
+
+        .btn-add {
+            background-color: #2980b9;
+            margin-bottom: 20px;
+        }
+
+        .btn-add:hover {
+            background-color: #1f6391;
+        }
+
+        .btn-remove {
+            background-color: var(--danger-color);
+            padding: 8px 15px;
+            width: auto;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        .btn-remove:hover {
+            background-color: #c0392b;
+        }
+
+        /* Estilos do Bloco Dinâmico */
+        .dynamic-block {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background-color: #fafafa;
+        }
+
+        /* Estilos do Currículo Gerado */
+        #cv-output {
+            display: none;
+            background: white;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .cv-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .cv-header h1 {
+            margin: 0 0 10px 0;
+        }
+
+        .cv-contact-info {
+            font-size: 0.9em;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .cv-section {
+            margin-bottom: 20px;
+        }
+
+        .cv-section h3 {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .cv-text-block {
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        /* Estilo específico para a experiência no currículo */
+        .cv-exp-item {
+            margin-bottom: 15px;
+        }
+        
+        .cv-exp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 5px;
+        }
+
+        .cv-exp-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 0;
+        }
+
+        .cv-exp-company {
+            font-style: italic;
+            color: #555;
+        }
+
+        .cv-exp-date {
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        .cv-exp-desc {
+            margin: 5px 0 0 0;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .btn-print {
+            background-color: var(--success-color);
+            margin-top: 20px;
+            width: auto;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-print:hover {
+            background-color: #219653;
+        }
+
+        /* Regras de impressão */
+        @media print {
+            body { background: white; padding: 0; }
+            .form-container, .btn-print { display: none; }
+            #cv-output { box-shadow: none; padding: 0; display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container form-container" id="form-container">
+        <h2>Preencha seus Dados</h2>
+        <form id="cv-form">
+            
+            <div class="form-group">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nascimento">Data de Nascimento</label>
+                    <input type="date" id="nascimento" required>
+                </div>
+                <div class="form-group">
+                    <label for="sexo">Sexo</label>
+                    <select id="sexo">
+                        <option value="Masculino">Masculino</option>
+                        <option value="Feminino">Feminino</option>
+                        <option value="Prefiro não informar">Prefiro não informar</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="estado_civil">Estado Civil</label>
+                    <select id="estado_civil">
+                        <option value="Solteiro(a)">Solteiro(a)</option>
+                        <option value="Casado(a)">Casado(a)</option>
+                        <option value="Divorciado(a)">Divorciado(a)</option>
+                        <option value="Viúvo(a)">Viúvo(a)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filhos">Tem filhos?</label>
+                    <select id="filhos">
+                        <option value="Não">Não</option>
+                        <option value="Sim">Sim</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefone">Telefone</label>
+                    <input type="tel" id="telefone" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="endereco">Endereço Completo (com CEP)</label>
+                <input type="text" id="endereco" required>
+            </div>
+
+            <div class="form-group">
+                <label for="documento">CPF / CNPJ</label>
+                <input type="text" id="documento" required>
+            </div>
+
+            <div class="form-group">
+                <label for="objetivo">Objetivo</label>
+                <textarea id="objetivo" placeholder="Descreva seu objetivo profissional..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="resumo">Resumo Profissional</label>
+                <textarea id="resumo" placeholder="Um breve resumo sobre sua carreira e qualificações..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="formacao">Formação Acadêmica</label>
+                <textarea id="formacao" placeholder="Ex: Bacharelado em Ciência da Computação - Universidade X (2020)"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Experiência Profissional</label>
+                <div id="experiencias-container">
+                    <div class="dynamic-block exp-item">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="exp-empresa" placeholder="Nome da Empresa">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="exp-cargo" placeholder="Cargo Ocupado">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" class="exp-inicio" placeholder="Início (Ex: Jan/2020)">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="exp-fim" placeholder="Fim (Ex: Atual ou Dez/2022)">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="exp-desc" placeholder="Descreva suas principais atividades e conquistas..."></textarea>
+                        </div>
+                        <button type="button" class="btn-remove" onclick="removerBloco(this)">Remover</button>
+                    </div>
+                </div>
+                <button type="button" class="btn-add" id="btn-add-exp">+ Adicionar Nova Experiência</button>
+            </div>
+
+            <div class="form-group">
+                <label for="idiomas">Idiomas de Fluência</label>
+                <textarea id="idiomas" placeholder="Ex: Inglês Avançado, Espanhol Básico..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="competencias">Competências / Habilidades</label>
+                <textarea id="competencias" placeholder="Ex: Liderança, Pacote Office, JavaScript, Gestão de Tempo..."></textarea>
+            </div>
+
+            <button type="submit" style="font-size: 1.1em; padding: 15px;">Gerar Currículo</button>
+        </form>
+    </div>
+
+    <div id="cv-output">
+        <div class="cv-header">
+            <h1 id="out-nome">Nome</h1>
+            <div class="cv-contact-info">
+                <span id="out-dados-pessoais"></span><br>
+                <span id="out-endereco"></span><br>
+                <strong>E-mail:</strong> <span id="out-email"></span> | 
+                <strong>Telefone:</strong> <span id="out-telefone"></span><br>
+                <strong>Doc:</strong> <span id="out-documento"></span>
+            </div>
+        </div>
+
+        <div class="cv-section" id="sec-objetivo">
+            <h3>Objetivo</h3>
+            <div class="cv-text-block" id="out-objetivo"></div>
+        </div>
+
+        <div class="cv-section" id="sec-resumo">
+            <h3>Resumo Profissional</h3>
+            <div class="cv-text-block" id="out-resumo"></div>
+        </div>
+
+        <div class="cv-section" id="sec-formacao">
+            <h3>Formação Acadêmica</h3>
+            <div class="cv-text-block" id="out-formacao"></div>
+        </div>
+
+        <div class="cv-section" id="sec-experiencia" style="display: none;">
+            <h3>Experiência Profissional</h3>
+            <div id="out-experiencia-container"></div>
+        </div>
+
+        <div class="cv-section" id="sec-idiomas">
+            <h3>Idiomas</h3>
+            <div class="cv-text-block" id="out-idiomas"></div>
+        </div>
+
+        <div class="cv-section" id="sec-competencias">
+            <h3>Competências</h3>
+            <div class="cv-text-block" id="out-competencias"></div>
+        </div>
+
+        <button class="btn-print" onclick="window.print()">Imprimir / Salvar como PDF</button>
+    </div>
+
+    <script>
+        // Função para adicionar um novo bloco de experiência
+        document.getElementById('btn-add-exp').addEventListener('click', function() {
+            const container = document.getElementById('experiencias-container');
+            const novoBloco = document.createElement('div');
+            novoBloco.classList.add('dynamic-block', 'exp-item');
+            
+            novoBloco.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" class="exp-empresa" placeholder="Nome da Empresa">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="exp-cargo" placeholder="Cargo Ocupado">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" class="exp-inicio" placeholder="Início (Ex: Jan/2020)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="exp-fim" placeholder="Fim (Ex: Atual ou Dez/2022)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <textarea class="exp-desc" placeholder="Descreva suas principais atividades e conquistas..."></textarea>
+                </div>
+                <button type="button" class="btn-remove" onclick="removerBloco(this)">Remover</button>
+            `;
+            container.appendChild(novoBloco);
+        });
+
+        // Função para remover bloco de experiência
+        function removerBloco(botao) {
+            botao.parentElement.remove();
+        }
+
+        // Ação ao enviar o formulário
+        document.getElementById('cv-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Coleta de Dados Básicos
+            const nome = document.getElementById('nome').value;
+            const dataNascimento = document.getElementById('nascimento').value;
+            const sexo = document.getElementById('sexo').value;
+            const estadoCivil = document.getElementById('estado_civil').value;
+            const filhos = document.getElementById('filhos').value;
+            const email = document.getElementById('email').value;
+            const telefone = document.getElementById('telefone').value;
+            const endereco = document.getElementById('endereco').value;
+            const documento = document.getElementById('documento').value;
+            const objetivo = document.getElementById('objetivo').value;
+            const resumo = document.getElementById('resumo').value;
+            const formacao = document.getElementById('formacao').value;
+            const idiomas = document.getElementById('idiomas').value;
+            const competencias = document.getElementById('competencias').value;
+
+            // Formatação da data (YYYY-MM-DD para DD/MM/YYYY)
+            let dataFormatada = "";
+            if(dataNascimento) {
+                const partes = dataNascimento.split('-');
+                dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+
+            const dadosPessoais = `Nascido(a) em ${dataFormatada} • ${sexo} • ${estadoCivil} • Filhos: ${filhos}`;
+
+            // Preenchimento dos dados básicos no layout
+            document.getElementById('out-nome').innerText = nome.toUpperCase();
+            document.getElementById('out-dados-pessoais').innerText = dadosPessoais;
+            document.getElementById('out-endereco').innerText = endereco;
+            document.getElementById('out-email').innerText = email;
+            document.getElementById('out-telefone').innerText = telefone;
+            document.getElementById('out-documento').innerText = documento;
+            document.getElementById('out-objetivo').innerText = objetivo;
+
+            // Tratamento das Experiências Dinâmicas
+            const expItems = document.querySelectorAll('.exp-item');
+            const outExpContainer = document.getElementById('out-experiencia-container');
+            const secExperiencia = document.getElementById('sec-experiencia');
+            outExpContainer.innerHTML = ''; // Limpa antes de gerar
+            let temExperiencia = false;
+
+            expItems.forEach(item => {
+                const empresa = item.querySelector('.exp-empresa').value.trim();
+                const cargo = item.querySelector('.exp-cargo').value.trim();
+                const inicio = item.querySelector('.exp-inicio').value.trim();
+                const fim = item.querySelector('.exp-fim').value.trim();
+                const desc = item.querySelector('.exp-desc').value.trim();
+
+                // Só adiciona se pelo menos empresa ou cargo estiverem preenchidos
+                if (empresa !== "" || cargo !== "") {
+                    temExperiencia = true;
+                    const expDiv = document.createElement('div');
+                    expDiv.classList.add('cv-exp-item');
+                    
+                    let dataString = "";
+                    if(inicio || fim) dataString = `${inicio || '?'} - ${fim || 'Atual'}`;
+
+                    expDiv.innerHTML = `
+                        <div class="cv-exp-header">
+                            <p class="cv-exp-title">${cargo} <span class="cv-exp-company">${empresa ? '| ' + empresa : ''}</span></p>
+                            <span class="cv-exp-date">${dataString}</span>
+                        </div>
+                        <p class="cv-exp-desc">${desc}</p>
+                    `;
+                    outExpContainer.appendChild(expDiv);
+                }
+            });
+
+            // Mostra ou esconde a seção de experiência baseada no preenchimento
+            if (temExperiencia) {
+                secExperiencia.style.display = 'block';
+            } else {
+                secExperiencia.style.display = 'none';
+            }
+
+            // Exibe/oculta outras seções opcionais
+            const camposOpcionais = [
+                { input: resumo, out: 'out-resumo', sec: 'sec-resumo' },
+                { input: formacao, out: 'out-formacao', sec: 'sec-formacao' },
+                { input: idiomas, out: 'out-idiomas', sec: 'sec-idiomas' },
+                { input: competencias, out: 'out-competencias', sec: 'sec-competencias' }
+            ];
+
+            camposOpcionais.forEach(campo => {
+                if (campo.input.trim() !== "") {
+                    document.getElementById(campo.out).innerText = campo.input;
+                    document.getElementById(campo.sec).style.display = 'block';
+                } else {
+                    document.getElementById(campo.sec).style.display = 'none';
+                }
+            });
+
+            // Mostra o currículo pronto
+            document.getElementById('cv-output').style.display = 'block';
+            
+            // Rola suavemente até o resultado
+            document.getElementById('cv-output').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+
+</body>
+</html>

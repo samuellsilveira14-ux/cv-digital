@@ -5,18 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Currículos</title>
     <style>
+       @import url('https://fonts.googleapis.com/css2?family=Boldonse&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #34495e;
             --bg-color: #f4f7f6;
             --form-bg: #ffffff;
-            --text-color: #333;
+            --text-color: #000000;
             --danger-color: #e74c3c;
             --success-color: #27ae60;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Boldonse', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
@@ -48,11 +49,13 @@
             display: flex;
             gap: 15px;
             margin-bottom: 10px;
+            flex-wrap: wrap; /* Adicionado para responsividade com os novos campos */
         }
 
         .form-row .form-group {
             flex: 1;
             margin-bottom: 0;
+            min-width: 200px; /* Evita que os campos fiquem muito espremidos */
         }
 
         label {
@@ -63,7 +66,7 @@
         }
 
         input[type="text"], input[type="date"], input[type="email"], 
-        input[type="tel"], select, textarea {
+        input[type="tel"], input[type="file"], select, textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
@@ -136,10 +139,23 @@
         }
 
         .cv-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
             border-bottom: 2px solid var(--primary-color);
             padding-bottom: 20px;
             margin-bottom: 20px;
+        }
+
+        .cv-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            margin-bottom: 15px;
+            display: none; /* Oculto por padrão, ativado via JS */
         }
 
         .cv-header h1 {
@@ -230,6 +246,11 @@
         <form id="cv-form">
             
             <div class="form-group">
+                <label for="foto">Foto de Perfil (Câmera ou Arquivo)</label>
+                <input type="file" id="foto" accept="image/*">
+            </div>
+
+            <div class="form-group">
                 <label for="nome">Nome Completo</label>
                 <input type="text" id="nome" required>
             </div>
@@ -240,6 +261,10 @@
                     <input type="date" id="nascimento" required>
                 </div>
                 <div class="form-group">
+                    <label for="local_nascimento">Local de Nascimento</label>
+                    <input type="text" id="local_nascimento" placeholder="Ex: São Paulo, SP" required>
+                </div>
+                <div class="form-group">
                     <label for="sexo">Sexo</label>
                     <select id="sexo">
                         <option value="Masculino">Masculino</option>
@@ -247,6 +272,11 @@
                         <option value="Prefiro não informar">Prefiro não informar</option>
                     </select>
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label for="filiacao">Filiação (Nome dos pais)</label>
+                <input type="text" id="filiacao" placeholder="Ex: Nome da Mãe e Nome do Pai" required>
             </div>
 
             <div class="form-row">
@@ -349,9 +379,12 @@
 
     <div id="cv-output">
         <div class="cv-header">
+            <img id="out-foto" class="cv-photo" alt="Foto de Perfil">
+            
             <h1 id="out-nome">Nome</h1>
             <div class="cv-contact-info">
                 <span id="out-dados-pessoais"></span><br>
+                <strong>Filiação:</strong> <span id="out-filiacao"></span><br>
                 <span id="out-endereco"></span><br>
                 <strong>E-mail:</strong> <span id="out-email"></span> | 
                 <strong>Telefone:</strong> <span id="out-telefone"></span><br>
@@ -388,11 +421,12 @@
             <h3>Competências</h3>
             <div class="cv-text-block" id="out-competencias"></div>
         </div>
-
-        <button class="btn-print" onclick="window.print()">Imprimir / Salvar como PDF</button>
+        
+        <button class="btn-print" onclick="window.print()">Imprimir / Salvar PDF</button>
     </div>
 
     <script>
+        
         // Função para adicionar um novo bloco de experiência
         document.getElementById('btn-add-exp').addEventListener('click', function() {
             const container = document.getElementById('experiencias-container');
@@ -436,6 +470,8 @@
             // Coleta de Dados Básicos
             const nome = document.getElementById('nome').value;
             const dataNascimento = document.getElementById('nascimento').value;
+            const localNascimento = document.getElementById('local_nascimento').value;
+            const filiacao = document.getElementById('filiacao').value;
             const sexo = document.getElementById('sexo').value;
             const estadoCivil = document.getElementById('estado_civil').value;
             const filhos = document.getElementById('filhos').value;
@@ -448,6 +484,21 @@
             const formacao = document.getElementById('formacao').value;
             const idiomas = document.getElementById('idiomas').value;
             const competencias = document.getElementById('competencias').value;
+            
+            // Tratamento da Imagem/Foto
+            const fotoInput = document.getElementById('foto');
+            const outFoto = document.getElementById('out-foto');
+            
+            if (fotoInput.files && fotoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    outFoto.src = e.target.result;
+                    outFoto.style.display = 'block'; // Mostra a imagem
+                }
+                reader.readAsDataURL(fotoInput.files[0]);
+            } else {
+                outFoto.style.display = 'none'; // Esconde se não houver foto
+            }
 
             // Formatação da data (YYYY-MM-DD para DD/MM/YYYY)
             let dataFormatada = "";
@@ -456,11 +507,13 @@
                 dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
             }
 
-            const dadosPessoais = `Nascido(a) em ${dataFormatada} • ${sexo} • ${estadoCivil} • Filhos: ${filhos}`;
+            // Inclusão do Local de Nascimento na string de dados pessoais
+            const dadosPessoais = `Nascido(a) em ${dataFormatada} (${localNascimento}) • ${sexo} • ${estadoCivil} • Filhos: ${filhos}`;
 
             // Preenchimento dos dados básicos no layout
             document.getElementById('out-nome').innerText = nome.toUpperCase();
             document.getElementById('out-dados-pessoais').innerText = dadosPessoais;
+            document.getElementById('out-filiacao').innerText = filiacao;
             document.getElementById('out-endereco').innerText = endereco;
             document.getElementById('out-email').innerText = email;
             document.getElementById('out-telefone').innerText = telefone;

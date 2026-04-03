@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Currículos</title>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
        @import url('https://fonts.googleapis.com/css2?family=Boldonse&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
         :root {
@@ -237,6 +238,7 @@
             .form-container, .btn-print { display: none; }
             #cv-output { box-shadow: none; padding: 0; display: block !important; }
         }
+       
     </style>
 </head>
 <body>
@@ -262,7 +264,7 @@
                 </div>
                 <div class="form-group">
                     <label for="local_nascimento">Local de Nascimento</label>
-                    <input type="text" id="local_nascimento" placeholder="Ex: São Paulo, SP" required>
+                    <input type="text" id="local_nascimento" required>
                 </div>
                 <div class="form-group">
                     <label for="sexo">Sexo</label>
@@ -584,7 +586,24 @@
             // Rola suavemente até o resultado
             document.getElementById('cv-output').scrollIntoView({ behavior: 'smooth' });
         });
-    </script>
+     // Exemplo básico de salvamento
+function baixarPDF() {
+    // 1. Seleciona o elemento que você quer transformar em PDF
+    const elemento = document.getElementById('cv-form');
 
+    // 2. Configurações do arquivo
+    const opcoes = {
+        margin: [10, 10, 10, 10], // margens (topo, esquerda, rodapé, direita)
+        filename: 'meu-curriculo.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 }, // Aumenta a qualidade do texto
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // 3. Executa o comando de salvar
+    html2pdf().set(opcoes).from(elemento).save();
+}
+</script>
 </body>
 </html>
+

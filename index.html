@@ -30,7 +30,6 @@
             flex-wrap: wrap;
         }
 
-        /* Layout Coluna de Formulário */
         .container {
             width: 100%;
             max-width: 500px;
@@ -38,10 +37,8 @@
             padding: 25px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            height: fit-content;
         }
 
-        /* Coluna de Preview Fixa */
         #cv-preview-container {
             width: 100%;
             max-width: 800px;
@@ -66,16 +63,15 @@
         }
         
         .btn-add { background-color: #2980b9; margin-bottom: 15px; }
-        .btn-print { background-color: var(--success-color); font-size: 1.1em; margin-bottom: 15px; }
+        .btn-print { background-color: var(--success-color); font-size: 1.1em; }
 
-        /* Estilos do Currículo (Folha A4) */
+        /* Estilos do Currículo */
         #cv-output {
             background: white;
-            padding: 50px;
-            min-height: 1050px;
+            padding: 40px;
+            min-height: 1000px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             border-radius: 4px;
-            box-sizing: border-box;
         }
 
         .cv-header {
@@ -92,23 +88,35 @@
         }
 
         .cv-header h1 { margin: 0; color: var(--primary-color); text-transform: uppercase; font-size: 1.8em; }
-        .cv-header h2 { margin: 5px 0; color: var(--secondary-color); font-size: 1.2em; font-weight: bold; }
+        .cv-header h2 { margin: 5px 0; color: var(--secondary-color); font-size: 1.2em; font-weight: normal; }
         
-        .cv-contact-info { font-size: 0.9em; color: #444; line-height: 1.6; }
-        .cv-section { margin-bottom: 20px; }
+        .cv-contact-info { font-size: 0.85em; color: #555; line-height: 1.4; }
+        .cv-section { margin-bottom: 15px; }
         .cv-section h3 {
-            border-bottom: 1px solid #ddd; padding-bottom: 3px;
-            margin-bottom: 10px; color: var(--primary-color); font-size: 1.1em;
-            text-transform: uppercase;
+            border-bottom: 1px solid #eee; padding-bottom: 3px;
+            margin-bottom: 8px; color: var(--primary-color); font-size: 1.1em;
         }
 
         .cv-text-block { white-space: pre-wrap; font-size: 0.95em; line-height: 1.5; }
-        .cv-exp-item { margin-bottom: 12px; }
+        .cv-exp-item { margin-bottom: 10px; }
         .cv-exp-header { display: flex; justify-content: space-between; font-weight: bold; }
+
+        /* Modal de Download */
+        #download-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
 
         @media print {
             body { background: white; padding: 0; }
-            .container, .btn-print, .btn-add, .btn-remove { display: none !important; }
+            .container, #cv-preview-container > button, #download-modal { display: none !important; }
             #cv-output { box-shadow: none; padding: 0; width: 100%; }
         }
     </style>
@@ -125,12 +133,12 @@
 
             <div class="form-group">
                 <label>Nome Completo</label>
-                <input type="text" id="nome" oninput="updateCV()">
+                <input type="text" id="nome" placeholder="Seu nome" oninput="updateCV()">
             </div>
 
             <div class="form-group">
                 <label>Vaga Desejada</label>
-                <input type="text" id="vaga" oninput="updateCV()">
+                <input type="text" id="vaga" placeholder="Ex: Recepcionista, Gerente..." oninput="updateCV()">
             </div>
 
             <div class="form-row">
@@ -140,7 +148,7 @@
                 </div>
                 <div class="form-group">
                     <label>CPF</label>
-                    <input type="text" id="documento" oninput="updateCV()">
+                    <input type="text" id="documento" placeholder="000.000.000-00" oninput="updateCV()">
                 </div>
             </div>
 
@@ -151,13 +159,13 @@
                 </div>
                 <div class="form-group">
                     <label>Naturalidade (Cidade/UF)</label>
-                    <input type="text" id="naturalidade" oninput="updateCV()">
+                    <input type="text" id="naturalidade" placeholder="Ex: São Paulo - SP" oninput="updateCV()">
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Filiação (Nome dos Pais)</label>
-                <input type="text" id="filiacao"  oninput="updateCV()">
+                <input type="text" id="filiacao" placeholder="Nome do pai e/ou mãe" oninput="updateCV()">
             </div>
 
             <div class="form-row">
@@ -165,6 +173,16 @@
                     <label>Data de Nascimento</label>
                     <input type="date" id="nascimento" oninput="updateCV()">
                 </div>
+                <div class="form-group">
+                    <label>Possui Filhos?</label>
+                    <select id="tem_filhos" onchange="updateCV()">
+                        <option value="Não">Não</option>
+                        <option value="Sim">Sim</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
                 <div class="form-group">
                     <label>Estado Civil</label>
                     <select id="estado_civil" onchange="updateCV()">
@@ -175,33 +193,24 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Tem filhos?</label>
-                    <select id="filhos" onchange="updateCV()">
-                        <option value="Não">Não</option>
-                        <option value="Sim">Sim</option>
-                    </select>
+                    <label>Telefone</label>
+                    <input type="tel" id="telefone" placeholder="(00) 00000-0000" oninput="updateCV()">
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>E-mail</label>
-                    <input type="email" id="email" oninput="updateCV()">
-                </div>
-                <div class="form-group">
-                    <label>Telefone</label>
-                    <input type="tel" id="telefone" oninput="updateCV()">
-                </div>
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="email" placeholder="email@exemplo.com" oninput="updateCV()">
             </div>
 
             <div class="form-group">
                 <label>Endereço Completo</label>
-                <input type="text" id="endereco" oninput="updateCV()">
+                <input type="text" id="endereco" placeholder="Rua, Número, Bairro, Cidade - UF" oninput="updateCV()">
             </div>
 
             <div class="form-group">
-                <label>Objetivo</label>
-                <textarea id="objetivo" oninput="updateCV()" rows="3"></textarea>
+                <label>Objetivo Profissional</label>
+                <textarea id="objetivo" placeholder="Fale sobre suas metas..." oninput="updateCV()"></textarea>
             </div>
 
             <div class="form-group">
@@ -212,31 +221,30 @@
 
             <div class="form-group">
                 <label>Formação Acadêmica</label>
-                <textarea id="formacao" oninput="updateCV()" rows="3"></textarea>
+                <textarea id="formacao" placeholder="Ex: Ensino Médio Completo..." oninput="updateCV()"></textarea>
             </div>
 
             <div class="form-group">
-                <label>Competências e Idiomas</label>
-                <textarea id="competencias" oninput="updateCV()" rows="3"></textarea>
+                <label>Competências e Cursos</label>
+                <textarea id="competencias" placeholder="Idiomas, informática, cursos..." oninput="updateCV()"></textarea>
             </div>
         </form>
     </div>
 
     <div id="cv-preview-container">
-        <button class="btn-print" onclick="baixarPDF()">⬇ Baixar Currículo em PDF</button>
+        <button class="btn-print" onclick="mostrarModalDownload()">⬇ Gerar e Baixar PDF</button>
         
         <div id="cv-output">
             <div class="cv-header">
                 <img id="out-foto" class="cv-photo">
                 <h1 id="out-nome">SEU NOME COMPLETO</h1>
-                <h2 id="out-vaga">Vaga Desejada</h2>
+                <h2 id="out-vaga">VAGA DESEJADA</h2>
                 
                 <div class="cv-contact-info">
-                    <span id="out-info-pessoal">Nacionalidade • Estado Civil • Idade</span><br>
-                    <span id="out-naturalidade">Naturalidade: ---</span> | <span id="out-filhos">Filhos: Não</span><br>
-                    <span id="out-filiacao">Filiação: ---</span><br>
+                    <span id="out-pessoal-1">Nacionalidade • Estado Civil • 00 anos • Filhos: Não</span><br>
+                    <span id="out-pessoal-2">Naturalidade: --- • Filiação: ---</span><br>
                     <span id="out-docs">RG: --- | CPF: ---</span><br>
-                    <span id="out-endereco">Endereço Completo</span><br>
+                    <span id="out-endereco">Endereço não informado</span><br>
                     <strong>E-mail:</strong> <span id="out-email">---</span> | <strong>Tel:</strong> <span id="out-tel">---</span>
                 </div>
             </div>
@@ -263,6 +271,15 @@
         </div>
     </div>
 
+    <div id="download-modal">
+        <h3>🎉 Tudo pronto!</h3>
+        <p>Seu currículo foi gerado com sucesso.</p>
+        <div style="display:flex; gap:10px">
+            <button onclick="baixarPDF()" style="background:var(--success-color); width:200px">Confirmar Download</button>
+            <button onclick="fecharModal()" style="background:var(--danger-color); width:100px">Voltar</button>
+        </div>
+    </div>
+
     <script>
         function previewImage(input) {
             const outFoto = document.getElementById('out-foto');
@@ -283,50 +300,51 @@
             div.style.border = "1px solid #ddd";
             div.style.padding = "10px";
             div.style.marginBottom = "10px";
-            div.style.borderRadius = "4px";
             div.innerHTML = `
-                <input type="text" placeholder="Empresa" oninput="updateCV()" class="e-emp" style="margin-bottom:5px">
-                <input type="text" placeholder="Cargo" oninput="updateCV()" class="e-car" style="margin-bottom:5px">
-                <input type="text" placeholder="Período (Ex: 2020 - Atual)" oninput="updateCV()" class="e-per" style="margin-bottom:5px">
-                <textarea placeholder="Descrição das atividades" oninput="updateCV()" class="e-des"></textarea>
-                <button type="button" onclick="this.parentElement.remove(); updateCV()" style="background:#c0392b; padding:5px; font-size:0.8em; margin-top:5px">Remover</button>
+                <input type="text" placeholder="Empresa" oninput="updateCV()" class="e-emp">
+                <input type="text" placeholder="Cargo" oninput="updateCV()" class="e-car" style="margin: 5px 0">
+                <input type="text" placeholder="Período" oninput="updateCV()" class="e-per">
+                <textarea placeholder="Descrição das atividades" oninput="updateCV()" class="e-des" style="margin-top:5px"></textarea>
+                <button type="button" onclick="this.parentElement.remove(); updateCV()" style="background:#c0392b; padding:5px; font-size:0.8em; width:auto">Remover</button>
             `;
             container.appendChild(div);
         }
 
         function updateCV() {
-            // Textos Simples
-            document.getElementById('out-nome').innerText = document.getElementById('nome').value.toUpperCase() || "SEU NOME COMPLETO";
-            document.getElementById('out-vaga').innerText = document.getElementById('vaga').value || "Vaga Desejada";
+            document.getElementById('out-nome').innerText = document.getElementById('nome').value || "SEU NOME COMPLETO";
+            document.getElementById('out-vaga').innerText = (document.getElementById('vaga').value).toUpperCase() || "VAGA DESEJADA";
             document.getElementById('out-email').innerText = document.getElementById('email').value || "---";
             document.getElementById('out-tel').innerText = document.getElementById('telefone').value || "---";
             document.getElementById('out-endereco').innerText = document.getElementById('endereco').value || "Endereço não informado";
             document.getElementById('out-objetivo').innerText = document.getElementById('objetivo').value;
             document.getElementById('out-formacao').innerText = document.getElementById('formacao').value;
             document.getElementById('out-comp').innerText = document.getElementById('competencias').value;
-            document.getElementById('out-naturalidade').innerText = "Naturalidade: " + (document.getElementById('naturalidade').value || "---");
-            document.getElementById('out-filhos').innerText = "Filhos: " + document.getElementById('filhos').value;
-            document.getElementById('out-filiacao').innerText = "Filiação: " + (document.getElementById('filiacao').value || "---");
-
+            
             // Documentos
             const rg = document.getElementById('rg').value;
             const cpf = document.getElementById('documento').value;
             document.getElementById('out-docs').innerText = `RG: ${rg || '---'} | CPF: ${cpf || '---'}`;
 
-            // Info Pessoal e Idade
+            // Info Pessoal Linha 1
             const nac = document.getElementById('nacionalidade').value;
             const est = document.getElementById('estado_civil').value;
+            const filhos = document.getElementById('tem_filhos').value;
             const nasc = document.getElementById('nascimento').value;
-            let idadeTxt = "";
+            let idade = "00 anos";
             if(nasc) {
                 const hoje = new Date();
                 const nascData = new Date(nasc);
-                let idade = hoje.getFullYear() - nascData.getFullYear();
+                let idadeCalc = hoje.getFullYear() - nascData.getFullYear();
                 const m = hoje.getMonth() - nascData.getMonth();
-                if (m < 0 || (m === 0 && hoje.getDate() < nascData.getDate())) idade--;
-                idadeTxt = ` • ${idade} anos`;
+                if (m < 0 || (m === 0 && hoje.getDate() < nascData.getDate())) idadeCalc--;
+                idade = idadeCalc + " anos";
             }
-            document.getElementById('out-info-pessoal').innerText = `${nac} • ${est}${idadeTxt}`;
+            document.getElementById('out-pessoal-1').innerText = `${nac} • ${est} • ${idade} • Filhos: ${filhos}`;
+
+            // Info Pessoal Linha 2
+            const nat = document.getElementById('naturalidade').value;
+            const fil = document.getElementById('filiacao').value;
+            document.getElementById('out-pessoal-2').innerText = `Naturalidade: ${nat || '---'} • Filiação: ${fil || '---'}`;
 
             // Experiências
             const expOut = document.getElementById('out-exp');
@@ -336,7 +354,6 @@
                 const car = block.querySelector('.e-car').value;
                 const per = block.querySelector('.e-per').value;
                 const des = block.querySelector('.e-des').value;
-                
                 if(emp || car) {
                     expOut.innerHTML += `
                         <div class="cv-exp-item">
@@ -348,12 +365,21 @@
             });
         }
 
+        function mostrarModalDownload() {
+            document.getElementById('download-modal').style.display = 'flex';
+        }
+
+        function fecharModal() {
+            document.getElementById('download-modal').style.display = 'none';
+        }
+
         function baixarPDF() {
+            fecharModal();
             const elemento = document.getElementById('cv-output');
             const nomeArquivo = (document.getElementById('nome').value || 'curriculo') + '.pdf';
             
             const opcoes = {
-                margin: 0,
+                margin: 10,
                 filename: nomeArquivo,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },

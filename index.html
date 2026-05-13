@@ -3,25 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Currículos Profissional</title>
+    <title>WorkNow</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Boldonse:wght@400;700&display=swap');
-        
+
+        @import url("https://fonts.googleapis.com/css2?family=Boldonse&display=swap");
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #34495e;
-            --bg-color: #f4f7f6;
+            --bg-color: #f0f2f5;
             --form-bg: #ffffff;
-            --text-color: #333;
-            --danger-color: #e74c3c;
-            --success-color: #27ae60;
         }
 
         body {
             font-family: 'Boldonse', sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
             margin: 0;
             padding: 20px;
             display: flex;
@@ -30,253 +26,219 @@
             flex-wrap: wrap;
         }
 
+        /* Coluna do Formulário */
         .container {
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
             background: var(--form-bg);
-            padding: 25px;
+            padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
         }
 
-        #cv-preview-container {
-            width: 100%;
-            max-width: 800px;
-            position: sticky;
-            top: 20px;
-        }
-
-        .form-group { margin-bottom: 12px; }
+        .form-group { margin-bottom: 15px; }
         .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        .form-row .form-group { flex: 1; min-width: 140px; }
+        .form-row .form-group { flex: 1; min-width: 120px; }
 
-        label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 0.85em; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.85em; color: var(--primary-color); }
         input, select, textarea {
-            width: 100%; padding: 8px; border: 1px solid #ccc;
+            width: 100%; padding: 10px; border: 1px solid #ccc;
             border-radius: 4px; box-sizing: border-box; font-family: inherit;
         }
 
         button {
             background-color: var(--primary-color); color: white; border: none;
             padding: 12px; border-radius: 4px; cursor: pointer; width: 100%;
-            transition: 0.3s; margin-top: 10px; font-weight: bold;
+            font-weight: bold; margin-top: 10px; transition: 0.3s;
         }
         
-        .btn-add { background-color: #2980b9; margin-bottom: 15px; }
-        .btn-print { background-color: var(--success-color); font-size: 1.1em; }
+        .btn-add { background-color: #2980b9; margin-bottom: 10px; }
+        .btn-print { background-color: #27ae60; font-size: 1.1em; position: sticky; top: 0; z-index: 10; margin-bottom: 20px; }
 
-        /* Estilos do Currículo */
+        /* Estilização do Currículo (Preview/PDF) */
+        #cv-preview-container { width: 100%; max-width: 800px; }
+
         #cv-output {
             background: white;
-            padding: 40px;
-            min-height: 1000px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            border-radius: 4px;
+            padding: 50px;
+            width: 210mm; /* Largura A4 */
+            min-height: 297mm; /* Altura A4 */
+            margin: 0 auto;
+            box-sizing: border-box;
+            color: #333;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
         }
 
-        .cv-header {
-            text-align: center;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .cv-photo {
-            width: 110px; height: 110px; border-radius: 50%;
-            object-fit: cover; border: 3px solid var(--primary-color);
-            margin-bottom: 10px; display: none; margin-inline: auto;
-        }
-
-        .cv-header h1 { margin: 0; color: var(--primary-color); text-transform: uppercase; font-size: 1.8em; }
-        .cv-header h2 { margin: 5px 0; color: var(--secondary-color); font-size: 1.2em; font-weight: normal; }
+        .cv-header { text-align: center; border-bottom: 2px solid var(--primary-color); margin-bottom: 20px; padding-bottom: 15px; }
+        .cv-header h1 { margin: 0; color: var(--primary-color); text-transform: uppercase; letter-spacing: 2px; }
+        .cv-photo { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); margin-bottom: 10px; display: none; margin-inline: auto; }
         
-        .cv-contact-info { font-size: 0.85em; color: #555; line-height: 1.4; }
-        .cv-section { margin-bottom: 15px; }
-        .cv-section h3 {
-            border-bottom: 1px solid #eee; padding-bottom: 3px;
-            margin-bottom: 8px; color: var(--primary-color); font-size: 1.1em;
+        .cv-contact-info { margin-top: 10px; font-size: 0.9em; line-height: 1.5; }
+        .cv-section { margin-bottom: 18px; }
+        .cv-section h3 { 
+            background: #f8f9fa; 
+            padding: 6px 10px; 
+            border-left: 5px solid var(--primary-color); 
+            text-transform: uppercase; 
+            font-size: 0.95em;
+            margin-bottom: 10px;
         }
+        
+        .cv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.9em; margin-bottom: 10px; }
+        .cv-text-block { white-space: pre-wrap; font-size: 0.95em; line-height: 1.6; text-align: justify; }
 
-        .cv-text-block { white-space: pre-wrap; font-size: 0.95em; line-height: 1.5; }
-        .cv-exp-item { margin-bottom: 10px; }
-        .cv-exp-header { display: flex; justify-content: space-between; font-weight: bold; }
-
-        /* Modal de Download */
-        #download-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: white;
-        }
+        .exp-item { margin-bottom: 12px; }
+        .exp-head { display: flex; justify-content: space-between; font-weight: bold; color: #2c3e50; font-size: 0.95em; }
 
         @media print {
             body { background: white; padding: 0; }
-            .container, #cv-preview-container > button, #download-modal { display: none !important; }
-            #cv-output { box-shadow: none; padding: 0; width: 100%; }
+            .container, .btn-print, .btn-add { display: none !important; }
+            #cv-output { box-shadow: none; margin: 0; border: none; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>Dados do Currículo</h2>
-        <form id="cv-form">
+        <h2>Painel de Edição</h2>
+        
+        <div class="form-group">
+            <label>Foto de Perfil</label>
+            <input type="file" accept="image/*" onchange="previewImage(this)">
+        </div>
+
+        <div class="form-group">
+            <label>Nome Completo</label>
+            <input type="text" id="nome" placeholder="Seu Nome" oninput="updateCV()">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group"><label>E-mail</label><input type="email" id="email" oninput="updateCV()"></div>
+            <div class="form-group"><label>Telefone</label><input type="text" id="telefone" oninput="updateCV()"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Vaga Desejada</label>
+            <input type="text" id="vaga" placeholder="Ex: Analista de RH" oninput="updateCV()">
+        </div>
+
+        <div class="form-group">
+            <label>Objetivo</label>
+            <input type="text" id="objetivo" placeholder="Ex: Atuar na área de marketing..." oninput="updateCV()">
+        </div>
+
+        <div class="form-group">
+            <label>Resumo Profissional</label>
+            <textarea id="resumo" rows="3" oninput="updateCV()"></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group"><label>Naturalidade</label><input type="text" id="naturalidade" oninput="updateCV()"></div>
+            <div class="form-group"><label>Nacionalidade</label><input type="text" id="nacionalidade" value="Brasileiro(a)" oninput="updateCV()"></div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group"><label>RG</label><input type="text" id="rg" oninput="updateCV()"></div>
+            <div class="form-group"><label>CPF</label><input type="text" id="cpf" oninput="updateCV()"></div>
+        </div>
+
+        <div class="form-row">
             <div class="form-group">
-                <label>Foto de Perfil</label>
-                <input type="file" id="foto" accept="image/*" onchange="previewImage(this)">
+                <label>Estado Civil</label>
+                <select id="estado_civil" onchange="updateCV()">
+                    <option value="Solteiro(a)">Solteiro(a)</option>
+                    <option value="Casado(a)">Casado(a)</option>
+                    <option value="Divorciado(a)">Divorciado(a)</option>
+                </select>
             </div>
-
             <div class="form-group">
-                <label>Nome Completo</label>
-                <input type="text" id="nome" placeholder="Seu nome" oninput="updateCV()">
+                <label>Tem filhos?</label>
+                <select id="filhos" onchange="updateCV()">
+                    <option value="Não">Não</option>
+                    <option value="Sim">Sim</option>
+                </select>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label>Vaga Desejada</label>
-                <input type="text" id="vaga" placeholder="Ex: Recepcionista, Gerente..." oninput="updateCV()">
-            </div>
+        <div class="form-group">
+            <label>Filiação (Pais)</label>
+            <input type="text" id="filiacao" oninput="updateCV()">
+        </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>RG</label>
-                    <input type="text" id="rg" placeholder="00.000.000-0" oninput="updateCV()">
-                </div>
-                <div class="form-group">
-                    <label>CPF</label>
-                    <input type="text" id="documento" placeholder="000.000.000-00" oninput="updateCV()">
-                </div>
-            </div>
+        <div class="form-group">
+            <label>Endereço</label>
+            <input type="text" id="endereco" oninput="updateCV()">
+        </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Nacionalidade</label>
-                    <input type="text" id="nacionalidade" value="Brasileiro(a)" oninput="updateCV()">
-                </div>
-                <div class="form-group">
-                    <label>Naturalidade (Cidade/UF)</label>
-                    <input type="text" id="naturalidade" placeholder="Ex: São Paulo - SP" oninput="updateCV()">
-                </div>
-            </div>
+        <div class="form-group">
+            <label>Experiências Profissionais</label>
+            <div id="exp-list"></div>
+            <button type="button" class="btn-add" onclick="addExp()">+ Adicionar Empresa</button>
+        </div>
 
-            <div class="form-group">
-                <label>Filiação (Nome dos Pais)</label>
-                <input type="text" id="filiacao" placeholder="Nome do pai e/ou mãe" oninput="updateCV()">
-            </div>
+        <div class="form-group">
+            <label>Formação Acadêmica</label>
+            <textarea id="formacao" rows="3" oninput="updateCV()"></textarea>
+        </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Data de Nascimento</label>
-                    <input type="date" id="nascimento" oninput="updateCV()">
-                </div>
-                <div class="form-group">
-                    <label>Possui Filhos?</label>
-                    <select id="tem_filhos" onchange="updateCV()">
-                        <option value="Não">Não</option>
-                        <option value="Sim">Sim</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Estado Civil</label>
-                    <select id="estado_civil" onchange="updateCV()">
-                        <option value="Solteiro(a)">Solteiro(a)</option>
-                        <option value="Casado(a)">Casado(a)</option>
-                        <option value="Divorciado(a)">Divorciado(a)</option>
-                        <option value="Viúvo(a)">Viúvo(a)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Telefone</label>
-                    <input type="tel" id="telefone" placeholder="(00) 00000-0000" oninput="updateCV()">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>E-mail</label>
-                <input type="email" id="email" placeholder="email@exemplo.com" oninput="updateCV()">
-            </div>
-
-            <div class="form-group">
-                <label>Endereço Completo</label>
-                <input type="text" id="endereco" placeholder="Rua, Número, Bairro, Cidade - UF" oninput="updateCV()">
-            </div>
-
-            <div class="form-group">
-                <label>Objetivo Profissional</label>
-                <textarea id="objetivo" placeholder="Fale sobre suas metas..." oninput="updateCV()"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Experiência Profissional</label>
-                <div id="experiencias-container"></div>
-                <button type="button" class="btn-add" onclick="addExp()">+ Adicionar Experiência</button>
-            </div>
-
-            <div class="form-group">
-                <label>Formação Acadêmica</label>
-                <textarea id="formacao" placeholder="Ex: Ensino Médio Completo..." oninput="updateCV()"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Competências e Cursos</label>
-                <textarea id="competencias" placeholder="Idiomas, informática, cursos..." oninput="updateCV()"></textarea>
-            </div>
-        </form>
+        <div class="form-group">
+            <label>Competências / Habilidades</label>
+            <textarea id="competencias" rows="3" oninput="updateCV()"></textarea>
+        </div>
     </div>
 
     <div id="cv-preview-container">
-        <button class="btn-print" onclick="mostrarModalDownload()">⬇ Gerar e Baixar PDF</button>
+        <button class="btn-print" onclick="baixarPDF()">⬇ BAIXAR CURRÍCULO (PDF)</button>
         
         <div id="cv-output">
             <div class="cv-header">
                 <img id="out-foto" class="cv-photo">
-                <h1 id="out-nome">SEU NOME COMPLETO</h1>
-                <h2 id="out-vaga">VAGA DESEJADA</h2>
-                
+                <h1 id="out-nome">NOME COMPLETO</h1>
                 <div class="cv-contact-info">
-                    <span id="out-pessoal-1">Nacionalidade • Estado Civil • 00 anos • Filhos: Não</span><br>
-                    <span id="out-pessoal-2">Naturalidade: --- • Filiação: ---</span><br>
-                    <span id="out-docs">RG: --- | CPF: ---</span><br>
-                    <span id="out-endereco">Endereço não informado</span><br>
-                    <strong>E-mail:</strong> <span id="out-email">---</span> | <strong>Tel:</strong> <span id="out-tel">---</span>
+                    <strong>E-mail:</strong> <span id="out-email">---</span> | <strong>Tel:</strong> <span id="out-tel">---</span><br>
+                    <span id="out-endereco">Endereço Completo</span>
                 </div>
             </div>
 
             <div class="cv-section">
-                <h3>Objetivo</h3>
-                <div id="out-objetivo" class="cv-text-block"></div>
+                <h3>Informações Pessoais</h3>
+                <div class="cv-grid">
+                    <div><strong>Vaga Desejada:</strong> <span id="out-vaga">---</span></div>
+                    <div><strong>Naturalidade:</strong> <span id="out-natu">---</span></div>
+                    <div><strong>Nacionalidade:</strong> <span id="out-naci">---</span></div>
+                    <div><strong>RG:</strong> <span id="out-rg">---</span></div>
+                    <div><strong>CPF:</strong> <span id="out-cpf">---</span></div>
+                    <div><strong>Estado Civil:</strong> <span id="out-est">---</span></div>
+                    <div><strong>Filhos:</strong> <span id="out-fil">---</span></div>
+                </div>
+                <div style="font-size: 0.9em;"><strong>Filiação:</strong> <span id="out-fili">---</span></div>
             </div>
 
-            <div class="cv-section" id="sec-experiencia">
+            <div class="cv-section">
+                <h3>Objetivo</h3>
+                <div id="out-objetivo" class="cv-text-block">---</div>
+            </div>
+
+            <div class="cv-section">
+                <h3>Resumo Profissional</h3>
+                <div id="out-resumo" class="cv-text-block">---</div>
+            </div>
+
+            <div class="cv-section">
                 <h3>Experiência Profissional</h3>
-                <div id="out-exp"></div>
+                <div id="out-exp-container"></div>
             </div>
 
             <div class="cv-section">
                 <h3>Formação Acadêmica</h3>
-                <div id="out-formacao" class="cv-text-block"></div>
+                <div id="out-formacao" class="cv-text-block">---</div>
             </div>
 
             <div class="cv-section">
-                <h3>Qualificações e Atividades</h3>
-                <div id="out-comp" class="cv-text-block"></div>
+                <h3>Competências</h3>
+                <div id="out-comp" class="cv-text-block">---</div>
             </div>
-        </div>
-    </div>
-
-    <div id="download-modal">
-        <h3>🎉 Tudo pronto!</h3>
-        <p>Seu currículo foi gerado com sucesso.</p>
-        <div style="display:flex; gap:10px">
-            <button onclick="baixarPDF()" style="background:var(--success-color); width:200px">Confirmar Download</button>
-            <button onclick="fecharModal()" style="background:var(--danger-color); width:100px">Voltar</button>
         </div>
     </div>
 
@@ -294,102 +256,69 @@
         }
 
         function addExp() {
-            const container = document.getElementById('experiencias-container');
-            const div = document.createElement('div');
-            div.className = 'dynamic-block';
-            div.style.border = "1px solid #ddd";
-            div.style.padding = "10px";
-            div.style.marginBottom = "10px";
-            div.innerHTML = `
-                <input type="text" placeholder="Empresa" oninput="updateCV()" class="e-emp">
-                <input type="text" placeholder="Cargo" oninput="updateCV()" class="e-car" style="margin: 5px 0">
-                <input type="text" placeholder="Período" oninput="updateCV()" class="e-per">
-                <textarea placeholder="Descrição das atividades" oninput="updateCV()" class="e-des" style="margin-top:5px"></textarea>
-                <button type="button" onclick="this.parentElement.remove(); updateCV()" style="background:#c0392b; padding:5px; font-size:0.8em; width:auto">Remover</button>
+            const container = document.getElementById('exp-list');
+            const id = Date.now();
+            const html = `
+                <div id="item-${id}" style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:4px">
+                    <input type="text" placeholder="Empresa" oninput="updateCV()" class="e-empresa" style="margin-bottom:5px">
+                    <input type="text" placeholder="Cargo" oninput="updateCV()" class="e-cargo" style="margin-bottom:5px">
+                    <input type="text" placeholder="Período" oninput="updateCV()" class="e-periodo" style="margin-bottom:5px">
+                    <textarea placeholder="Atividades" oninput="updateCV()" class="e-desc" rows="2"></textarea>
+                    <button type="button" onclick="document.getElementById('item-${id}').remove(); updateCV()" style="background:#e74c3c; padding:5px; font-size:0.8em">Remover</button>
+                </div>
             `;
-            container.appendChild(div);
+            container.insertAdjacentHTML('beforeend', html);
         }
 
         function updateCV() {
-            document.getElementById('out-nome').innerText = document.getElementById('nome').value || "SEU NOME COMPLETO";
-            document.getElementById('out-vaga').innerText = (document.getElementById('vaga').value).toUpperCase() || "VAGA DESEJADA";
+            document.getElementById('out-nome').innerText = document.getElementById('nome').value || "NOME COMPLETO";
             document.getElementById('out-email').innerText = document.getElementById('email').value || "---";
             document.getElementById('out-tel').innerText = document.getElementById('telefone').value || "---";
+            document.getElementById('out-vaga').innerText = document.getElementById('vaga').value || "---";
+            document.getElementById('out-natu').innerText = document.getElementById('naturalidade').value || "---";
+            document.getElementById('out-naci').innerText = document.getElementById('nacionalidade').value || "---";
+            document.getElementById('out-rg').innerText = document.getElementById('rg').value || "---";
+            document.getElementById('out-cpf').innerText = document.getElementById('cpf').value || "---";
+            document.getElementById('out-est').innerText = document.getElementById('estado_civil').value;
+            document.getElementById('out-fil').innerText = document.getElementById('filhos').value;
+            document.getElementById('out-fili').innerText = document.getElementById('filiacao').value || "---";
             document.getElementById('out-endereco').innerText = document.getElementById('endereco').value || "Endereço não informado";
-            document.getElementById('out-objetivo').innerText = document.getElementById('objetivo').value;
-            document.getElementById('out-formacao').innerText = document.getElementById('formacao').value;
-            document.getElementById('out-comp').innerText = document.getElementById('competencias').value;
-            
-            // Documentos
-            const rg = document.getElementById('rg').value;
-            const cpf = document.getElementById('documento').value;
-            document.getElementById('out-docs').innerText = `RG: ${rg || '---'} | CPF: ${cpf || '---'}`;
+            document.getElementById('out-objetivo').innerText = document.getElementById('objetivo').value || "---";
+            document.getElementById('out-resumo').innerText = document.getElementById('resumo').value || "---";
+            document.getElementById('out-formacao').innerText = document.getElementById('formacao').value || "---";
+            document.getElementById('out-comp').innerText = document.getElementById('competencias').value || "---";
 
-            // Info Pessoal Linha 1
-            const nac = document.getElementById('nacionalidade').value;
-            const est = document.getElementById('estado_civil').value;
-            const filhos = document.getElementById('tem_filhos').value;
-            const nasc = document.getElementById('nascimento').value;
-            let idade = "00 anos";
-            if(nasc) {
-                const hoje = new Date();
-                const nascData = new Date(nasc);
-                let idadeCalc = hoje.getFullYear() - nascData.getFullYear();
-                const m = hoje.getMonth() - nascData.getMonth();
-                if (m < 0 || (m === 0 && hoje.getDate() < nascData.getDate())) idadeCalc--;
-                idade = idadeCalc + " anos";
-            }
-            document.getElementById('out-pessoal-1').innerText = `${nac} • ${est} • ${idade} • Filhos: ${filhos}`;
-
-            // Info Pessoal Linha 2
-            const nat = document.getElementById('naturalidade').value;
-            const fil = document.getElementById('filiacao').value;
-            document.getElementById('out-pessoal-2').innerText = `Naturalidade: ${nat || '---'} • Filiação: ${fil || '---'}`;
-
-            // Experiências
-            const expOut = document.getElementById('out-exp');
-            expOut.innerHTML = "";
-            document.querySelectorAll('.dynamic-block').forEach(block => {
-                const emp = block.querySelector('.e-emp').value;
-                const car = block.querySelector('.e-car').value;
-                const per = block.querySelector('.e-per').value;
-                const des = block.querySelector('.e-des').value;
-                if(emp || car) {
-                    expOut.innerHTML += `
-                        <div class="cv-exp-item">
-                            <div class="cv-exp-header"><span>${car} - ${emp}</span><span>${per}</span></div>
-                            <div class="cv-text-block">${des}</div>
+            const expContainer = document.getElementById('out-exp-container');
+            expContainer.innerHTML = '';
+            document.querySelectorAll('#exp-list > div').forEach(item => {
+                const empresa = item.querySelector('.e-empresa').value;
+                const cargo = item.querySelector('.e-cargo').value;
+                const periodo = item.querySelector('.e-periodo').value;
+                const desc = item.querySelector('.e-desc').value;
+                if(empresa || cargo) {
+                    expContainer.innerHTML += `
+                        <div class="exp-item">
+                            <div class="exp-head"><span>${cargo} - ${empresa}</span><span>${periodo}</span></div>
+                            <div class="cv-text-block">${desc}</div>
                         </div>
                     `;
                 }
             });
         }
 
-        function mostrarModalDownload() {
-            document.getElementById('download-modal').style.display = 'flex';
-        }
-
-        function fecharModal() {
-            document.getElementById('download-modal').style.display = 'none';
-        }
-
         function baixarPDF() {
-            fecharModal();
-            const elemento = document.getElementById('cv-output');
-            const nomeArquivo = (document.getElementById('nome').value || 'curriculo') + '.pdf';
-            
-            const opcoes = {
-                margin: 10,
-                filename: nomeArquivo,
+            const element = document.getElementById('cv-output');
+            const opt = {
+                margin: 0,
+                filename: 'Curriculo.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-
-            html2pdf().set(opcoes).from(elemento).save();
+            html2pdf().set(opt).from(element).save();
         }
-        
-        // Iniciar
+
+        // Inicia com uma experiência
         addExp();
     </script>
 </body>

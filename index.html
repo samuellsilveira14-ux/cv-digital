@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WorkNow</title>
+    <title>Gerador de Currículos Profissional</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-
         @import url("https://fonts.googleapis.com/css2?family=Boldonse&display=swap");
         :root {
             --primary-color: #2c3e50;
@@ -90,6 +89,7 @@
 
         .exp-item { margin-bottom: 12px; }
         .exp-head { display: flex; justify-content: space-between; font-weight: bold; color: #2c3e50; font-size: 0.95em; }
+        .exp-sub { font-size: 0.85em; color: #666; font-style: italic; margin-bottom: 4px; }
 
         @media print {
             body { background: white; padding: 0; }
@@ -134,13 +134,28 @@
         </div>
 
         <div class="form-row">
-            <div class="form-group"><label>Naturalidade</label><input type="text" id="naturalidade" oninput="updateCV()"></div>
+            <div class="form-group"><label>Naturalidade</label><input type="text" id="naturalidade" placeholder="Ex: Rio de Janeiro/RJ" oninput="updateCV()"></div>
             <div class="form-group"><label>Nacionalidade</label><input type="text" id="nacionalidade" value="Brasileiro(a)" oninput="updateCV()"></div>
         </div>
 
         <div class="form-row">
             <div class="form-group"><label>RG</label><input type="text" id="rg" oninput="updateCV()"></div>
             <div class="form-group"><label>CPF</label><input type="text" id="cpf" oninput="updateCV()"></div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Data de Nascimento</label>
+                <input type="date" id="nascimento" oninput="updateCV()">
+            </div>
+            <div class="form-group">
+                <label>Gênero</label>
+                <select id="genero" onchange="updateCV()">
+                    <option value="Masculino">Masculino</option>
+                    <option value="Feminino">Feminino</option>
+                    <option value="Não Informar">Não Informar</option>
+                </select>
+            </div>
         </div>
 
         <div class="form-row">
@@ -163,12 +178,12 @@
 
         <div class="form-group">
             <label>Filiação (Pais)</label>
-            <input type="text" id="filiacao" oninput="updateCV()">
+            <input type="text" id="filiacao" placeholder="Nome do pai e/ou da mãe" oninput="updateCV()">
         </div>
 
         <div class="form-group">
             <label>Endereço</label>
-            <input type="text" id="endereco" oninput="updateCV()">
+            <input type="text" id="endereco" placeholder="Rua, Bairro, Cidade - UF" oninput="updateCV()">
         </div>
 
         <div class="form-group">
@@ -205,6 +220,8 @@
                 <h3>Informações Pessoais</h3>
                 <div class="cv-grid">
                     <div><strong>Vaga Desejada:</strong> <span id="out-vaga">---</span></div>
+                    <div><strong>Data de Nascimento:</strong> <span id="out-data-nasc">---</span></div>
+                    <div><strong>Gênero:</strong> <span id="out-genero">---</span></div>
                     <div><strong>Naturalidade:</strong> <span id="out-natu">---</span></div>
                     <div><strong>Nacionalidade:</strong> <span id="out-naci">---</span></div>
                     <div><strong>RG:</strong> <span id="out-rg">---</span></div>
@@ -212,7 +229,7 @@
                     <div><strong>Estado Civil:</strong> <span id="out-est">---</span></div>
                     <div><strong>Filhos:</strong> <span id="out-fil">---</span></div>
                 </div>
-                <div style="font-size: 0.9em;"><strong>Filiação:</strong> <span id="out-fili">---</span></div>
+                <div style="font-size: 0.9em; margin-top: 4px;"><strong>Filiação:</strong> <span id="out-fili">---</span></div>
             </div>
 
             <div class="cv-section">
@@ -261,6 +278,10 @@
             const html = `
                 <div id="item-${id}" style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:4px">
                     <input type="text" placeholder="Empresa" oninput="updateCV()" class="e-empresa" style="margin-bottom:5px">
+                    <div style="display:flex; gap:5px; margin-bottom:5px;">
+                        <input type="text" placeholder="Cidade" oninput="updateCV()" class="e-cidade">
+                        <input type="text" placeholder="UF" oninput="updateCV()" class="e-uf" style="width:60px;">
+                    </div>
                     <input type="text" placeholder="Cargo" oninput="updateCV()" class="e-cargo" style="margin-bottom:5px">
                     <input type="text" placeholder="Período" oninput="updateCV()" class="e-periodo" style="margin-bottom:5px">
                     <textarea placeholder="Atividades" oninput="updateCV()" class="e-desc" rows="2"></textarea>
@@ -275,6 +296,7 @@
             document.getElementById('out-email').innerText = document.getElementById('email').value || "---";
             document.getElementById('out-tel').innerText = document.getElementById('telefone').value || "---";
             document.getElementById('out-vaga').innerText = document.getElementById('vaga').value || "---";
+            document.getElementById('out-genero').innerText = document.getElementById('genero').value;
             document.getElementById('out-natu').innerText = document.getElementById('naturalidade').value || "---";
             document.getElementById('out-naci').innerText = document.getElementById('nacionalidade').value || "---";
             document.getElementById('out-rg').innerText = document.getElementById('rg').value || "---";
@@ -288,17 +310,32 @@
             document.getElementById('out-formacao').innerText = document.getElementById('formacao').value || "---";
             document.getElementById('out-comp').innerText = document.getElementById('competencias').value || "---";
 
+            // Formatação de Data de Nascimento no Preview
+            const dataNasc = document.getElementById('nascimento').value;
+            if(dataNasc) {
+                const parts = dataNasc.split('-');
+                document.getElementById('out-data-nasc').innerText = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            } else {
+                document.getElementById('out-data-nasc').innerText = "---";
+            }
+
+            // Lista de Experiências
             const expContainer = document.getElementById('out-exp-container');
             expContainer.innerHTML = '';
             document.querySelectorAll('#exp-list > div').forEach(item => {
                 const empresa = item.querySelector('.e-empresa').value;
+                const cidade = item.querySelector('.e-cidade').value;
+                const uf = item.querySelector('.e-uf').value;
                 const cargo = item.querySelector('.e-cargo').value;
                 const periodo = item.querySelector('.e-periodo').value;
                 const desc = item.querySelector('.e-desc').value;
+                
                 if(empresa || cargo) {
+                    const localidade = (cidade || uf) ? `(${cidade}${cidade && uf ? '/' : ''}${uf})` : '';
                     expContainer.innerHTML += `
                         <div class="exp-item">
                             <div class="exp-head"><span>${cargo} - ${empresa}</span><span>${periodo}</span></div>
+                            <div class="exp-sub">${localidade}</div>
                             <div class="cv-text-block">${desc}</div>
                         </div>
                     `;
@@ -308,17 +345,25 @@
 
         function baixarPDF() {
             const element = document.getElementById('cv-output');
+            const nomeArquivo = 'Curriculo_' + (document.getElementById('nome').value || 'Profissional').replace(/\s+/g, '_') + '.pdf';
+            
             const opt = {
                 margin: 0,
-                filename: 'Curriculo.pdf',
+                filename: nomeArquivo,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true, 
+                    scrollY: 0,
+                    windowWidth: 1000 /* Garante largura estável durante a renderização virtual */
+                },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
+            
             html2pdf().set(opt).from(element).save();
         }
 
-        // Inicia com uma experiência
+        // Inicializa com um bloco de experiência vazio montado
         addExp();
     </script>
 </body>

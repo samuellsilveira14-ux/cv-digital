@@ -3,18 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobNow</title>
+    <title>JobNow - Gerador de Currículos</title>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
         :root {
-            --primary-color: #0f172a;
-            --secondary-color: #2563eb;
-            --accent-color: #38bdf8;
-            --bg-color: #f8fafc;
+            --primary-color: #1a365d;
+            --secondary-color: #2b6cb0;
+            --accent-color: #319795;
+            --bg-color: #f0f4f8;
             --form-bg: #ffffff;
-            --text-main: #334155;
-            --text-muted: #64748b;
+            --text-main: #1a202c;
+            --text-muted: #718096;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius-md: 8px;
+            --radius-lg: 12px;
         }
 
         body {
@@ -26,7 +34,7 @@
             min-height: 100vh;
         }
 
-        /* --- SISTEMA DE TELAS --- */
+        /* --- SISTEMA DE TELAS COM ANIMAÇÃO --- */
         .screen {
             display: none;
             min-height: 100vh;
@@ -41,142 +49,191 @@
 
         /* --- BOTÕES GLOBAIS --- */
         button {
-            color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; 
-            font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.2s; font-size: 0.95em;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
+            border: none; padding: 12px 24px; border-radius: var(--radius-md); cursor: pointer; 
+            font-weight: 600; transition: all 0.2s; font-size: 0.95em; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
         button:active { transform: scale(0.97); }
-        .btn-primary { background-color: var(--secondary-color); box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); }
-        .btn-primary:hover { background-color: #1d4ed8; transform: translateY(-1px); }
-        .btn-success { background-color: #10b981; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3); }
-        .btn-success:hover { background-color: #059669; }
-        .btn-secondary { background-color: #475569; }
-        .btn-secondary:hover { background-color: #334155; }
-        .btn-remove { background-color: #ef4444; padding: 8px 12px; margin-top: 8px; font-size: 0.85em; }
+        .btn-primary { background-color: var(--secondary-color); color: white; box-shadow: var(--shadow-md); }
+        .btn-primary:hover { background-color: #1a4a84; box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+        .btn-success { background-color: #38a169; color: white; box-shadow: var(--shadow-md); }
+        .btn-success:hover { background-color: #2f855a; }
+        .btn-secondary { background-color: #e2e8f0; color: #4a5568; }
+        .btn-secondary:hover { background-color: #cbd5e0; }
+        .btn-remove { background-color: #fed7d7; color: #c53030; padding: 8px 12px; margin-top: 8px; font-size: 0.85em; }
+        .btn-remove:hover { background-color: #feb2b2; }
 
-        /* --- TELA 1: HOME / APRESENTAÇÃO --- */
+        /* --- TELA 1: HOME --- */
         #screen-home {
-            flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
             padding: 40px 20px;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #1a365d 0%, #2a4365 50%, #2b6cb0 100%);
             color: white;
         }
-        #screen-home h1 { font-size: 3.5rem; margin-bottom: 10px; letter-spacing: -1.5px; font-weight: 700; background: linear-gradient(to right, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        #screen-home p { font-size: 1.15rem; max-width: 600px; color: #94a3b8; margin-bottom: 40px; line-height: 1.6; }
+        #screen-home h1 { font-size: 4rem; margin-bottom: 10px; letter-spacing: -2px; font-weight: 800; }
+        #screen-home p { font-size: 1.25rem; max-width: 600px; color: #e2e8f0; margin-bottom: 40px; line-height: 1.6; }
 
-        /* --- TELA 2: LOGIN --- */
-        #screen-login { justify-content: center; align-items: center; background-color: #f1f5f9; }
-        .login-card {
-            background: white; padding: 40px; border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08); width: 100%; max-width: 420px; box-sizing: border-box; text-align: center;
+        /* --- TELA 2: LOGIN GOOGLE --- */
+        #screen-login, #screen-google-accounts {
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-color);
+            padding: 20px;
         }
-        .login-card h2 { margin-top: 0; color: var(--primary-color); margin-bottom: 10px; font-size: 1.8rem; }
-        .login-card p { color: var(--text-muted); margin-bottom: 30px; font-size: 0.95rem; }
+        .login-card {
+            background: white; padding: 40px; border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg); width: 100%; max-width: 400px;
+            text-align: center;
+        }
+        .login-card h2 { margin-top: 0; color: var(--text-main); margin-bottom: 10px; font-weight: 600; }
+        .login-card p { color: var(--text-muted); margin-bottom: 30px; font-size: 0.95em; }
         
         .btn-google {
-            background-color: white; color: #334155; border: 1px solid #cbd5e1; width: 100%; padding: 14px;
-            font-size: 1rem; border-radius: 8px; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            background-color: white; color: #3c4043; border: 1px solid #dadce0;
+            width: 100%; padding: 12px; border-radius: 4px; font-weight: 500; font-size: 1em;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3); transition: background-color 0.2s;
         }
-        .btn-google:hover { background-color: #f8fafc; border-color: #94a3b8; }
-        .btn-google svg { width: 20px; height: 20px; }
+        .btn-google:hover { background-color: #f8f9fa; box-shadow: 0 1px 3px 1px rgba(60,64,67,0.15); }
+        .btn-google img { width: 20px; height: 20px; margin-right: 10px; }
+
+        /* --- TELA 2.5: ESCOLHA DE CONTA GOOGLE --- */
+        .account-list { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .account-item {
+            display: flex; align-items: center; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;
+            cursor: pointer; transition: background 0.2s; text-align: left;
+        }
+        .account-item:hover { background-color: #f7fafc; border-color: #cbd5e0; }
+        .account-item img { width: 40px; height: 40px; border-radius: 50%; margin-right: 15px; }
+        .account-info { display: flex; flex-direction: column; }
+        .account-info strong { font-size: 0.95em; color: #1a202c; }
+        .account-info span { font-size: 0.85em; color: #718096; }
 
         /* --- TELA 3: CONFIGURAÇÃO --- */
-        #screen-config { flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; }
-        .config-container { width: 100%; max-width: 800px; text-align: center; }
-        .config-container h2 { font-size: 2rem; color: var(--primary-color); margin-bottom: 30px; letter-spacing: -0.5px; }
-        
-        .template-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .template-card {
-            background: white; padding: 25px; border-radius: 12px; border: 2px solid #e2e8f0;
-            cursor: pointer; transition: all 0.2s; text-align: left;
+        #screen-config {
+            flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px;
         }
-        .template-card:hover { border-color: #93c5fd; transform: translateY(-2px); }
-        .template-card.selected { border-color: var(--secondary-color); background-color: #eff6ff; }
-        .template-card h4 { margin: 0 0 8px 0; font-size: 1.1rem; color: var(--primary-color); }
+        .config-container { width: 100%; max-width: 900px; text-align: center; }
+        .config-container h2 { font-size: 2.2rem; color: var(--primary-color); margin-bottom: 40px; letter-spacing: -0.5px; }
+        
+        .config-section-title { text-align: left; margin-bottom: 15px; color: var(--text-main); font-size: 1.2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;}
+        
+        .template-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .template-card {
+            background: white; padding: 25px; border-radius: var(--radius-lg); border: 2px solid transparent;
+            cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow-sm); text-align: left;
+        }
+        .template-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .template-card.selected { border-color: var(--secondary-color); background-color: #ebf8ff; box-shadow: 0 0 0 1px var(--secondary-color); }
+        .template-card h4 { margin: 0 0 10px 0; font-size: 1.2rem; color: var(--primary-color); }
         .template-card p { margin: 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
 
-        .config-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-        .config-box { background: white; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: left; }
-        .config-box h3 { margin-top: 0; margin-bottom: 15px; font-size: 1.05rem; color: var(--primary-color); }
+        .config-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .config-box { background: white; padding: 25px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); text-align: left; }
+        .config-box label { display: block; margin-bottom: 10px; font-weight: 600; color: #4a5568; }
         
-        .color-picker-wrapper { display: flex; gap: 12px; }
-        .color-btn { width: 36px; height: 36px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; padding: 0; }
+        .color-picker-wrapper { display: flex; gap: 15px; flex-wrap: wrap; }
+        .color-btn { width: 45px; height: 45px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; padding: 0; box-shadow: var(--shadow-sm); }
         .color-btn:hover { transform: scale(1.1); }
-        .color-btn.active { border-color: #cbd5e1; transform: scale(1.15); box-shadow: 0 0 0 2px var(--primary-color); }
-        .select-lang { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95em; font-family: inherit; }
+        .color-btn.active { border-color: #1a202c; transform: scale(1.15); box-shadow: 0 0 0 2px white inset; }
 
-        /* --- TELA 4: GERADOR DE CURRÍCULO --- */
+        select.modern-select {
+            width: 100%; padding: 14px; border: 1px solid #cbd5e0; border-radius: var(--radius-md); font-size: 1em; 
+            background: #f7fafc; cursor: pointer; color: var(--text-main); font-family: inherit; appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23718096%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto;
+        }
+        select.modern-select:focus { outline: none; border-color: var(--secondary-color); background-color: white; box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2); }
+
+        /* --- TELA 4: GERADOR --- */
         #screen-generator {
-            display: none; grid-template-columns: 500px 1fr; gap: 30px; max-width: 1500px;
-            margin-inline: auto; padding: 25px;
+            grid-template-columns: 500px 1fr; gap: 30px; max-width: 1600px; margin-inline: auto; padding: 30px;
         }
-        .form-panel {
-            background: var(--form-bg); padding: 30px; border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04); max-height: 92vh; overflow-y: auto; border: 1px solid #f1f5f9;
-        }
-        .form-panel::-webkit-scrollbar, #cv-preview-container::-webkit-scrollbar { width: 6px; }
-        .form-panel::-webkit-scrollbar-thumb, #cv-preview-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        h3.form-title { color: var(--primary-color); font-size: 1.1em; margin-top: 30px; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
         
-        .form-group { margin-bottom: 16px; }
-        .form-row { display: flex; gap: 15px; flex-wrap: wrap; }
-        .form-row .form-group { flex: 1; min-width: 140px; }
-        .form-panel label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.85em; color: #475569; }
-        .form-panel input, .form-panel select, .form-panel textarea {
-            width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 0.9em; transition: border 0.2s;
+        .form-panel {
+            background: var(--form-bg); padding: 30px; border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto;
         }
-        .form-panel input:focus, .form-panel select:focus, .form-panel textarea:focus { outline: none; border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        .dynamic-box { border: 1px solid #e2e8f0; padding: 20px; margin-bottom: 15px; border-radius: 12px; background: #f8fafc; }
+        .form-panel::-webkit-scrollbar { width: 8px; }
+        .form-panel::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
+        
+        h3.form-title { color: var(--primary-color); font-size: 1.1em; margin: 30px 0 15px 0; border-bottom: 2px solid #edf2f7; padding-bottom: 10px; }
+        .form-group { margin-bottom: 18px; }
+        .form-row { display: flex; gap: 15px; flex-wrap: wrap; }
+        .form-row .form-group { flex: 1; min-width: 150px; }
+        .form-panel label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85em; color: #4a5568; }
+        .form-panel input, .form-panel select, .form-panel textarea {
+            width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: var(--radius-md); 
+            box-sizing: border-box; font-family: inherit; font-size: 0.95em; background: #f8fafc; transition: all 0.2s;
+        }
+        .form-panel input:focus, .form-panel select:focus, .form-panel textarea:focus { 
+            outline: none; border-color: var(--secondary-color); background: white; box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15); 
+        }
+        .dynamic-box { border: 1px solid #e2e8f0; padding: 20px; margin-bottom: 15px; border-radius: var(--radius-md); background: #f7fafc; position: relative; }
 
         /* Preview (Direita) */
-        #cv-preview-container { position: relative; height: 92vh; overflow-y: auto; padding-right: 10px; }
-        .action-bar { display: flex; gap: 10px; position: sticky; top: 0; z-index: 100; margin-bottom: 15px; }
+        #cv-preview-container { position: relative; height: 90vh; overflow-y: auto; padding-right: 15px; display: flex; flex-direction: column; align-items: center;}
+        #cv-preview-container::-webkit-scrollbar { width: 8px; }
+        #cv-preview-container::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
         
+        .action-bar { width: 210mm; display: flex; justify-content: flex-end; margin-bottom: 20px; position: sticky; top: 0; z-index: 10; padding: 10px 0; background: var(--bg-color); }
+        .btn-print { font-size: 1.05em; padding: 12px 25px; }
+
         /* --- DESIGN DO OUTPUT DO CURRÍCULO (A4) --- */
         #cv-output {
-            background: white; padding: 15mm; width: 210mm; min-height: 297mm; margin: 0 auto;
-            box-sizing: border-box; color: #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.08); font-size: 10pt; line-height: 1.6;
+            background: white; padding: 15mm; width: 210mm; min-height: 297mm;
+            box-sizing: border-box; color: #2d3748; box-shadow: var(--shadow-lg); font-size: 10pt; line-height: 1.6;
+            flex-shrink: 0;
         }
-        .cv-photo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; display: none; }
+
+        .cv-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--cv-primary); }
         .cv-text-block { white-space: pre-wrap; font-size: 9.5pt; text-align: justify; }
         .cv-sub-section { margin-bottom: 15px; }
-        .cv-sub-section h4 { color: var(--cv-secondary); font-size: 10pt; margin: 0 0 5px 0; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+        .cv-sub-section h4 { color: var(--cv-secondary); font-size: 10pt; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .exp-item { margin-bottom: 16px; }
-        .exp-head { display: flex; justify-content: space-between; align-items: baseline; }
+        .exp-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px;}
         .exp-title { font-weight: bold; font-size: 10.5pt; color: var(--cv-primary); }
         .exp-date { font-size: 9pt; color: var(--text-muted); font-weight: 600; }
-        .exp-sub { font-size: 9.5pt; color: #475569; font-weight: 500; margin-bottom: 4px; }
-        .cv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; font-size: 9pt; }
-        .cv-grid-item strong { color: #475569; margin-right: 5px; font-weight: 600; }
+        .exp-sub { font-size: 9.5pt; color: #4a5568; font-weight: 600; margin-bottom: 4px; font-style: italic; }
+        .cv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; font-size: 9.5pt; }
+        .cv-grid-item strong { color: #4a5568; margin-right: 5px; }
         .hidden { display: none !important; }
 
+        .location-badges { margin-top: 10px; display: flex; gap: 15px; font-size: 9pt; font-weight: 500;}
+        .badge { background: #f7fafc; padding: 4px 10px; border-radius: 4px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 5px;}
+
         /* Template: Moderno */
-        .tpl-modern .cv-header { display: flex; align-items: center; gap: 20px; border-bottom: 3px solid var(--cv-primary); padding-bottom: 15px; margin-bottom: 20px; }
-        .tpl-modern .cv-header h1 { margin: 0 0 5px 0; color: var(--cv-primary); text-transform: uppercase; font-size: 24pt; font-weight: 700; letter-spacing: -0.5px; }
-        .tpl-modern .cv-header h2 { margin: 0 0 10px 0; color: var(--cv-secondary); font-size: 12pt; font-weight: 500; }
-        .tpl-modern .cv-contact { display: flex; flex-wrap: wrap; gap: 8px 15px; font-size: 9pt; color: var(--text-muted); }
-        .tpl-modern .cv-section { margin-bottom: 24px; }
-        .tpl-modern .cv-section h3 { color: var(--cv-primary); border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; text-transform: uppercase; font-size: 11pt; margin-bottom: 14px; font-weight: 700; }
+        .tpl-modern .cv-header { display: flex; align-items: center; gap: 25px; border-bottom: 3px solid var(--cv-primary); padding-bottom: 20px; margin-bottom: 20px; }
+        .tpl-modern .cv-header h1 { margin: 0 0 5px 0; color: var(--cv-primary); text-transform: uppercase; font-size: 26pt; font-weight: 800; letter-spacing: -0.5px;}
+        .tpl-modern .cv-header h2 { margin: 0 0 10px 0; color: var(--cv-secondary); font-size: 14pt; font-weight: 500; }
+        .tpl-modern .cv-contact { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 9pt; color: var(--text-muted); }
+        .tpl-modern .cv-section { margin-bottom: 25px; }
+        .tpl-modern .cv-section h3 { color: var(--cv-primary); border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; text-transform: uppercase; font-size: 12pt; margin-bottom: 15px; }
 
         /* Template: Minimalista */
-        .tpl-minimal .cv-header { text-align: center; margin-bottom: 25px; }
-        .tpl-minimal .cv-header h1 { margin: 0 0 5px 0; color: #0f172a; font-size: 22pt; font-weight: 400; letter-spacing: 2px; }
-        .tpl-minimal .cv-header h2 { margin: 0 0 12px 0; color: var(--cv-primary); font-size: 11pt; text-transform: uppercase; letter-spacing: 1px; }
-        .tpl-minimal .cv-contact { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; font-size: 8.5pt; color: #475569; border-bottom: 1px solid #cbd5e1; padding-bottom: 12px; }
-        .tpl-minimal .cv-section { margin-bottom: 20px; }
-        .tpl-minimal .cv-section h3 { color: #0f172a; font-size: 10pt; text-transform: uppercase; border-left: 3px solid var(--cv-primary); padding-left: 10px; margin-bottom: 12px; letter-spacing: 1px; }
+        .tpl-minimal { font-family: 'Inter', sans-serif; }
+        .tpl-minimal .cv-header { text-align: center; margin-bottom: 30px; }
+        .tpl-minimal .cv-header h1 { margin: 0 0 5px 0; color: #1a202c; font-size: 24pt; font-weight: 300; letter-spacing: 2px; }
+        .tpl-minimal .cv-header h2 { margin: 0 0 15px 0; color: var(--cv-primary); font-size: 12pt; text-transform: uppercase; letter-spacing: 1px; }
+        .tpl-minimal .cv-contact { display: flex; justify-content: center; gap: 18px; font-size: 9pt; color: #4a5568; border-bottom: 1px solid #cbd5e0; padding-bottom: 15px; }
+        .tpl-minimal .cv-section { margin-bottom: 25px; }
+        .tpl-minimal .cv-section h3 { color: #1a202c; font-size: 11pt; text-transform: uppercase; border-left: 4px solid var(--cv-primary); padding-left: 10px; margin-bottom: 15px; letter-spacing: 1px; }
 
         /* Template: Elegante */
-        .tpl-elegant .cv-header { border-left: 6px solid var(--cv-primary); padding-left: 20px; margin-bottom: 25px; }
-        .tpl-elegant .cv-header h1 { margin: 0; color: var(--cv-primary); font-size: 26pt; font-family: Georgia, serif; }
-        .tpl-elegant .cv-header h2 { margin: 8px 0 12px 0; color: #64748b; font-size: 12pt; font-style: italic; }
-        .tpl-elegant .cv-contact { font-size: 9pt; color: #475569; line-height: 1.5; display: flex; gap: 15px; flex-wrap: wrap;}
-        .tpl-elegant .cv-section h3 { color: var(--cv-primary); font-family: Georgia, serif; font-size: 12pt; border-bottom: 2px double var(--cv-primary); padding-bottom: 4px; margin-bottom: 14px; }
+        .tpl-elegant .cv-header { border-left: 8px solid var(--cv-primary); padding-left: 20px; margin-bottom: 30px; }
+        .tpl-elegant .cv-header h1 { margin: 0; color: var(--cv-primary); font-size: 28pt; font-family: Georgia, serif; }
+        .tpl-elegant .cv-header h2 { margin: 5px 0 15px 0; color: #718096; font-size: 13pt; font-style: italic; }
+        .tpl-elegant .cv-contact { font-size: 9.5pt; color: #4a5568; line-height: 1.5; }
+        .tpl-elegant .cv-section h3 { color: var(--cv-primary); font-family: Georgia, serif; font-size: 14pt; border-bottom: 1px solid #cbd5e0; padding-bottom: 5px; margin-bottom: 15px; position: relative;}
+        .tpl-elegant .cv-section h3::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 100%; height: 1px; background: #cbd5e0; }
 
-        @media (max-width: 1150px) {
+        @media (max-width: 1200px) {
             #screen-generator { grid-template-columns: 1fr; }
-            #cv-preview-container { height: auto; }
+            #cv-preview-container { height: auto; padding-right: 0; }
+            #cv-output { width: 100%; max-width: 210mm; }
+            .action-bar { width: 100%; max-width: 210mm; }
         }
     </style>
 </head>
@@ -185,35 +242,56 @@
     <!-- TELA 1: HOME -->
     <div id="screen-home" class="screen active">
         <h1>JobNow</h1>
-        <p>Quer se destacar no mercado de trabalho? O JobNow é o primeiro passo! Crie seu currículo aqui e garanta seu sonhado emprego.</p>
-        <button class="btn-primary" style="font-size: 1.1em; padding: 16px 40px;" onclick="navigateTo('screen-login')">Comece já</button>
+        <p>Crie um currículo profissional em minutos, destaque-se no mercado global e conquiste a vaga dos seus sonhos.</p>
+        <button class="btn-primary" style="font-size: 1.1em; padding: 16px 45px; border-radius: 30px;" onclick="navigateTo('screen-login')">Começar Agora</button>
     </div>
 
-    <!-- TELA 2: LOGIN (GOOGLE) -->
+    <!-- TELA 2: LOGIN -->
     <div id="screen-login" class="screen">
         <div class="login-card">
-            <h2>Bem-vindo de volta</h2>
-            <p>Conecte-se de forma rápida e segura para criar seu currículo.</p>
-            
-            <button type="button" class="btn-google" onclick="handleGoogleLogin()">
-                <svg viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                </svg>
+            <h2>Acesse sua conta</h2>
+            <p>Para salvar seu progresso e configurações.</p>
+            <button class="btn-google" onclick="navigateTo('screen-google-accounts')">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo">
                 Continuar com o Google
             </button>
-            <p style="margin-top: 20px; font-size: 0.8em; color: #94a3b8;">Nenhuma senha é necessária.</p>
+            <button class="btn-secondary" style="margin-top: 15px; width: 100%;" onclick="navigateTo('screen-home')">Voltar</button>
+        </div>
+    </div>
+
+    <!-- TELA 2.5: ESCOLHA CONTA GOOGLE (SIMULAÇÃO) -->
+    <div id="screen-google-accounts" class="screen">
+        <div class="login-card" style="padding-top: 30px;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google" style="height: 30px; margin-bottom: 15px;">
+            <h2 style="font-size: 1.3em;">Escolha uma conta</h2>
+            <p style="margin-bottom: 15px;">para prosseguir para <strong>JobNow</strong></p>
+            
+            <div class="account-list">
+                <div class="account-item" onclick="loginSuccess('João Silva', 'joao.silva@gmail.com')">
+                    <img src="https://ui-avatars.com/api/?name=João+Silva&background=1a365d&color=fff" alt="Avatar">
+                    <div class="account-info">
+                        <strong>João Silva</strong>
+                        <span>joao.silva@gmail.com</span>
+                    </div>
+                </div>
+                <div class="account-item" onclick="loginSuccess('Maria Oliveira', 'maria.o@gmail.com')">
+                    <img src="https://ui-avatars.com/api/?name=Maria+Oliveira&background=319795&color=fff" alt="Avatar">
+                    <div class="account-info">
+                        <strong>Maria Oliveira</strong>
+                        <span>maria.o@gmail.com</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-secondary" style="margin-top: 20px; width: 100%; font-size: 0.85em;" onclick="navigateTo('screen-login')">Cancelar</button>
         </div>
     </div>
 
     <!-- TELA 3: CONFIGURAÇÃO -->
     <div id="screen-config" class="screen">
         <div class="config-container">
-            <h2>Configure as preferências do documento</h2>
+            <h2>Configure seu Currículo</h2>
             
-            <h3 style="text-align: left; margin-bottom: 15px; color: var(--primary-color);">1. Selecione um Modelo</h3>
+            <div class="config-section-title">1. Selecione um Modelo</div>
             <div class="template-grid">
                 <div class="template-card selected" id="card-tpl-modern" onclick="selectTemplate('tpl-modern')">
                     <h4>Moderno</h4>
@@ -231,31 +309,67 @@
 
             <div class="config-row">
                 <div class="config-box">
-                    <h3>2. Cor de Destaque</h3>
+                    <label>2. Cor de Destaque</label>
                     <div class="color-picker-wrapper">
-                        <button class="color-btn active" style="background:#0f172a" onclick="selectColor('#0f172a', '#334155', this)"></button>
-                        <button class="color-btn" style="background:#2563eb" onclick="selectColor('#2563eb', '#60a5fa', this)"></button>
-                        <button class="color-btn" style="background:#059669" onclick="selectColor('#059669', '#34d399', this)"></button>
-                        <button class="color-btn" style="background:#7c3aed" onclick="selectColor('#7c3aed', '#a78bfa', this)"></button>
-                        <button class="color-btn" style="background:#be123c" onclick="selectColor('#be123c', '#fb7185', this)"></button>
+                        <button class="color-btn active" style="background:#1a365d" onclick="selectColor('#1a365d', '#2b6cb0', this)"></button>
+                        <button class="color-btn" style="background:#2c3e50" onclick="selectColor('#2c3e50', '#7f8c8d', this)"></button>
+                        <button class="color-btn" style="background:#27ae60" onclick="selectColor('#27ae60', '#2ecc71', this)"></button>
+                        <button class="color-btn" style="background:#d97706" onclick="selectColor('#d97706', '#f59e0b', this)"></button>
+                        <button class="color-btn" style="background:#7b2cbf" onclick="selectColor('#7b2cbf', '#9d4edd', this)"></button>
+                        <button class="color-btn" style="background:#b7094c" onclick="selectColor('#b7094c', '#a01a58', this)"></button>
                     </div>
                 </div>
+
                 <div class="config-box">
-                    <h3>3. Idioma do Currículo</h3>
-                    <select id="select-language" class="select-lang" onchange="selectLanguage(this.value)">
-                        <option value="pt">Português (Brasil)</option>
-                        <option value="en">English (International)</option>
-                        <option value="es">Español (América Latina/España)</option>
+                    <label>3. Idioma do Gerador</label>
+                    <select id="select-language" class="modern-select" onchange="selectLanguage(this.value)">
+                        <option value="pt">🇧🇷 Português (Brasil)</option>
+                        <option value="en">🇺🇸 English (International)</option>
+                        <option value="es">🇪🇸 Español (América Latina)</option>
                     </select>
                 </div>
             </div>
 
-            <button class="btn-success" style="font-size: 1.1em; padding: 15px 50px; margin: 0 auto;" onclick="goToGenerator()">Avançar para o Preenchimento</button>
+            <div class="config-row">
+                <div class="config-box">
+                    <label>4. Onde você reside atualmente?</label>
+                    <select id="country-residence" class="modern-select" onchange="updateCV()">
+                        <option value="">Selecione...</option>
+                        <option value="🇧🇷 Brasil">🇧🇷 Brasil</option>
+                        <option value="🇵🇹 Portugal">🇵🇹 Portugal</option>
+                        <option value="🇺🇸 Estados Unidos">🇺🇸 Estados Unidos</option>
+                        <option value="🇨🇦 Canadá">🇨🇦 Canadá</option>
+                        <option value="🇬🇧 Reino Unido">🇬🇧 Reino Unido</option>
+                        <option value="🇪🇸 Espanha">🇪🇸 Espanha</option>
+                        <option value="🇩🇪 Alemanha">🇩🇪 Alemanha</option>
+                        <option value="🇦🇺 Austrália">🇦🇺 Austrália</option>
+                    </select>
+                </div>
+
+                <div class="config-box">
+                    <label>5. Qual seu país alvo de trabalho?</label>
+                    <select id="country-target" class="modern-select" onchange="updateCV()">
+                        <option value="">Selecione...</option>
+                        <option value="🌎 Remoto / Qualquer">🌎 Remoto Global</option>
+                        <option value="🇺🇸 Estados Unidos">🇺🇸 Estados Unidos</option>
+                        <option value="🇨🇦 Canadá">🇨🇦 Canadá</option>
+                        <option value="🇵🇹 Portugal">🇵🇹 Portugal</option>
+                        <option value="🇬🇧 Reino Unido">🇬🇧 Reino Unido</option>
+                        <option value="🇮🇪 Irlanda">🇮🇪 Irlanda</option>
+                        <option value="🇪🇸 Espanha">🇪🇸 Espanha</option>
+                        <option value="🇧🇷 Brasil">🇧🇷 Brasil</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-success" style="font-size: 1.1em; padding: 15px 50px;" onclick="goToGenerator()">Avançar para o Preenchimento →</button>
         </div>
     </div>
 
     <!-- TELA 4: GERADOR -->
     <div id="screen-generator" class="screen">
+        
+        <!-- Formulário (Esquerda) -->
         <div class="form-panel">
             <button class="btn-secondary" style="margin-bottom: 20px; padding: 8px 15px; font-size: 0.85em;" onclick="navigateTo('screen-config')" data-i18n="btnBack">← Voltar</button>
             <h2 data-i18n="titleForm" style="margin-top: 0;">Preencha seus Dados</h2>
@@ -273,34 +387,13 @@
                 <label data-i18n="lblJob">Cargo Desejado</label>
                 <input type="text" id="vaga" oninput="updateCV()">
             </div>
-            
             <div class="form-row">
                 <div class="form-group"><label data-i18n="lblEmail">E-mail</label><input type="email" id="email" oninput="updateCV()"></div>
                 <div class="form-group"><label data-i18n="lblPhone">Telefone</label><input type="text" id="telefone" oninput="updateCV()"></div>
             </div>
             <div class="form-group">
-                <label data-i18n="lblAddress">Endereço (Cidade, Estado)</label>
+                <label data-i18n="lblAddress">Cidade / Região</label>
                 <input type="text" id="endereco" oninput="updateCV()">
-            </div>
-            
-            <!-- NOVOS CAMPOS: PAÍSES -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label data-i18n="lblCountryRes">País de Residência</label>
-                    <select id="pais_res" onchange="updateCV()">
-                        <option value="">Selecione...</option>
-                        <option value="🇧🇷 Brasil">🇧🇷 Brasil</option>
-                        <option value="🇵🇹 Portugal">🇵🇹 Portugal</option>
-                        <option value="🇺🇸 Estados Unidos">🇺🇸 Estados Unidos</option>
-                        <option value="🇨🇦 Canadá">🇨🇦 Canadá</option>
-                        <option value="🇬🇧 Reino Unido">🇬🇧 Reino Unido</option>
-                        <option value="🇪🇸 Espanha">🇪🇸 Espanha</option>
-                        <option value="🇩🇪 Alemanha">🇩🇪 Alemanha</option>
-                        <option value="🇦🇺 Austrália">🇦🇺 Austrália</option>
-                        <option value="🇮🇪 Irlanda">🇮🇪 Irlanda</option>
-                        <option value="🇦🇷 Argentina">🇦🇷 Argentina</option>
-                          </select>
-                </div>
             </div>
 
             <h3 class="form-title" data-i18n="sec2">2. Informações Pessoais</h3>
@@ -323,21 +416,26 @@
                         <option value="" data-i18n="optSelect">Selecione...</option>
                         <option value="Solteiro(a)" data-i18n="optSingle">Solteiro(a)</option>
                         <option value="Casado(a)" data-i18n="optMarried">Casado(a)</option>
+                        <option value="Divorciado(a)" data-i18n="optDivorced">Divorciado(a)</option>
                     </select>
                 </div>
             </div>
 
             <h3 class="form-title" data-i18n="sec3">3. Trajetória Profissional</h3>
             <div class="form-group">
+                <label data-i18n="lblObjective">Objetivo Profissional (Curto)</label>
+                <input type="text" id="objetivo" oninput="updateCV()">
+            </div>
+            <div class="form-group">
                 <label data-i18n="lblSummary">Resumo Profissional</label>
                 <textarea id="resumo" rows="4" oninput="updateCV()"></textarea>
             </div>
             <div id="exp-list"></div>
-            <button type="button" class="btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="addExp()" data-i18n="btnAddExp">+ Adicionar Experiência</button>
+            <button type="button" class="btn-primary" style="margin-top: 10px;" onclick="addExp()" data-i18n="btnAddExp">+ Adicionar Experiência</button>
 
-            <h3 class="form-title" data-i18n="sec4">4. Bagagem Acadêmica e Competências</h3>
+            <h3 class="form-title" data-i18n="sec4">4. Formação e Competências</h3>
             <div id="edu-list"></div>
-            <button type="button" class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="addEdu()" data-i18n="btnAddEdu">+ Adicionar Formação</button>
+            <button type="button" class="btn-primary" style="margin-top: 10px; margin-bottom: 20px;" onclick="addEdu()" data-i18n="btnAddEdu">+ Adicionar Formação</button>
 
             <div class="form-group">
                 <label data-i18n="lblSkills">Competências, Ferramentas e Idiomas</label>
@@ -345,31 +443,34 @@
             </div>
         </div>
 
-        <!-- PREVIEW DO CURRÍCULO -->
+        <!-- Preview (Direita) -->
         <div id="cv-preview-container">
             <div class="action-bar">
-                <button class="btn-success" style="flex:1" onclick="baixarPDF()">
+                <button class="btn-success btn-print" onclick="baixarPDF()">
                     <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                    <span data-i18n="btnPrint">BAIXAR CURRÍCULO EM PDF</span>
+                    <span data-i18n="btnPrint">BAIXAR PDF</span>
                 </button>
             </div>
             
-            <div id="cv-output" class="tpl-modern" style="--cv-primary: #0f172a; --cv-secondary: #2563eb;">
+            <div id="cv-output" class="tpl-modern" style="--cv-primary: #1a365d; --cv-secondary: #2b6cb0;">
                 <div class="cv-header">
                     <img id="out-foto" class="cv-photo">
                     <div style="flex:1">
-                        <h1 id="out-nome">Seu Nome</h1>
+                        <h1 id="out-nome">SEU NOME AQUI</h1>
                         <h2 id="out-vaga" class="hidden"></h2>
                         <div class="cv-contact">
                             <span id="wrap-email" class="hidden">✉ <span id="out-email"></span></span>
                             <span id="wrap-tel" class="hidden">✆ <span id="out-tel"></span></span>
                             <span id="wrap-end" class="hidden">📍 <span id="out-endereco"></span></span>
-                            <span id="wrap-countries" class="hidden">🌍 Residência: <span id="out-pais_res"></span> | Destino: <span id="out-pais_dest"></span></span>
+                        </div>
+                        <div class="location-badges" id="wrap-badges" style="display: none;">
+                            <span class="badge" id="badge-residence">🏠 Reside em: <span id="out-country-res"></span></span>
+                            <span class="badge" id="badge-target">🎯 Alvo: <span id="out-country-tgt"></span></span>
                         </div>
                     </div>
                 </div>
 
-                <div class="cv-section" id="sec-pessoais" style="display:none;">
+                <div class="cv-section" id="sec-pessoais" style="display: none;">
                     <h3 id="cv-title-personal">Informações Pessoais</h3>
                     <div class="cv-grid">
                         <div class="cv-grid-item hidden" id="wrap-nasc"><strong id="cv-lbl-birth">Nascimento:</strong> <span id="out-nasc"></span></div>
@@ -379,14 +480,20 @@
                     </div>
                 </div>
 
-                <div class="cv-section hidden" id="sec-resumo">
-                    <h3 id="cv-title-sum">Resumo Profissional</h3>
-                    <div id="out-resumo" class="cv-text-block"></div>
-                </div>
-
-                <div class="cv-section hidden" id="sec-historico">
-                    <h3 id="cv-title-hist">Histórico de Experiências</h3>
-                    <div id="out-exp-container"></div>
+                <div class="cv-section" id="sec-trajetoria">
+                    <h3 id="cv-title-trajectory">Trajetória Profissional</h3>
+                    <div id="wrap-objetivo" class="cv-sub-section hidden">
+                        <h4 id="cv-title-obj">Objetivo</h4>
+                        <div id="out-objetivo" class="cv-text-block"></div>
+                    </div>
+                    <div id="wrap-resumo" class="cv-sub-section hidden">
+                        <h4 id="cv-title-sum">Resumo</h4>
+                        <div id="out-resumo" class="cv-text-block"></div>
+                    </div>
+                    <div id="wrap-historico" class="cv-sub-section hidden">
+                        <h4 id="cv-title-hist" style="margin-top: 15px;">Experiência Laboral</h4>
+                        <div id="out-exp-container"></div>
+                    </div>
                 </div>
 
                 <div class="cv-section hidden" id="sec-edu">
@@ -403,64 +510,110 @@
     </div>
 
     <script>
-        let currentTemplate = 'tpl-modern';
-        let currentPrimaryColor = '#0f172a';
-        let currentSecondaryColor = '#2563eb';
+        // --- ESTADOS GLOBAIS ---
         let currentLang = 'pt';
         let expCount = 0;
         let eduCount = 0;
 
-        // --- DICIONÁRIO MULTILÍNGUE ---
+        // --- DICIONÁRIO MULTILÍNGUE COMPLETO ---
         const dictionary = {
             pt: {
-                btnBack: "← Voltar", titleForm: "Preencha seus Dados", btnPrint: "BAIXAR CURRÍCULO EM PDF",
-                sec1: "1. Informações Principais", lblPhoto: "Foto de Perfil (Opcional)", lblName: "Nome Completo", lblJob: "Cargo Desejado", lblEmail: "E-mail", lblPhone: "Telefone", lblAddress: "Endereço (Cidade, Estado)",
-                lblCountryRes: "País de Residência", lblCountryDest: "País de Destino (Trabalho)",
-                sec2: "2. Informações Pessoais", lblBirth: "Data de Nascimento", lblGender: "Gênero", optOmit: "Não informar", optMale: "Masculino", optFemale: "Feminino", lblNacional: "Nacionalidade", lblCivil: "Estado Civil", optSelect: "Selecione...", optSingle: "Solteiro(a)", optMarried: "Casado(a)",
-                sec3: "3. Trajetória Profissional", lblSummary: "Resumo Profissional", btnAddExp: "+ Adicionar Experiência",
-                sec4: "4. Bagagem Acadêmica e Competências", btnAddEdu: "+ Adicionar Formação", lblSkills: "Competências, Ferramentas e Idiomas",
-                cvTitlePersonal: "Informações Pessoais", cvTitleSum: "Resumo Profissional", cvTitleHist: "Histórico de Experiências", cvTitleAcademic: "Formação Acadêmica", cvTitleSkills: "Competências e Idiomas",
+                btnBack: "← Voltar", titleForm: "Preencha seus Dados", btnPrint: "BAIXAR PDF",
+                sec1: "1. Informações Principais", lblPhoto: "Foto de Perfil (Opcional)", lblName: "Nome Completo", lblJob: "Cargo / Vaga Desejada", lblEmail: "E-mail", lblPhone: "Telefone / WhatsApp", lblAddress: "Cidade / Região",
+                sec2: "2. Informações Pessoais", lblBirth: "Data de Nascimento", lblGender: "Gênero", optOmit: "Não informar", optMale: "Masculino", optFemale: "Feminino", lblNacional: "Nacionalidade", lblCivil: "Estado Civil", optSelect: "Selecione...", optSingle: "Solteiro(a)", optMarried: "Casado(a)", optDivorced: "Divorciado(a)",
+                sec3: "3. Trajetória Profissional", lblObjective: "Objetivo Profissional", lblSummary: "Resumo Profissional", btnAddExp: "+ Adicionar Experiência",
+                sec4: "4. Formação e Competências", btnAddEdu: "+ Adicionar Formação", lblSkills: "Competências, Ferramentas e Idiomas",
+                cvTitlePersonal: "Informações Pessoais", cvTitleTrajectory: "Perfil e Experiência", cvTitleAcademic: "Formação Acadêmica", cvTitleSkills: "Competências", cvTitleObj: "Objetivo", cvTitleSum: "Resumo", cvTitleHist: "Experiência Profissional",
                 cvBirth: "Nascimento:", cvGender: "Gênero:", cvCivil: "Estado Civil:", cvNacional: "Nacionalidade:",
-                dynCompany: "Empresa", dynPeriod: "Período", dynCity: "Cidade", dynActivities: "Atividades", dynRemove: "Remover", dynCourse: "Curso", dynInst: "Instituição", dynYear: "Ano"
+                dynCompany: "Empresa", dynRole: "Cargo", dynPeriod: "Período (Ex: 2020 - Atual)", dynActivities: "Principais Atividades", dynRemove: "Remover", dynCourse: "Curso / Grau", dynInst: "Instituição de Ensino", dynYear: "Ano de Conclusão"
             },
             en: {
-                btnBack: "← Back", titleForm: "Fill Your Details", btnPrint: "DOWNLOAD PDF RESUME",
-                sec1: "1. Primary Information", lblPhoto: "Profile Photo (Optional)", lblName: "Full Name", lblJob: "Target Job Title", lblEmail: "Email", lblPhone: "Phone", lblAddress: "Location (City, State)",
-                lblCountryRes: "Country of Residence", lblCountryDest: "Target Country (Work)",
-                sec2: "2. Personal Details", lblBirth: "Date of Birth", lblGender: "Gender", optOmit: "Do not inform", optMale: "Male", optFemale: "Female", lblNacional: "Nationality", lblCivil: "Marital Status", optSelect: "Select...", optSingle: "Single", optMarried: "Married",
-                sec3: "3. Professional Path", lblSummary: "Professional Summary", btnAddExp: "+ Add Experience",
-                sec4: "4. Academic Background & Skills", btnAddEdu: "+ Add Education", lblSkills: "Skills, Tools & Languages",
-                cvTitlePersonal: "Personal Information", cvTitleSum: "Professional Summary", cvTitleHist: "Work Experience", cvTitleAcademic: "Academic Background", cvTitleSkills: "Skills & Languages",
+                btnBack: "← Back", titleForm: "Fill in Your Details", btnPrint: "DOWNLOAD PDF",
+                sec1: "1. Primary Information", lblPhoto: "Profile Photo (Optional)", lblName: "Full Name", lblJob: "Target Job / Title", lblEmail: "Email", lblPhone: "Phone / WhatsApp", lblAddress: "City / Region",
+                sec2: "2. Personal Details", lblBirth: "Date of Birth", lblGender: "Gender", optOmit: "Do not inform", optMale: "Male", optFemale: "Female", lblNacional: "Nationality", lblCivil: "Marital Status", optSelect: "Select...", optSingle: "Single", optMarried: "Married", optDivorced: "Divorced",
+                sec3: "3. Professional Path", lblObjective: "Professional Objective", lblSummary: "Professional Summary", btnAddExp: "+ Add Experience",
+                sec4: "4. Education & Skills", btnAddEdu: "+ Add Education", lblSkills: "Core Skills & Languages",
+                cvTitlePersonal: "Personal Information", cvTitleTrajectory: "Profile & Experience", cvTitleAcademic: "Academic Background", cvTitleSkills: "Skills & Expertise", cvTitleObj: "Objective", cvTitleSum: "Summary", cvTitleHist: "Work Experience",
                 cvBirth: "Date of Birth:", cvGender: "Gender:", cvCivil: "Marital Status:", cvNacional: "Nationality:",
-                dynCompany: "Company", dynPeriod: "Period", dynCity: "Location", dynActivities: "Responsibilities", dynRemove: "Remove", dynCourse: "Degree / Course", dynInst: "Institution", dynYear: "Year"
+                dynCompany: "Company", dynRole: "Job Title", dynPeriod: "Period (E.g. 2020 - Present)", dynActivities: "Main Responsibilities", dynRemove: "Remove", dynCourse: "Degree / Course", dynInst: "Institution", dynYear: "Graduation Year"
             },
             es: {
-                btnBack: "← Volver", titleForm: "Complete sus Datos", btnPrint: "DESCARGAR CV PDF",
-                sec1: "1. Información Principal", lblPhoto: "Foto de Perfil (Opcional)", lblName: "Nombre Completo", lblJob: "Puesto Deseado", lblEmail: "Correo", lblPhone: "Teléfono", lblAddress: "Ubicación (Ciudad, Provincia)",
-                lblCountryRes: "País de Residencia", lblCountryDest: "País de Destino (Trabajo)",
-                sec2: "2. Datos Personales", lblBirth: "Fecha de Nacimiento", lblGender: "Género", optOmit: "No informar", optMale: "Masculino", optFemale: "Femenino", lblNacional: "Nacionalidad", lblCivil: "Estado Civil", optSelect: "Seleccione...", optSingle: "Soltero(a)", optMarried: "Casado(a)",
-                sec3: "3. Trayectoria Profesional", lblSummary: "Resumen Profesional", btnAddExp: "+ Añadir Experiencia",
-                sec4: "4. Formación Académica y Competencias", btnAddEdu: "+ Añadir Formación", lblSkills: "Competencias, Herramientas e Idiomas",
-                cvTitlePersonal: "Información Personal", cvTitleSum: "Resumen Profesional", cvTitleHist: "Experiencia Laboral", cvTitleAcademic: "Formación Académica", cvTitleSkills: "Competencias e Idiomas",
+                btnBack: "← Volver", titleForm: "Complete sus Datos", btnPrint: "DESCARGAR PDF",
+                sec1: "1. Información Principal", lblPhoto: "Foto de Perfil (Opcional)", lblName: "Nombre Completo", lblJob: "Puesto Deseado", lblEmail: "Correo Electrónico", lblPhone: "Teléfono / WhatsApp", lblAddress: "Ciudad / Región",
+                sec2: "2. Datos Personales", lblBirth: "Fecha de Nacimiento", lblGender: "Género", optOmit: "No informar", optMale: "Masculino", optFemale: "Femenino", lblNacional: "Nacionalidad", lblCivil: "Estado Civil", optSelect: "Seleccione...", optSingle: "Soltero(a)", optMarried: "Casado(a)", optDivorced: "Divorciado(a)",
+                sec3: "3. Trayectoria Profesional", lblObjective: "Objetivo Profesional", lblSummary: "Resumen Profesional", btnAddExp: "+ Añadir Experiencia",
+                sec4: "4. Formación y Competencias", btnAddEdu: "+ Añadir Formación", lblSkills: "Competencias e Idiomas",
+                cvTitlePersonal: "Información Personal", cvTitleTrajectory: "Perfil y Experiencia", cvTitleAcademic: "Formación Académica", cvTitleSkills: "Competencias", cvTitleObj: "Objetivo", cvTitleSum: "Resumen", cvTitleHist: "Experiencia Laboral",
                 cvBirth: "Nacimiento:", cvGender: "Género:", cvCivil: "Estado Civil:", cvNacional: "Nacionalidad:",
-                dynCompany: "Empresa", dynPeriod: "Período", dynCity: "Ciudad", dynActivities: "Funciones", dynRemove: "Eliminar", dynCourse: "Curso / Título", dynInst: "Institución", dynYear: "Año"
+                dynCompany: "Empresa", dynRole: "Puesto", dynPeriod: "Período (Ej: 2020 - Actual)", dynActivities: "Responsabilidades", dynRemove: "Eliminar", dynCourse: "Título / Curso", dynInst: "Institución", dynYear: "Año de Graduación"
             }
         };
 
-        // --- FUNÇÕES DE NAVEGAÇÃO E LOGIN ---
+        // --- NAVEGAÇÃO ---
         function navigateTo(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            setTimeout(() => { document.getElementById(screenId).classList.add('active'); }, 50);
+            setTimeout(() => {
+                document.getElementById(screenId).classList.add('active');
+                window.scrollTo(0,0);
+            }, 50);
         }
 
-        function handleGoogleLogin() {
-            // Simula uma conexão com o Google
-            const btn = document.querySelector('.btn-google');
-            btn.innerHTML = 'Conectando...';
-            setTimeout(() => {
-                navigateTo('screen-config');
-                btn.innerHTML = `<svg viewBox="0 0 24 24">...<path d="M22.56..." fill="#4285F4"/>...</svg> Continuar com o Google`;
-            }, 1000);
+        // --- LOGIN GOOGLE MOCK ---
+        function loginSuccess(name, email) {
+            // Em um app real, aqui você processaria o token OAuth do Google
+            document.getElementById('nome').value = name;
+            document.getElementById('email').value = email;
+            navigateTo('screen-config');
+        }
+
+        // --- CONFIGURAÇÕES ---
+        function selectTemplate(tplClass) {
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('card-' + tplClass).classList.add('selected');
+            const cv = document.getElementById('cv-output');
+            cv.className = '';
+            cv.classList.add(tplClass);
+        }
+
+        function selectColor(primary, secondary, btn) {
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const cv = document.getElementById('cv-output');
+            cv.style.setProperty('--cv-primary', primary);
+            cv.style.setProperty('--cv-secondary', secondary);
+        }
+
+        function selectLanguage(lang) {
+            currentLang = lang;
+            const dict = dictionary[lang];
+            
+            // Atualizar UI
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(dict[key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = dict[key];
+                    else el.innerText = dict[key];
+                }
+            });
+
+            // Atualizar Títulos do CV
+            document.getElementById('cv-title-personal').innerText = dict.cvTitlePersonal;
+            document.getElementById('cv-title-trajectory').innerText = dict.cvTitleTrajectory;
+            document.getElementById('cv-title-academic').innerText = dict.cvTitleAcademic;
+            document.getElementById('cv-title-skills').innerText = dict.cvTitleSkills;
+            document.getElementById('cv-title-obj').innerText = dict.cvTitleObj;
+            document.getElementById('cv-title-sum').innerText = dict.cvTitleSum;
+            document.getElementById('cv-title-hist').innerText = dict.cvTitleHist;
+
+            // Atualizar Labels do CV
+            document.getElementById('cv-lbl-birth').innerText = dict.cvBirth;
+            document.getElementById('cv-lbl-gender').innerText = dict.cvGender;
+            document.getElementById('cv-lbl-civil').innerText = dict.cvCivil;
+            document.getElementById('cv-lbl-nacional').innerText = dict.cvNacional;
+
+            // Atualizar campos dinâmicos existentes
+            updateDynamicLabels();
+            updateCV();
         }
 
         function goToGenerator() {
@@ -468,73 +621,12 @@
             updateCV();
         }
 
-        // --- FUNÇÕES DE CONFIGURAÇÃO ---
-        function selectTemplate(tplId) {
-            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
-            document.getElementById('card-' + tplId).classList.add('selected');
-            const cvOutput = document.getElementById('cv-output');
-            cvOutput.className = '';
-            cvOutput.classList.add(tplId);
-            currentTemplate = tplId;
-        }
-
-        function selectColor(primary, secondary, btn) {
-            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const cvOutput = document.getElementById('cv-output');
-            cvOutput.style.setProperty('--cv-primary', primary);
-            cvOutput.style.setProperty('--cv-secondary', secondary);
-            currentPrimaryColor = primary;
-            currentSecondaryColor = secondary;
-        }
-
-        function selectLanguage(lang) {
-            currentLang = lang;
-            const t = dictionary[lang];
-            
-            // Atualizar textos da interface
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (t[key]) el.textContent = t[key];
-            });
-
-            // Atualizar títulos no Preview
-            document.getElementById('cv-title-personal').textContent = t.cvTitlePersonal;
-            document.getElementById('cv-title-sum').textContent = t.cvTitleSum;
-            document.getElementById('cv-title-hist').textContent = t.cvTitleHist;
-            document.getElementById('cv-title-academic').textContent = t.cvTitleAcademic;
-            document.getElementById('cv-title-skills').textContent = t.cvTitleSkills;
-            
-            document.getElementById('cv-lbl-birth').textContent = t.cvBirth;
-            document.getElementById('cv-lbl-gender').textContent = t.cvGender;
-            document.getElementById('cv-lbl-civil').textContent = t.cvCivil;
-            document.getElementById('cv-lbl-nacional').textContent = t.cvNacional;
-
-            // Recriar labels dinâmicas
-            updateCV();
-        }
-
-        // --- FUNÇÕES DO GERADOR ---
-        function previewImage(input) {
-            const file = input.files[0];
-            const imgEl = document.getElementById('out-foto');
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    imgEl.src = e.target.result;
-                    imgEl.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            } else {
-                imgEl.style.display = 'none';
-            }
-        }
-
-        function syncField(inputId, outId, wrapId) {
-            const val = document.getElementById(inputId).value;
+        // --- LÓGICA DO GERADOR (UPDATE CV) ---
+        function val(id) { return document.getElementById(id).value.trim(); }
+        function showHide(val, outId, wrapId) {
             const wrap = document.getElementById(wrapId);
-            if(val.trim() !== '') {
-                document.getElementById(outId).textContent = val;
+            if(val) {
+                document.getElementById(outId).innerText = val;
                 wrap.classList.remove('hidden');
                 return true;
             } else {
@@ -544,127 +636,197 @@
         }
 
         function updateCV() {
-            // Principais
-            const nome = document.getElementById('nome').value;
-            document.getElementById('out-nome').textContent = nome || (currentLang === 'pt' ? 'Seu Nome' : currentLang === 'en' ? 'Your Name' : 'Su Nombre');
-            syncField('vaga', 'out-vaga', 'out-vaga');
-            syncField('email', 'out-email', 'wrap-email');
-            syncField('telefone', 'out-tel', 'wrap-tel');
-            syncField('endereco', 'out-endereco', 'wrap-end');
-            
+            // Header
+            document.getElementById('out-nome').innerText = val('nome') || (currentLang === 'pt' ? 'SEU NOME AQUI' : 'YOUR NAME HERE');
+            showHide(val('vaga'), 'out-vaga', 'out-vaga');
+            showHide(val('email'), 'out-email', 'wrap-email');
+            showHide(val('telefone'), 'out-tel', 'wrap-tel');
+            showHide(val('endereco'), 'out-endereco', 'wrap-end');
+
             // Países
-            const paisRes = document.getElementById('pais_res').value;
-            const paisDest = document.getElementById('pais_dest').value;
-            if(paisRes || paisDest) {
-                document.getElementById('out-pais_res').textContent = paisRes || '-';
-                document.getElementById('out-pais_dest').textContent = paisDest || '-';
-                document.getElementById('wrap-countries').classList.remove('hidden');
+            const res = val('country-residence');
+            const tgt = val('country-target');
+            if(res || tgt) {
+                document.getElementById('wrap-badges').style.display = 'flex';
+                showHide(res, 'out-country-res', 'badge-residence');
+                showHide(tgt, 'out-country-tgt', 'badge-target');
             } else {
-                document.getElementById('wrap-countries').classList.add('hidden');
+                document.getElementById('wrap-badges').style.display = 'none';
             }
 
             // Pessoais
-            let hasPersonal = false;
-            if(syncField('nascimento', 'out-nasc', 'wrap-nasc')) hasPersonal = true;
-            if(syncField('genero', 'out-gen', 'wrap-gen')) hasPersonal = true;
-            if(syncField('estado_civil', 'out-est', 'wrap-est')) hasPersonal = true;
-            if(syncField('nacionalidade', 'out-naci', 'wrap-naci')) hasPersonal = true;
-            document.getElementById('sec-pessoais').style.display = hasPersonal ? 'block' : 'none';
+            let p1 = showHide(val('nascimento') ? new Date(val('nascimento')).toLocaleDateString() : '', 'out-nasc', 'wrap-nasc');
+            let p2 = showHide(val('genero'), 'out-gen', 'wrap-gen');
+            let p3 = showHide(val('estado_civil'), 'out-est', 'wrap-est');
+            let p4 = showHide(val('nacionalidade'), 'out-naci', 'wrap-naci');
+            
+            if(p1 || p2 || p3 || p4) document.getElementById('sec-pessoais').style.display = 'block';
+            else document.getElementById('sec-pessoais').style.display = 'none';
 
-            // Resumo & Competências
-            syncField('resumo', 'out-resumo', 'sec-resumo');
-            syncField('competencias', 'out-comp', 'sec-comp');
+            // Trajetória
+            showHide(val('objetivo'), 'out-objetivo', 'wrap-objetivo');
+            showHide(val('resumo'), 'out-resumo', 'wrap-resumo');
+            
+            // Competências
+            if(val('competencias')) {
+                document.getElementById('out-comp').innerText = val('competencias');
+                document.getElementById('sec-comp').classList.remove('hidden');
+            } else {
+                document.getElementById('sec-comp').classList.add('hidden');
+            }
 
-            updateDynamics();
+            renderDynamicLists();
         }
 
-        // --- CAMPOS DINÂMICOS (Experiência e Formação) ---
+        function previewImage(input) {
+            const img = document.getElementById('out-foto');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                img.style.display = 'none';
+            }
+        }
+
+        // --- CAMPOS DINÂMICOS (EXPERIÊNCIA E EDUCAÇÃO) ---
+        let experiences = [];
+        let educations = [];
+
         function addExp() {
-            expCount++;
-            const t = dictionary[currentLang];
-            const html = `
-                <div class="dynamic-box" id="exp-box-${expCount}">
-                    <div class="form-row">
-                        <div class="form-group"><label>${t.dynCompany}</label><input type="text" class="exp-empresa" oninput="updateCV()"></div>
-                        <div class="form-group"><label>${t.dynPeriod}</label><input type="text" class="exp-periodo" oninput="updateCV()" placeholder="Ex: 2020 - Atual"></div>
-                    </div>
-                    <div class="form-group"><label>${t.dynActivities}</label><textarea class="exp-atividades" rows="2" oninput="updateCV()"></textarea></div>
-                    <button class="btn-remove" onclick="this.parentElement.remove(); updateCV()">${t.dynRemove}</button>
-                </div>`;
-            document.getElementById('exp-list').insertAdjacentHTML('beforeend', html);
-            updateCV();
+            experiences.push({id: expCount++, company: '', role: '', period: '', desc: ''});
+            renderDynamicForms();
         }
-
         function addEdu() {
-            eduCount++;
-            const t = dictionary[currentLang];
-            const html = `
-                <div class="dynamic-box" id="edu-box-${eduCount}">
-                    <div class="form-row">
-                        <div class="form-group"><label>${t.dynCourse}</label><input type="text" class="edu-curso" oninput="updateCV()"></div>
-                        <div class="form-group"><label>${t.dynInst}</label><input type="text" class="edu-inst" oninput="updateCV()"></div>
-                        <div class="form-group"><label>${t.dynYear}</label><input type="text" class="edu-ano" oninput="updateCV()" placeholder="Ex: 2023"></div>
+            educations.push({id: eduCount++, course: '', inst: '', year: ''});
+            renderDynamicForms();
+        }
+        function removeExp(id) { experiences = experiences.filter(e => e.id !== id); renderDynamicForms(); }
+        function removeEdu(id) { educations = educations.filter(e => e.id !== id); renderDynamicForms(); }
+
+        function renderDynamicForms() {
+            const dict = dictionary[currentLang];
+            
+            // Renderizar inputs Exp
+            const expList = document.getElementById('exp-list');
+            expList.innerHTML = '';
+            experiences.forEach((exp, index) => {
+                expList.innerHTML += `
+                    <div class="dynamic-box">
+                        <div class="form-row">
+                            <div class="form-group"><label class="lbl-dyn-company">${dict.dynCompany}</label><input type="text" value="${exp.company}" oninput="experiences[${index}].company=this.value; updateCV()"></div>
+                            <div class="form-group"><label class="lbl-dyn-role">${dict.dynRole}</label><input type="text" value="${exp.role}" oninput="experiences[${index}].role=this.value; updateCV()"></div>
+                        </div>
+                        <div class="form-group"><label class="lbl-dyn-period">${dict.dynPeriod}</label><input type="text" value="${exp.period}" oninput="experiences[${index}].period=this.value; updateCV()"></div>
+                        <div class="form-group"><label class="lbl-dyn-act">${dict.dynActivities}</label><textarea rows="2" oninput="experiences[${index}].desc=this.value; updateCV()">${exp.desc}</textarea></div>
+                        <button type="button" class="btn-remove btn-dyn-rem" onclick="removeExp(${exp.id})">${dict.dynRemove}</button>
                     </div>
-                    <button class="btn-remove" onclick="this.parentElement.remove(); updateCV()">${t.dynRemove}</button>
-                </div>`;
-            document.getElementById('edu-list').insertAdjacentHTML('beforeend', html);
+                `;
+            });
+
+            // Renderizar inputs Edu
+            const eduList = document.getElementById('edu-list');
+            eduList.innerHTML = '';
+            educations.forEach((edu, index) => {
+                eduList.innerHTML += `
+                    <div class="dynamic-box">
+                        <div class="form-row">
+                            <div class="form-group"><label class="lbl-dyn-course">${dict.dynCourse}</label><input type="text" value="${edu.course}" oninput="educations[${index}].course=this.value; updateCV()"></div>
+                            <div class="form-group"><label class="lbl-dyn-inst">${dict.dynInst}</label><input type="text" value="${edu.inst}" oninput="educations[${index}].inst=this.value; updateCV()"></div>
+                        </div>
+                        <div class="form-group"><label class="lbl-dyn-year">${dict.dynYear}</label><input type="text" value="${edu.year}" oninput="educations[${index}].year=this.value; updateCV()"></div>
+                        <button type="button" class="btn-remove btn-dyn-rem" onclick="removeEdu(${edu.id})">${dict.dynRemove}</button>
+                    </div>
+                `;
+            });
             updateCV();
         }
 
-        function updateDynamics() {
-            // Experiências
-            const expContainer = document.getElementById('out-exp-container');
-            expContainer.innerHTML = '';
+        function renderDynamicLists() {
+            // CV Exp
+            const outExp = document.getElementById('out-exp-container');
+            const wrapHist = document.getElementById('wrap-historico');
+            outExp.innerHTML = '';
             let hasExp = false;
-            document.querySelectorAll('#exp-list .dynamic-box').forEach(box => {
-                const emp = box.querySelector('.exp-empresa').value;
-                const per = box.querySelector('.exp-periodo').value;
-                const atv = box.querySelector('.exp-atividades').value;
-                if(emp || atv) {
+            experiences.forEach(exp => {
+                if(exp.company || exp.role) {
                     hasExp = true;
-                    expContainer.innerHTML += `
+                    outExp.innerHTML += `
                         <div class="exp-item">
-                            <div class="exp-head"><span class="exp-title">${emp}</span><span class="exp-date">${per}</span></div>
-                            <div class="cv-text-block">${atv}</div>
-                        </div>`;
+                            <div class="exp-head">
+                                <span class="exp-title">${exp.role || '-'}</span>
+                                <span class="exp-date">${exp.period}</span>
+                            </div>
+                            <div class="exp-sub">${exp.company}</div>
+                            <div class="cv-text-block">${exp.desc}</div>
+                        </div>
+                    `;
                 }
             });
-            document.getElementById('sec-historico').classList.toggle('hidden', !hasExp);
+            hasExp ? wrapHist.classList.remove('hidden') : wrapHist.classList.add('hidden');
 
-            // Formações
-            const eduContainer = document.getElementById('out-edu-container');
-            eduContainer.innerHTML = '';
+            // CV Edu
+            const outEdu = document.getElementById('out-edu-container');
+            const secEdu = document.getElementById('sec-edu');
+            outEdu.innerHTML = '';
             let hasEdu = false;
-            document.querySelectorAll('#edu-list .dynamic-box').forEach(box => {
-                const cur = box.querySelector('.edu-curso').value;
-                const inst = box.querySelector('.edu-inst').value;
-                const ano = box.querySelector('.edu-ano').value;
-                if(cur || inst) {
+            educations.forEach(edu => {
+                if(edu.course || edu.inst) {
                     hasEdu = true;
-                    eduContainer.innerHTML += `
-                        <div class="exp-item" style="margin-bottom:10px;">
-                            <div class="exp-head"><span class="exp-title">${cur}</span><span class="exp-date">${ano}</span></div>
-                            <div class="exp-sub">${inst}</div>
-                        </div>`;
+                    outEdu.innerHTML += `
+                        <div class="exp-item" style="margin-bottom: 10px;">
+                            <div class="exp-head">
+                                <span class="exp-title">${edu.course || '-'}</span>
+                                <span class="exp-date">${edu.year}</span>
+                            </div>
+                            <div class="exp-sub" style="margin-bottom: 0;">${edu.inst}</div>
+                        </div>
+                    `;
                 }
             });
-            document.getElementById('sec-edu').classList.toggle('hidden', !hasEdu);
+            hasEdu ? secEdu.classList.remove('hidden') : secEdu.classList.add('hidden');
         }
 
-        // --- EXPORTAR PDF ---
+        function updateDynamicLabels() {
+            // Helper para atualizar labels de campos dinâmicos quando a língua muda
+            const dict = dictionary[currentLang];
+            document.querySelectorAll('.lbl-dyn-company').forEach(l => l.innerText = dict.dynCompany);
+            document.querySelectorAll('.lbl-dyn-role').forEach(l => l.innerText = dict.dynRole);
+            document.querySelectorAll('.lbl-dyn-period').forEach(l => l.innerText = dict.dynPeriod);
+            document.querySelectorAll('.lbl-dyn-act').forEach(l => l.innerText = dict.dynActivities);
+            document.querySelectorAll('.lbl-dyn-course').forEach(l => l.innerText = dict.dynCourse);
+            document.querySelectorAll('.lbl-dyn-inst').forEach(l => l.innerText = dict.dynInst);
+            document.querySelectorAll('.lbl-dyn-year').forEach(l => l.innerText = dict.dynYear);
+            document.querySelectorAll('.btn-dyn-rem').forEach(b => b.innerText = dict.dynRemove);
+        }
+
+        // --- GERAÇÃO PDF ---
         function baixarPDF() {
-            const element = document.getElementById('cv-output');
+            const elemento = document.getElementById('cv-output');
+            const nome = val('nome') ? val('nome').split(' ')[0] : 'Curriculo';
+            
             const opt = {
-                margin: 0,
-                filename: 'Curriculo_BuilderCV.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                margin:       0,
+                filename:     `CV_${nome}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            html2pdf().set(opt).from(element).save();
+
+            // Efeito visual no botão
+            const btn = document.querySelector('.btn-print');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ GERANDO...";
+            
+            html2pdf().set(opt).from(elemento).save().then(() => {
+                btn.innerHTML = originalText;
+            });
         }
 
-        // Inicializar
+        // Iniciar com tradução padrão
         selectLanguage('pt');
     </script>
 </body>

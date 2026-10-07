@@ -1,769 +1,820 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>JobNow</title>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <style>
-        :root {
-            --primary-color: #1a365d;
-            --secondary-color: #2b6cb0;
-            --accent-color: #319795;
-            --bg-color: #f7fafc;
-            --form-bg: #ffffff;
-            --text-main: #2d3748;
-            --text-muted: #718096;
-            --danger: #e53e3e;
-            --success: #38a169;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg-color);
-            margin: 0;
-            color: var(--text-main);
-            min-height: 100vh;
-        }
-
-        button,
-        input,
-        select,
-        textarea {
-            font-family: inherit;
-        }
-
-        button {
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-            font-size: 0.95em;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn-primary {
-            background: var(--secondary-color);
-        }
-
-        .btn-primary:hover {
-            background: #2c5282;
-        }
-
-        .btn-success {
-            background: var(--success);
-        }
-
-        .btn-success:hover {
-            background: #2f855a;
-        }
-
-        .btn-secondary {
-            background: #4a5568;
-        }
-
-        .btn-secondary:hover {
-            background: #2d3748;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-        }
-
-        .btn-danger:hover {
-            background: #c53030;
-        }
-
-        .screen {
-            display: none;
-            min-height: 100vh;
-            width: 100%;
-        }
-
-        .screen.active {
-            display: flex;
-        }
-
-        /* =========================
-           HOME
-        ========================= */
-
-        #screen-home {
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 40px 20px;
-            background: linear-gradient(
-                135deg,
-                #1a365d 0%,
-                #2a4365 100%
-            );
-            color: white;
-        }
-
-        #screen-home h1 {
-            font-size: 3rem;
-            margin: 0 0 10px;
-        }
-
-        #screen-home p {
-            font-size: 1.2rem;
-            max-width: 650px;
-            color: #e2e8f0;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .home-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        /* =========================
-           AUTH
-        ========================= */
-
-        #screen-auth {
-            justify-content: center;
-            align-items: center;
-            padding: 30px 15px;
-            background: #edf2f7;
-        }
-
-        .auth-card {
-            width: 100%;
-            max-width: 460px;
-            background: white;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,.08);
-        }
-
-        .auth-card h2 {
-            margin-top: 0;
-            color: var(--primary-color);
-        }
-
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 25px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .auth-tab {
-            flex: 1;
-            background: transparent;
-            color: #718096;
-            border-radius: 0;
-            border-bottom: 3px solid transparent;
-        }
-
-        .auth-tab.active {
-            color: var(--secondary-color);
-            border-bottom-color: var(--secondary-color);
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: .88em;
-            color: #4a5568;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            background: white;
-            font-size: .95em;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 2px rgba(43,108,176,.08);
-        }
-
-        .password-help {
-            color: var(--text-muted);
-            font-size: .78em;
-            margin-top: 5px;
-        }
-
-        .terms-box {
-            display: flex;
-            gap: 8px;
-            align-items: flex-start;
-            margin: 15px 0;
-            font-size: .85em;
-        }
-
-        .terms-box input {
-            width: auto;
-            margin-top: 3px;
-        }
-
-        .terms-box label {
-            font-weight: normal;
-            margin: 0;
-        }
-
-        .link-button {
-            background: none;
-            border: none;
-            color: var(--secondary-color);
-            padding: 0;
-            font-weight: normal;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        .message {
-            padding: 10px 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: none;
-            font-size: .9em;
-        }
-
-        .message.error {
-            display: block;
-            background: #fff5f5;
-            color: #c53030;
-            border: 1px solid #feb2b2;
-        }
-
-        .message.success {
-            display: block;
-            background: #f0fff4;
-            color: #276749;
-            border: 1px solid #9ae6b4;
-        }
-
-        /* =========================
-           MODAIS
-        ========================= */
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.55);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            z-index: 1000;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            width: 100%;
-            max-width: 750px;
-            max-height: 85vh;
-            overflow-y: auto;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,.2);
-        }
-
-        .modal-content h2 {
-            color: var(--primary-color);
-            margin-top: 0;
-        }
-
-        .modal-content h3 {
-            color: var(--primary-color);
-        }
-
-        .modal-footer {
-            text-align: right;
-            margin-top: 20px;
-        }
-
-        /* =========================
-           CONFIGURAÇÃO
-        ========================= */
-
-        #screen-config {
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px 20px;
-        }
-
-        .config-container {
-            width: 100%;
-            max-width: 900px;
-        }
-
-        .config-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .config-header h2 {
-            color: var(--primary-color);
-            font-size: 2rem;
-            margin-bottom: 5px;
-        }
-
-        .account-bar {
-            background: white;
-            padding: 12px 18px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            box-shadow: 0 3px 10px rgba(0,0,0,.04);
-        }
-
-        .template-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .template-card {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            border: 2px solid #e2e8f0;
-            cursor: pointer;
-            transition: .2s;
-        }
-
-        .template-card:hover {
-            border-color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-
-        .template-card.selected {
-            border-color: var(--secondary-color);
-            background: #ebf8ff;
-        }
-
-        .template-card h4 {
-            margin: 0 0 10px;
-            color: var(--primary-color);
-        }
-
-        .template-card p {
-            margin: 0;
-            color: var(--text-muted);
-            font-size: .9em;
-        }
-
-        .config-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .config-box {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .config-box h3 {
-            margin-top: 0;
-            color: var(--primary-color);
-        }
-
-        .color-picker-wrapper {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .color-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            padding: 0;
-        }
-
-        .color-btn.active {
-            border-color: #2d3748;
-            transform: scale(1.1);
-        }
-
-        /* =========================
-           GERADOR
-        ========================= */
-
-        #screen-generator {
-            display: none;
-            grid-template-columns: 480px 1fr;
-            gap: 25px;
-            max-width: 1450px;
-            margin-inline: auto;
-            padding: 20px;
-        }
-
-        #screen-generator.active {
-            display: grid;
-        }
-
-        .form-panel {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,.05);
-            max-height: 92vh;
-            overflow-y: auto;
-        }
-
-        .form-title {
-            color: var(--primary-color);
-            font-size: 1.1em;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #edf2f7;
-            padding-bottom: 8px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-            min-width: 140px;
-        }
-
-        .country-select {
-            font-size: .9em;
-        }
-
-        .country-preview {
-            display: none;
-            margin-top: 7px;
-            font-size: .82em;
-            color: var(--text-muted);
-        }
-
-        .dynamic-box {
-            border: 1px dashed #cbd5e0;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            background: #f7fafc;
-        }
-
-        .action-bar {
-            display: flex;
-            gap: 10px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            margin-bottom: 15px;
-            background: white;
-            padding-bottom: 5px;
-        }
-
-        .action-bar button {
-            flex: 1;
-        }
-
-        /* =========================
-           PREVIEW
-        ========================= */
-
-        #cv-preview-container {
-            height: 92vh;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
-        #cv-output {
-            background: white;
-            padding: 15mm;
-            width: 210mm;
-            min-height: 297mm;
-            margin: 0 auto;
-            color: #2d3748;
-            box-shadow: 0 10px 25px rgba(0,0,0,.08);
-            font-size: 10pt;
-            line-height: 1.5;
-        }
-
-        .cv-photo {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            object-fit: cover;
-            display: none;
-        }
-
-        .cv-text-block {
-            white-space: pre-wrap;
-            font-size: 9.5pt;
-            text-align: justify;
-        }
-
-        .cv-sub-section {
-            margin-bottom: 15px;
-        }
-
-        .cv-sub-section h4 {
-            color: var(--cv-secondary);
-            font-size: 10pt;
-            margin: 0 0 5px;
-            text-transform: uppercase;
-        }
-
-        .exp-item {
-            margin-bottom: 14px;
-        }
-
-        .exp-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-        }
-
-        .exp-title {
-            font-weight: bold;
-            color: var(--cv-primary);
-        }
-
-        .exp-date {
-            font-size: 9pt;
-            color: var(--text-muted);
-        }
-
-        .exp-sub {
-            color: #4a5568;
-            font-weight: 500;
-        }
-
-        .cv-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px 15px;
-            font-size: 9pt;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* =========================
-           TEMPLATE MODERNO
-        ========================= */
-
-        .tpl-modern .cv-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border-bottom: 3px solid var(--cv-primary);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .tpl-modern .cv-header h1 {
-            margin: 0 0 5px;
-            color: var(--cv-primary);
-            text-transform: uppercase;
-            font-size: 24pt;
-        }
-
-        .tpl-modern .cv-header h2 {
-            margin: 0 0 10px;
-            color: var(--cv-secondary);
-            font-size: 13pt;
-        }
-
-        .tpl-modern .cv-contact {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px 15px;
-            font-size: 9pt;
-            color: var(--text-muted);
-        }
-
-        .tpl-modern .cv-section {
-            margin-bottom: 22px;
-        }
-
-        .tpl-modern .cv-section h3 {
-            color: var(--cv-primary);
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 4px;
-            text-transform: uppercase;
-            font-size: 11pt;
-        }
-
-        /* =========================
-           TEMPLATE MINIMALISTA
-        ========================= */
-
-        .tpl-minimal {
-            font-family: Arial, sans-serif;
-        }
-
-        .tpl-minimal .cv-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .tpl-minimal .cv-header h1 {
-            margin: 0 0 5px;
-            color: #1a202c;
-            font-size: 22pt;
-            font-weight: 300;
-            letter-spacing: 2px;
-        }
-
-        .tpl-minimal .cv-header h2 {
-            color: var(--cv-primary);
-            font-size: 11pt;
-            text-transform: uppercase;
-        }
-
-        .tpl-minimal .cv-contact {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            font-size: 8.5pt;
-            color: #4a5568;
-            border-bottom: 1px solid #cbd5e0;
-            padding-bottom: 12px;
-        }
-
-        .tpl-minimal .cv-section {
-            margin-bottom: 20px;
-        }
-
-        .tpl-minimal .cv-section h3 {
-            color: #1a202c;
-            font-size: 10pt;
-            text-transform: uppercase;
-            border-left: 3px solid var(--cv-primary);
-            padding-left: 8px;
-        }
-
-        /* =========================
-           TEMPLATE ELEGANTE
-        ========================= */
-
-        .tpl-elegant .cv-header {
-            border-left: 6px solid var(--cv-primary);
-            padding-left: 15px;
-            margin-bottom: 25px;
-        }
-
-        .tpl-elegant .cv-header h1 {
-            margin: 0;
-            color: var(--cv-primary);
-            font-size: 26pt;
-            font-family: Georgia, serif;
-        }
-
-        .tpl-elegant .cv-header h2 {
-            margin: 5px 0 10px;
-            color: #718096;
-            font-size: 12pt;
-            font-style: italic;
-        }
-
-        .tpl-elegant .cv-contact {
-            font-size: 9pt;
-            color: #4a5568;
-        }
-
-        .tpl-elegant .cv-section h3 {
-            color: var(--cv-primary);
-            font-family: Georgia, serif;
-            font-size: 12pt;
-            border-bottom: 2px double var(--cv-primary);
-        }
-
-        /* =========================
-           RESPONSIVIDADE
-        ========================= */
-
-        @media (max-width: 1150px) {
-            #screen-generator.active {
-                grid-template-columns: 1fr;
-            }
-
-            #cv-preview-container {
-                height: auto;
-            }
-        }
-
-        @media (max-width: 700px) {
-            .config-row {
-                grid-template-columns: 1fr;
-            }
-
-            .auth-card {
-                padding: 25px;
-            }
-
-            #screen-home h1 {
-                font-size: 2.3rem;
-            }
-
-            #cv-output {
-                width: 100%;
-                min-height: auto;
-                padding: 25px;
-            }
-
-            .cv-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>JobNow</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+
+:root {
+    --primary-color:#1a365d;
+    --secondary-color:#2b6cb0;
+    --accent-color:#319795;
+    --bg-color:#f7fafc;
+    --form-bg:#ffffff;
+    --text-main:#2d3748;
+    --text-muted:#718096;
+    --danger:#e53e3e;
+    --success:#38a169;
+}
+
+* {
+    box-sizing:border-box;
+}
+
+body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:var(--bg-color);
+    margin:0;
+    color:var(--text-main);
+    min-height:100vh;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family:inherit;
+}
+
+button {
+    color:white;
+    border:none;
+    padding:12px 24px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.2s;
+    font-size:.95em;
+}
+
+button:active {
+    transform:scale(.98);
+}
+
+button:disabled {
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.btn-primary {
+    background:var(--secondary-color);
+}
+
+.btn-primary:hover {
+    background:#2c5282;
+}
+
+.btn-success {
+    background:var(--success);
+}
+
+.btn-success:hover {
+    background:#2f855a;
+}
+
+.btn-secondary {
+    background:#4a5568;
+}
+
+.btn-secondary:hover {
+    background:#2d3748;
+}
+
+.btn-danger {
+    background:var(--danger);
+}
+
+.btn-danger:hover {
+    background:#c53030;
+}
+
+.screen {
+    display:none;
+    min-height:100vh;
+    width:100%;
+}
+
+.screen.active {
+    display:flex;
+}
+
+
+/* =========================================================
+   HOME
+========================================================= */
+
+#screen-home {
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:40px 20px;
+    background:linear-gradient(
+        135deg,
+        #1a365d 0%,
+        #2a4365 100%
+    );
+    color:white;
+}
+
+#screen-home h1 {
+    font-size:3rem;
+    margin:0 0 10px;
+}
+
+#screen-home p {
+    font-size:1.2rem;
+    max-width:650px;
+    color:#e2e8f0;
+    margin-bottom:30px;
+    line-height:1.6;
+}
+
+.home-buttons {
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+#screen-auth {
+    justify-content:center;
+    align-items:center;
+    padding:30px 15px;
+    background:#edf2f7;
+}
+
+.auth-card {
+    width:100%;
+    max-width:460px;
+    background:white;
+    padding:35px;
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.auth-card h2 {
+    margin-top:0;
+    color:var(--primary-color);
+}
+
+.auth-tabs {
+    display:flex;
+    margin-bottom:25px;
+    border-bottom:1px solid #e2e8f0;
+}
+
+.auth-tab {
+    flex:1;
+    background:transparent;
+    color:#718096;
+    border-radius:0;
+    border-bottom:3px solid transparent;
+}
+
+.auth-tab.active {
+    color:var(--secondary-color);
+    border-bottom-color:var(--secondary-color);
+}
+
+.form-group {
+    margin-bottom:15px;
+}
+
+label {
+    display:block;
+    margin-bottom:6px;
+    font-weight:600;
+    font-size:.88em;
+    color:#4a5568;
+}
+
+input,
+select,
+textarea {
+    width:100%;
+    padding:11px;
+    border:1px solid #cbd5e0;
+    border-radius:6px;
+    background:white;
+    font-size:.95em;
+}
+
+textarea {
+    resize:vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline:none;
+    border-color:var(--secondary-color);
+    box-shadow:0 0 0 2px rgba(43,108,176,.08);
+}
+
+.password-help {
+    color:var(--text-muted);
+    font-size:.78em;
+    margin-top:5px;
+}
+
+.terms-box {
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+    margin:15px 0;
+    font-size:.85em;
+}
+
+.terms-box input {
+    width:auto;
+    margin-top:3px;
+}
+
+.terms-box label {
+    font-weight:normal;
+    margin:0;
+}
+
+.link-button {
+    background:none;
+    border:none;
+    color:var(--secondary-color);
+    padding:0;
+    font-weight:normal;
+    text-decoration:underline;
+    cursor:pointer;
+}
+
+.message {
+    padding:10px 12px;
+    border-radius:6px;
+    margin-bottom:15px;
+    display:none;
+    font-size:.9em;
+}
+
+.message.error {
+    display:block;
+    background:#fff5f5;
+    color:#c53030;
+    border:1px solid #feb2b2;
+}
+
+.message.success {
+    display:block;
+    background:#f0fff4;
+    color:#276749;
+    border:1px solid #9ae6b4;
+}
+
+
+/* =========================================================
+   IDIOMA GLOBAL
+========================================================= */
+
+.language-selector {
+    position:fixed;
+    top:18px;
+    right:18px;
+    z-index:500;
+}
+
+.language-selector select {
+    width:auto;
+    min-width:150px;
+    padding:8px 12px;
+    border-radius:8px;
+    background:white;
+    box-shadow:0 3px 10px rgba(0,0,0,.12);
+}
+
+
+/* =========================================================
+   MODAIS
+========================================================= */
+
+.modal {
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    z-index:1000;
+}
+
+.modal.active {
+    display:flex;
+}
+
+.modal-content {
+    background:white;
+    width:100%;
+    max-width:750px;
+    max-height:85vh;
+    overflow-y:auto;
+    border-radius:10px;
+    padding:30px;
+    box-shadow:0 20px 50px rgba(0,0,0,.2);
+}
+
+.modal-content h2,
+.modal-content h3 {
+    color:var(--primary-color);
+}
+
+.modal-footer {
+    text-align:right;
+    margin-top:20px;
+}
+
+
+/* =========================================================
+   CONFIGURAÇÃO
+========================================================= */
+
+#screen-config {
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:40px 20px;
+}
+
+.config-container {
+    width:100%;
+    max-width:900px;
+}
+
+.config-header {
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.config-header h2 {
+    color:var(--primary-color);
+    font-size:2rem;
+    margin-bottom:5px;
+}
+
+.account-bar {
+    background:white;
+    padding:12px 18px;
+    border-radius:8px;
+    margin-bottom:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+    box-shadow:0 3px 10px rgba(0,0,0,.04);
+}
+
+.template-grid {
+    display:grid;
+    grid-template-columns:repeat(
+        auto-fit,
+        minmax(220px,1fr)
+    );
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.template-card {
+    background:white;
+    padding:25px;
+    border-radius:8px;
+    border:2px solid #e2e8f0;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.template-card:hover {
+    border-color:var(--secondary-color);
+    transform:translateY(-2px);
+}
+
+.template-card.selected {
+    border-color:var(--secondary-color);
+    background:#ebf8ff;
+}
+
+.template-card h4 {
+    margin:0 0 10px;
+    color:var(--primary-color);
+}
+
+.template-card p {
+    margin:0;
+    color:var(--text-muted);
+    font-size:.9em;
+}
+
+.config-row {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.config-box {
+    background:white;
+    padding:25px;
+    border-radius:8px;
+    border:1px solid #e2e8f0;
+}
+
+.config-box h3 {
+    margin-top:0;
+    color:var(--primary-color);
+}
+
+.color-picker-wrapper {
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.color-btn {
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:3px solid transparent;
+    padding:0;
+}
+
+.color-btn.active {
+    border-color:#2d3748;
+    transform:scale(1.1);
+}
+
+
+/* =========================================================
+   GERADOR
+========================================================= */
+
+#screen-generator {
+    display:none;
+    grid-template-columns:480px 1fr;
+    gap:25px;
+    max-width:1450px;
+    margin-inline:auto;
+    padding:20px;
+}
+
+#screen-generator.active {
+    display:grid;
+}
+
+.form-panel {
+    background:white;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 4px 15px rgba(0,0,0,.05);
+    max-height:92vh;
+    overflow-y:auto;
+}
+
+.form-title {
+    color:var(--primary-color);
+    font-size:1.1em;
+    margin-top:25px;
+    margin-bottom:15px;
+    border-bottom:2px solid #edf2f7;
+    padding-bottom:8px;
+}
+
+.form-row {
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.form-row .form-group {
+    flex:1;
+    min-width:140px;
+}
+
+.dynamic-box {
+    border:1px dashed #cbd5e0;
+    padding:15px;
+    margin-bottom:10px;
+    border-radius:6px;
+    background:#f7fafc;
+}
+
+.action-bar {
+    display:flex;
+    gap:10px;
+    position:sticky;
+    top:0;
+    z-index:100;
+    margin-bottom:15px;
+    background:white;
+    padding-bottom:5px;
+}
+
+.action-bar button {
+    flex:1;
+}
+
+
+/* =========================================================
+   PREVIEW
+========================================================= */
+
+#cv-preview-container {
+    height:92vh;
+    overflow-y:auto;
+    padding-right:10px;
+}
+
+#cv-output {
+    background:white;
+    padding:15mm;
+    width:210mm;
+    min-height:297mm;
+    margin:0 auto;
+    color:#2d3748;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    font-size:10pt;
+    line-height:1.5;
+}
+
+.cv-photo {
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    object-fit:cover;
+    display:none;
+}
+
+.cv-text-block {
+    white-space:pre-wrap;
+    font-size:9.5pt;
+    text-align:justify;
+}
+
+.cv-sub-section {
+    margin-bottom:15px;
+}
+
+.exp-item {
+    margin-bottom:14px;
+}
+
+.exp-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+}
+
+.exp-title {
+    font-weight:bold;
+    color:var(--cv-primary);
+}
+
+.exp-date {
+    font-size:9pt;
+    color:var(--text-muted);
+}
+
+.exp-sub {
+    color:#4a5568;
+    font-weight:500;
+}
+
+.cv-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px 15px;
+    font-size:9pt;
+}
+
+.hidden {
+    display:none !important;
+}
+
+
+/* =========================================================
+   TEMPLATE MODERNO
+========================================================= */
+
+.tpl-modern .cv-header {
+    display:flex;
+    align-items:center;
+    gap:20px;
+    border-bottom:3px solid var(--cv-primary);
+    padding-bottom:15px;
+    margin-bottom:20px;
+}
+
+.tpl-modern .cv-header h1 {
+    margin:0 0 5px;
+    color:var(--cv-primary);
+    text-transform:uppercase;
+    font-size:24pt;
+}
+
+.tpl-modern .cv-header h2 {
+    margin:0 0 10px;
+    color:var(--cv-secondary);
+    font-size:13pt;
+}
+
+.tpl-modern .cv-contact {
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px 15px;
+    font-size:9pt;
+    color:var(--text-muted);
+}
+
+.tpl-modern .cv-section {
+    margin-bottom:22px;
+}
+
+.tpl-modern .cv-section h3 {
+    color:var(--cv-primary);
+    border-bottom:1px solid #e2e8f0;
+    padding-bottom:4px;
+    text-transform:uppercase;
+    font-size:11pt;
+}
+
+
+/* =========================================================
+   TEMPLATE MINIMALISTA
+========================================================= */
+
+.tpl-minimal {
+    font-family:Arial,sans-serif;
+}
+
+.tpl-minimal .cv-header {
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.tpl-minimal .cv-header h1 {
+    margin:0 0 5px;
+    color:#1a202c;
+    font-size:22pt;
+    font-weight:300;
+    letter-spacing:2px;
+}
+
+.tpl-minimal .cv-header h2 {
+    color:var(--cv-primary);
+    font-size:11pt;
+    text-transform:uppercase;
+}
+
+.tpl-minimal .cv-contact {
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    font-size:8.5pt;
+    color:#4a5568;
+    border-bottom:1px solid #cbd5e0;
+    padding-bottom:12px;
+}
+
+.tpl-minimal .cv-section {
+    margin-bottom:20px;
+}
+
+.tpl-minimal .cv-section h3 {
+    color:#1a202c;
+    font-size:10pt;
+    text-transform:uppercase;
+    border-left:3px solid var(--cv-primary);
+    padding-left:8px;
+}
+
+
+/* =========================================================
+   TEMPLATE ELEGANTE
+========================================================= */
+
+.tpl-elegant .cv-header {
+    border-left:6px solid var(--cv-primary);
+    padding-left:15px;
+    margin-bottom:25px;
+}
+
+.tpl-elegant .cv-header h1 {
+    margin:0;
+    color:var(--cv-primary);
+    font-size:26pt;
+    font-family:Georgia,serif;
+}
+
+.tpl-elegant .cv-header h2 {
+    margin:5px 0 10px;
+    color:#718096;
+    font-size:12pt;
+    font-style:italic;
+}
+
+.tpl-elegant .cv-contact {
+    font-size:9pt;
+    color:#4a5568;
+}
+
+.tpl-elegant .cv-section h3 {
+    color:var(--cv-primary);
+    font-family:Georgia,serif;
+    font-size:12pt;
+    border-bottom:2px double var(--cv-primary);
+}
+
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media(max-width:1150px) {
+
+    #screen-generator.active {
+        grid-template-columns:1fr;
+    }
+
+    #cv-preview-container {
+        height:auto;
+    }
+
+}
+
+@media(max-width:700px) {
+
+    .config-row {
+        grid-template-columns:1fr;
+    }
+
+    .auth-card {
+        padding:25px;
+    }
+
+    #screen-home h1 {
+        font-size:2.3rem;
+    }
+
+    #cv-output {
+        width:100%;
+        min-height:auto;
+        padding:25px;
+    }
+
+    .cv-grid {
+        grid-template-columns:1fr;
+    }
+
+    .language-selector {
+        position:static;
+        margin:15px;
+        text-align:right;
+    }
+
+}
+
+</style>
+
 </head>
 <body>
+
+
+<!-- =========================================================
+     SELETOR DE IDIOMA GLOBAL
+========================================================= -->
+
+<div class="language-selector">
+
+<select
+    id="global-language"
+    onchange="changeLanguage(this.value)">
+
+    <option value="pt">🇧🇷 Português</option>
+    <option value="en">🇺🇸 English</option>
+    <option value="es">🇪🇸 Español</option>
+
+</select>
+
+</div>
+
 
 <!-- =========================================================
      HOME
@@ -771,1039 +822,1172 @@
 
 <div id="screen-home" class="screen active">
 
-    <h1>JobNow</h1>
+<h1>JobNow</h1>
 
-    <p>
-        Quer se destacar no mercado de trabalho?
-        O JobNow ajuda você a criar um currículo profissional
-        personalizado para o país e para a empresa onde deseja trabalhar.
-    </p>
+<p data-i18n="homeDescription">
+    Quer se destacar no mercado de trabalho?
+    O JobNow ajuda você a criar um currículo profissional
+    personalizado para o país e para a empresa onde deseja trabalhar.
+</p>
 
-    <div class="home-buttons">
+<div class="home-buttons">
 
-        <button
-            class="btn-primary"
-            onclick="openAuth('register')">
-            Criar minha conta
-        </button>
+<button
+    class="btn-primary"
+    onclick="openAuth('register')"
+    data-i18n="createAccount">
+    Criar minha conta
+</button>
 
-        <button
-            class="btn-secondary"
-            onclick="openAuth('login')">
-            Já tenho uma conta
-        </button>
+<button
+    class="btn-secondary"
+    onclick="openAuth('login')"
+    data-i18n="alreadyAccount">
+    Já tenho uma conta
+</button>
 
-    </div>
+</div>
 
 </div>
 
 
 <!-- =========================================================
-     LOGIN / CADASTRO
+     AUTENTICAÇÃO
 ========================================================= -->
 
 <div id="screen-auth" class="screen">
 
-    <div class="auth-card">
+<div class="auth-card">
 
-        <div class="auth-tabs">
+<div class="auth-tabs">
 
-            <button
-                id="tab-login"
-                class="auth-tab active"
-                onclick="switchAuth('login')">
-                Entrar
-            </button>
+<button
+    id="tab-login"
+    class="auth-tab active"
+    onclick="switchAuth('login')"
+    data-i18n="loginTab">
+    Entrar
+</button>
 
-            <button
-                id="tab-register"
-                class="auth-tab"
-                onclick="switchAuth('register')">
-                Criar conta
-            </button>
-
-        </div>
-
-        <div id="auth-message" class="message"></div>
-
-
-        <!-- LOGIN -->
-
-        <form id="login-form" onsubmit="handleLogin(event)">
-
-            <h2>Entrar no JobNow</h2>
-
-            <div class="form-group">
-                <label>E-mail</label>
-
-                <input
-                    type="email"
-                    id="login-email"
-                    required
-                    placeholder="seu@email.com">
-            </div>
-
-            <div class="form-group">
-                <label>Senha</label>
-
-                <input
-                    type="password"
-                    id="login-password"
-                    required
-                    placeholder="••••••••">
-            </div>
-
-            <button
-                type="submit"
-                class="btn-primary"
-                style="width:100%;">
-                Entrar
-            </button>
-
-        </form>
-
-
-        <!-- CADASTRO -->
-
-        <form
-            id="register-form"
-            class="hidden"
-            onsubmit="handleRegister(event)">
-
-            <h2>Criar sua conta</h2>
-
-            <div class="form-group">
-                <label>Nome completo</label>
-
-                <input
-                    type="text"
-                    id="register-name"
-                    required
-                    autocomplete="name"
-                    placeholder="Seu nome completo">
-            </div>
-
-            <div class="form-group">
-                <label>E-mail</label>
-
-                <input
-                    type="email"
-                    id="register-email"
-                    required
-                    autocomplete="email"
-                    placeholder="seu@email.com">
-            </div>
-
-            <div class="form-group">
-                <label>Senha</label>
-
-                <input
-                    type="password"
-                    id="register-password"
-                    required
-                    minlength="8"
-                    autocomplete="new-password"
-                    placeholder="Crie uma senha">
-
-                <div class="password-help">
-                    A senha deve possuir pelo menos 8 caracteres.
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Confirmar senha</label>
-
-                <input
-                    type="password"
-                    id="register-password-confirm"
-                    required
-                    minlength="8"
-                    autocomplete="new-password">
-            </div>
-
-            <div class="terms-box">
-
-                <input
-                    type="checkbox"
-                    id="accept-terms"
-                    required>
-
-                <label for="accept-terms">
-
-                    Li e aceito os
-
-                    <button
-                        type="button"
-                        class="link-button"
-                        onclick="openModal('terms-modal')">
-                        Termos de Uso
-                    </button>
-
-                    e a
-
-                    <button
-                        type="button"
-                        class="link-button"
-                        onclick="openModal('privacy-modal')">
-                        Política de Privacidade
-                    </button>.
-
-                </label>
-
-            </div>
-
-            <button
-                type="submit"
-                class="btn-success"
-                style="width:100%;">
-                Criar conta
-            </button>
-
-        </form>
-
-        <br>
-
-        <button
-            class="btn-secondary"
-            style="width:100%;"
-            onclick="navigateTo('screen-home')">
-            ← Voltar
-        </button>
-
-    </div>
+<button
+    id="tab-register"
+    class="auth-tab"
+    onclick="switchAuth('register')"
+    data-i18n="registerTab">
+    Criar conta
+</button>
 
 </div>
 
 
-<!-- =========================================================
+<div id="auth-message" class="message"></div>
+
+
+<!-- LOGIN -->
+
+<form
+    id="login-form"
+    onsubmit="handleLogin(event)">
+
+<h2 data-i18n="loginTitle">
+    Entrar no JobNow
+</h2>
+
+<div class="form-group">
+
+<label data-i18n="email">
+    E-mail
+</label>
+
+<input
+    type="email"
+    id="login-email"
+    required
+    placeholder="seu@email.com">
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="password">
+    Senha
+</label>
+
+<input
+    type="password"
+    id="login-password"
+    required
+    placeholder="••••••••">
+
+</div>
+
+
+<button
+    type="submit"
+    class="btn-primary"
+    style="width:100%;"
+    data-i18n="loginButton">
+
+    Entrar
+
+</button>
+
+</form>
+
+
+<!-- CADASTRO -->
+
+<form
+    id="register-form"
+    class="hidden"
+    onsubmit="handleRegister(event)">
+
+<h2 data-i18n="registerTitle">
+    Criar sua conta
+</h2>
+
+
+<div class="form-group">
+
+<label data-i18n="fullName">
+    Nome completo
+</label>
+
+<input
+    type="text"
+    id="register-name"
+    required
+    placeholder="Seu nome completo">
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="email">
+    E-mail
+</label>
+
+<input
+    type="email"
+    id="register-email"
+    required
+    placeholder="seu@email.com">
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="password">
+    Senha
+</label>
+
+<input
+    type="password"
+    id="register-password"
+    required
+    minlength="8"
+    placeholder="Crie uma senha">
+
+<div
+    class="password-help"
+    data-i18n="passwordHelp">
+
+    A senha deve possuir pelo menos 8 caracteres.
+
+</div>
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="confirmPassword">
+    Confirmar senha
+</label>
+
+<input
+    type="password"
+    id="register-password-confirm"
+    required
+    minlength="8">
+
+</div>
+
+
+<div class="terms-box">
+
+<input
+    type="checkbox"
+    id="accept-terms"
+    required>
+
+<label for="accept-terms">
+
+<span data-i18n="acceptText">
+    Li e aceito os
+</span>
+
+<button
+    type="button"
+    class="link-button"
+    onclick="openModal('terms-modal')"
+    data-i18n="termsShort">
+    Termos de Uso
+</button>
+
+<span data-i18n="and">
+    e a
+</span>
+
+<button
+    type="button"
+    class="link-button"
+    onclick="openModal('privacy-modal')"
+    data-i18n="privacyShort">
+    Política de Privacidade
+</button>.
+
+</label>
+
+</div>
+
+
+<button
+    type="submit"
+    class="btn-success"
+    style="width:100%;"
+    data-i18n="createAccount">
+
+    Criar conta
+
+</button>
+
+</form>
+
+
+<br>
+
+
+<button
+    class="btn-secondary"
+    style="width:100%;"
+    onclick="navigateTo('screen-home')"
+    data-i18n="back">
+
+    ← Voltar
+
+</button>
+
+</div>
+
+    </div>
+    <!-- =========================================================
      CONFIGURAÇÃO
 ========================================================= -->
 
 <div id="screen-config" class="screen">
 
-    <div class="config-container">
-
-        <div class="account-bar">
-
-            <div>
-                <strong>Conta:</strong>
-                <span id="account-name"></span>
-            </div>
-
-            <button
-                class="btn-danger"
-                onclick="logout()">
-                Sair
-            </button>
-
-        </div>
-
-        <div class="config-header">
-
-            <h2>Configure seu currículo</h2>
-
-            <p>
-                Escolha o modelo, a aparência e o idioma.
-            </p>
-
-        </div>
+<div class="config-container">
 
 
-        <h3 style="color:var(--primary-color);">
-            1. Selecione um Modelo
-        </h3>
+<div class="account-bar">
 
-        <div class="template-grid">
+<div>
 
-            <div
-                class="template-card selected"
-                id="card-tpl-modern"
-                onclick="selectTemplate('tpl-modern')">
+<strong data-i18n="account">
+    Conta:
+</strong>
 
-                <h4>Moderno</h4>
-
-                <p>
-                    Layout corporativo ideal para tecnologia,
-                    finanças e mercado executivo.
-                </p>
-
-            </div>
-
-            <div
-                class="template-card"
-                id="card-tpl-minimal"
-                onclick="selectTemplate('tpl-minimal')">
-
-                <h4>Minimalista</h4>
-
-                <p>
-                    Visual clean e direto ao ponto.
-                </p>
-
-            </div>
-
-            <div
-                class="template-card"
-                id="card-tpl-elegant"
-                onclick="selectTemplate('tpl-elegant')">
-
-                <h4>Elegante</h4>
-
-                <p>
-                    Estética clássica e tipografia refinada.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="config-row">
-
-            <div class="config-box">
-
-                <h3>2. Cor de Destaque</h3>
-
-                <div class="color-picker-wrapper">
-
-                    <button
-                        class="color-btn active"
-                        style="background:#1a365d"
-                        onclick="selectColor('#1a365d','#2b6cb0',this)">
-                    </button>
-
-                    <button
-                        class="color-btn"
-                        style="background:#2c3e50"
-                        onclick="selectColor('#2c3e50','#7f8c8d',this)">
-                    </button>
-
-                    <button
-                        class="color-btn"
-                        style="background:#27ae60"
-                        onclick="selectColor('#27ae60','#2ecc71',this)">
-                    </button>
-
-                    <button
-                        class="color-btn"
-                        style="background:#7b2cbf"
-                        onclick="selectColor('#7b2cbf','#9d4edd',this)">
-                    </button>
-
-                    <button
-                        class="color-btn"
-                        style="background:#b7094c"
-                        onclick="selectColor('#b7094c','#a01a58',this)">
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <div class="config-box">
-
-                <h3>3. Idioma</h3>
-
-                <select
-                    id="select-language"
-                    onchange="selectLanguage(this.value)">
-
-                    <option value="pt">
-                        🇧🇷 Português (Brasil)
-                    </option>
-
-                    <option value="en">
-                        🇺🇸 English
-                    </option>
-
-                    <option value="es">
-                        🇪🇸 Español
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <button
-            class="btn-success"
-            style="font-size:1.05em;padding:15px 50px;"
-            onclick="goToGenerator()">
-
-            Avançar para o preenchimento
-
-        </button>
-
-    </div>
+<span id="account-name"></span>
 
 </div>
 
-    <!-- =========================================================
+
+<button
+    class="btn-danger"
+    onclick="logout()"
+    data-i18n="logout">
+
+    Sair
+
+</button>
+
+</div>
+
+
+<div class="config-header">
+
+<h2 data-i18n="configTitle">
+    Configure seu currículo
+</h2>
+
+<p data-i18n="configDescription">
+    Escolha o modelo, a aparência e o idioma.
+</p>
+
+</div>
+
+
+<h3
+    style="color:var(--primary-color);"
+    data-i18n="selectModel">
+
+    1. Selecione um Modelo
+
+</h3>
+
+
+<div class="template-grid">
+
+
+<div
+    class="template-card selected"
+    id="card-tpl-modern"
+    onclick="selectTemplate('tpl-modern')">
+
+<h4 data-i18n="modern">
+    Moderno
+</h4>
+
+<p data-i18n="modernDescription">
+    Layout corporativo ideal para tecnologia,
+    finanças e mercado executivo.
+</p>
+
+</div>
+
+
+<div
+    class="template-card"
+    id="card-tpl-minimal"
+    onclick="selectTemplate('tpl-minimal')">
+
+<h4 data-i18n="minimal">
+    Minimalista
+</h4>
+
+<p data-i18n="minimalDescription">
+    Visual clean e direto ao ponto.
+</p>
+
+</div>
+
+
+<div
+    class="template-card"
+    id="card-tpl-elegant"
+    onclick="selectTemplate('tpl-elegant')">
+
+<h4 data-i18n="elegant">
+    Elegante
+</h4>
+
+<p data-i18n="elegantDescription">
+    Estética clássica e tipografia refinada.
+</p>
+
+</div>
+
+
+</div>
+
+
+<div class="config-row">
+
+
+<div class="config-box">
+
+<h3 data-i18n="highlightColor">
+    2. Cor de Destaque
+</h3>
+
+
+<div class="color-picker-wrapper">
+
+<button
+    class="color-btn active"
+    style="background:#1a365d"
+    onclick="selectColor('#1a365d','#2b6cb0',this)">
+</button>
+
+<button
+    class="color-btn"
+    style="background:#2c3e50"
+    onclick="selectColor('#2c3e50','#7f8c8d',this)">
+</button>
+
+<button
+    class="color-btn"
+    style="background:#27ae60"
+    onclick="selectColor('#27ae60','#2ecc71',this)">
+</button>
+
+<button
+    class="color-btn"
+    style="background:#7b2cbf"
+    onclick="selectColor('#7b2cbf','#9d4edd',this)">
+</button>
+
+<button
+    class="color-btn"
+    style="background:#b7094c"
+    onclick="selectColor('#b7094c','#a01a58',this)">
+</button>
+
+</div>
+
+</div>
+
+
+<div class="config-box">
+
+<h3 data-i18n="language">
+    3. Idioma
+</h3>
+
+<select
+    id="select-language"
+    onchange="changeLanguage(this.value)">
+
+<option value="pt">
+    🇧🇷 Português
+</option>
+
+<option value="en">
+    🇺🇸 English
+</option>
+
+<option value="es">
+    🇪🇸 Español
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<button
+    class="btn-success"
+    style="font-size:1.05em;padding:15px 50px;"
+    onclick="goToGenerator()"
+    data-i18n="continue">
+
+    Avançar para o preenchimento
+
+</button>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
      GERADOR
 ========================================================= -->
 
 <div id="screen-generator">
 
-    <div class="form-panel">
 
-        <div class="action-bar">
+<div class="form-panel">
 
-            <button
-                class="btn-secondary"
-                onclick="navigateTo('screen-config')">
-                ← Voltar
-            </button>
 
-            <button
-                class="btn-success"
-                onclick="saveCV()">
-                💾 Salvar
-            </button>
+<div class="action-bar">
 
-            <button
-                class="btn-danger"
-                onclick="logout()">
-                Sair
-            </button>
+<button
+    class="btn-secondary"
+    onclick="navigateTo('screen-config')"
+    data-i18n="back">
 
-        </div>
+    ← Voltar
 
+</button>
 
-        <h2>Preencha seus Dados</h2>
+<button
+    class="btn-success"
+    onclick="saveCV()"
+    data-i18n="save">
 
+    💾 Salvar
 
-        <!-- =========================
-             LOCALIZAÇÃO PROFISSIONAL
-        ========================== -->
+</button>
 
-        <h3 class="form-title">
-            1. Objetivo profissional
-        </h3>
+<button
+    class="btn-danger"
+    onclick="logout()"
+    data-i18n="logout">
 
-        <div class="form-group">
+    Sair
 
-            <label>
-                País onde você mora
-            </label>
-
-            <select
-                id="country-live"
-                class="country-select"
-                onchange="updateCountryPreview('country-live','live-country-preview')">
-
-            </select>
-
-            <div
-                id="live-country-preview"
-                class="country-preview">
-            </div>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label>
-                País onde deseja trabalhar
-            </label>
-
-            <select
-                id="country-work"
-                class="country-select"
-                onchange="updateCountryPreview('country-work','work-country-preview')">
-
-            </select>
-
-            <div
-                id="work-country-preview"
-                class="country-preview">
-            </div>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label>
-                Empresa onde deseja trabalhar
-            </label>
-
-            <input
-                type="text"
-                id="empresa"
-                placeholder="Ex.: Google, Microsoft, Nubank..."
-                oninput="updateCV()">
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label>
-                Cargo desejado
-            </label>
-
-            <input
-                type="text"
-                id="vaga"
-                placeholder="Ex.: Desenvolvedor Front-end"
-                oninput="updateCV()">
-
-        </div>
-
-
-        <!-- =========================
-             INFORMAÇÕES PRINCIPAIS
-        ========================== -->
-
-        <h3 class="form-title">
-            2. Informações Principais
-        </h3>
-
-        <div class="form-group">
-
-            <label>
-                Foto de Perfil (Opcional)
-            </label>
-
-            <input
-                type="file"
-                accept="image/*"
-                onchange="previewImage(this)">
-
-        </div>
-
-        <div class="form-group">
-
-            <label>
-                Nome Completo
-            </label>
-
-            <input
-                type="text"
-                id="nome"
-                oninput="updateCV()">
-
-        </div>
-
-
-        <div class="form-row">
-
-            <div class="form-group">
-
-                <label>
-                    E-mail
-                </label>
-
-                <input
-                    type="email"
-                    id="email"
-                    oninput="updateCV()">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Telefone
-                </label>
-
-                <input
-                    type="text"
-                    id="telefone"
-                    oninput="updateCV()">
-
-            </div>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label>
-                Endereço
-            </label>
-
-            <input
-                type="text"
-                id="endereco"
-                oninput="updateCV()">
-
-        </div>
-
-
-        <!-- =========================
-             DADOS PESSOAIS
-        ========================== -->
-
-        <h3 class="form-title">
-            3. Informações Pessoais
-        </h3>
-
-        <div class="form-row">
-
-            <div class="form-group">
-
-                <label>
-                    Data de Nascimento
-                </label>
-
-                <input
-                    type="date"
-                    id="nascimento"
-                    onchange="updateCV()">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Gênero
-                </label>
-
-                <select
-                    id="genero"
-                    onchange="updateCV()">
-
-                    <option value="">
-                        Não informar
-                    </option>
-
-                    <option>
-                        Masculino
-                    </option>
-
-                    <option>
-                        Feminino
-                    </option>
-
-                    <option>
-                        Outro
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <div class="form-row">
-
-            <div class="form-group">
-
-                <label>
-                    Naturalidade
-                </label>
-
-                <input
-                    type="text"
-                    id="naturalidade"
-                    oninput="updateCV()">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Nacionalidade
-                </label>
-
-                <input
-                    type="text"
-                    id="nacionalidade"
-                    oninput="updateCV()">
-
-            </div>
-
-        </div>
-
-
-        <div class="form-row">
-
-            <div class="form-group">
-
-                <label>RG</label>
-
-                <input
-                    type="text"
-                    id="rg"
-                    oninput="updateCV()">
-
-            </div>
-
-            <div class="form-group">
-
-                <label>CPF</label>
-
-                <input
-                    type="text"
-                    id="cpf"
-                    oninput="updateCV()">
-
-            </div>
-
-        </div>
-
-
-        <div class="form-row">
-
-            <div class="form-group">
-
-                <label>
-                    Estado Civil
-                </label>
-
-                <select
-                    id="estado_civil"
-                    onchange="updateCV()">
-
-                    <option value="">
-                        Selecione...
-                    </option>
-
-                    <option>
-                        Solteiro(a)
-                    </option>
-
-                    <option>
-                        Casado(a)
-                    </option>
-
-                    <option>
-                        Divorciado(a)
-                    </option>
-
-                    <option>
-                        Viúvo(a)
-                    </option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>
-                    Filhos?
-                </label>
-
-                <select
-                    id="filhos"
-                    onchange="updateCV()">
-
-                    <option value="">
-                        Selecione...
-                    </option>
-
-                    <option>
-                        Não
-                    </option>
-
-                    <option>
-                        Sim
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label>
-                Filiação
-            </label>
-
-            <input
-                type="text"
-                id="filiacao"
-                oninput="updateCV()">
-
-        </div>
-        
-        <!-- =========================
-             RESUMO
-        ========================== -->
-
-        <h3 class="form-title">
-            4. Resumo Profissional
-        </h3>
-
-        <div class="form-group">
-
-            <textarea
-                id="resumo"
-                rows="6"
-                placeholder="Descreva sua experiência, competências e objetivos profissionais..."
-                oninput="updateCV()">
-            </textarea>
-
-        </div>
-
-
-        <!-- =========================
-             EXPERIÊNCIA
-        ========================== -->
-
-        <h3 class="form-title">
-            5. Experiência Profissional
-        </h3>
-
-        <div id="experiencias"></div>
-
-        <button
-            type="button"
-            class="btn-primary"
-            onclick="addExperience()">
-            + Adicionar experiência
-        </button>
-
-
-        <!-- =========================
-             FORMAÇÃO
-        ========================== -->
-
-        <h3 class="form-title">
-            6. Formação Acadêmica
-        </h3>
-
-        <div id="formacoes"></div>
-
-        <button
-            type="button"
-            class="btn-primary"
-            onclick="addEducation()">
-            + Adicionar formação
-        </button>
-
-
-        <!-- =========================
-             HABILIDADES
-        ========================== -->
-
-        <h3 class="form-title">
-            7. Habilidades
-        </h3>
-
-        <div class="form-group">
-
-            <textarea
-                id="habilidades"
-                rows="4"
-                placeholder="Ex.: JavaScript, liderança, comunicação, Excel..."
-                oninput="updateCV()">
-            </textarea>
-
-        </div>
-
-
-        <!-- =========================
-             IDIOMAS
-        ========================== -->
-
-        <h3 class="form-title">
-            8. Idiomas
-        </h3>
-
-        <div class="form-group">
-
-            <textarea
-                id="idiomas"
-                rows="4"
-                placeholder="Ex.: Português — Nativo&#10;Inglês — Avançado"
-                oninput="updateCV()">
-            </textarea>
-
-        </div>
-
-
-        <button
-            class="btn-success"
-            style="width:100%;margin-top:15px;"
-            onclick="downloadPDF()">
-            📄 Baixar currículo em PDF
-        </button>
-
-    </div>
-
-
-    <!-- =========================
-         PREVIEW
-    ========================== -->
-
-    <div id="cv-preview-container">
-
-        <div id="cv-output" class="tpl-modern">
-
-            <div class="cv-header">
-
-                <img
-                    id="cv-photo"
-                    class="cv-photo"
-                    alt="Foto de perfil">
-
-                <div>
-
-                    <h1 id="cv-name">
-                        Seu Nome
-                    </h1>
-
-                    <h2 id="cv-job">
-                        Cargo desejado
-                    </h2>
-
-                    <div class="cv-contact">
-
-                        <span id="cv-email">
-                            E-mail
-                        </span>
-
-                        <span id="cv-phone">
-                            Telefone
-                        </span>
-
-                        <span id="cv-address">
-                            Endereço
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="cv-section"
-                id="cv-objective-section">
-
-                <h3>
-                    Objetivo profissional
-                </h3>
-
-                <div class="cv-grid">
-
-                    <div>
-                        <strong>Empresa:</strong>
-                        <span id="cv-company"></span>
-                    </div>
-
-                    <div>
-                        <strong>País de residência:</strong>
-                        <span id="cv-live-country"></span>
-                    </div>
-
-                    <div>
-                        <strong>País desejado:</strong>
-                        <span id="cv-work-country"></span>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="cv-section"
-                id="cv-summary-section">
-
-                <h3>
-                    Resumo profissional
-                </h3>
-
-                <div
-                    id="cv-summary"
-                    class="cv-text-block">
-                </div>
-
-            </div>
-
-
-            <div
-                class="cv-section"
-                id="cv-experience-section">
-
-                <h3>
-                    Experiência profissional
-                </h3>
-
-                <div id="cv-experience"></div>
-
-            </div>
-
-
-            <div
-                class="cv-section"
-                id="cv-education-section">
-
-                <h3>
-                    Formação acadêmica
-                </h3>
-
-                <div id="cv-education"></div>
-
-            </div>
-
-
-            <div
-                class="cv-section"
-                id="cv-skills-section">
-
-                <h3>
-                    Habilidades
-                </h3>
-
-                <div
-                    id="cv-skills"
-                    class="cv-text-block">
-                </div>
-
-            </div>
-
-
-            <div
-                class="cv-section"
-                id="cv-languages-section">
-
-                <h3>
-                    Idiomas
-                </h3>
-
-                <div
-                    id="cv-languages"
-                    class="cv-text-block">
-                </div>
-
-            </div>
-
-
-            <div
-                class="cv-section"
-                id="cv-personal-section">
-
-                <h3>
-                    Informações pessoais
-                </h3>
-
-                <div
-                    id="cv-personal"
-                    class="cv-grid">
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
+</button>
 
 </div>
-    <!-- =========================================================
+
+
+<h2 data-i18n="formTitle">
+    Preencha seus Dados
+</h2>
+
+
+<!-- OBJETIVO -->
+
+<h3
+    class="form-title"
+    data-i18n="objectiveSection">
+
+    1. Objetivo profissional
+
+</h3>
+
+
+<div class="form-group">
+
+<label data-i18n="countryLive">
+    País onde você mora
+</label>
+
+<select
+    id="country-live"
+    onchange="updateCountryPreview(
+        'country-live',
+        'live-country-preview'
+    )">
+</select>
+
+<div
+    id="live-country-preview"
+    class="country-preview">
+</div>
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="countryWork">
+    País onde deseja trabalhar
+</label>
+
+<select
+    id="country-work"
+    onchange="updateCountryPreview(
+        'country-work',
+        'work-country-preview'
+    )">
+</select>
+
+<div
+    id="work-country-preview"
+    class="country-preview">
+</div>
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="desiredCompany">
+    Empresa onde deseja trabalhar
+</label>
+
+<input
+    type="text"
+    id="empresa"
+    placeholder="Ex.: Google, Microsoft, Nubank..."
+    data-placeholder="companyPlaceholder"
+    oninput="updateCV()">
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="desiredPosition">
+    Cargo desejado
+</label>
+
+<input
+    type="text"
+    id="vaga"
+    placeholder="Ex.: Desenvolvedor Front-end"
+    data-placeholder="positionPlaceholder"
+    oninput="updateCV()">
+
+</div>
+
+
+<!-- INFORMAÇÕES -->
+
+<h3
+    class="form-title"
+    data-i18n="mainInfo">
+
+    2. Informações Principais
+
+</h3>
+
+
+<div class="form-group">
+
+<label data-i18n="profilePhoto">
+    Foto de Perfil (Opcional)
+</label>
+
+<input
+    type="file"
+    accept="image/*"
+    onchange="previewImage(this)">
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="fullName">
+    Nome Completo
+</label>
+
+<input
+    type="text"
+    id="nome"
+    oninput="updateCV()">
+
+</div>
+
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label data-i18n="email">
+    E-mail
+</label>
+
+<input
+    type="email"
+    id="email"
+    oninput="updateCV()">
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="phone">
+    Telefone
+</label>
+
+<input
+    type="text"
+    id="telefone"
+    oninput="updateCV()">
+
+</div>
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="address">
+    Endereço
+</label>
+
+<input
+    type="text"
+    id="endereco"
+    oninput="updateCV()">
+
+</div>
+
+
+<!-- PESSOAL -->
+
+<h3
+    class="form-title"
+    data-i18n="personalInfo">
+
+    3. Informações Pessoais
+
+</h3>
+
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label data-i18n="birthDate">
+    Data de Nascimento
+</label>
+
+<input
+    type="date"
+    id="nascimento"
+    onchange="updateCV()">
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="gender">
+    Gênero
+</label>
+
+<select
+    id="genero"
+    onchange="updateCV()">
+
+<option value="" data-i18n="notInform">
+    Não informar
+</option>
+
+<option value="Masculino" data-i18n="male">
+    Masculino
+</option>
+
+<option value="Feminino" data-i18n="female">
+    Feminino
+</option>
+
+<option value="Outro" data-i18n="other">
+    Outro
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label data-i18n="birthPlace">
+    Naturalidade
+</label>
+
+<input
+    type="text"
+    id="naturalidade"
+    oninput="updateCV()">
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="nationality">
+    Nacionalidade
+</label>
+
+<input
+    type="text"
+    id="nacionalidade"
+    oninput="updateCV()">
+
+</div>
+
+</div>
+
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label data-i18n="maritalStatus">
+    Estado Civil
+</label>
+
+<select
+    id="estado_civil"
+    onchange="updateCV()">
+
+<option value="" data-i18n="select">
+    Selecione...
+</option>
+
+<option data-i18n="single">
+    Solteiro(a)
+</option>
+
+<option data-i18n="married">
+    Casado(a)
+</option>
+
+<option data-i18n="divorced">
+    Divorciado(a)
+</option>
+
+<option data-i18n="widowed">
+    Viúvo(a)
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="children">
+    Filhos?
+</label>
+
+<select
+    id="filhos"
+    onchange="updateCV()">
+
+<option value="" data-i18n="select">
+    Selecione...
+</option>
+
+<option data-i18n="no">
+    Não
+</option>
+
+<option data-i18n="yes">
+    Sim
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<div class="form-group">
+
+<label data-i18n="parents">
+    Filiação
+</label>
+
+<input
+    type="text"
+    id="filiacao"
+    oninput="updateCV()">
+
+</div>
+
+
+<!-- RESUMO -->
+
+<h3
+    class="form-title"
+    data-i18n="summarySection">
+
+    4. Resumo Profissional
+
+</h3>
+
+<div class="form-group">
+
+<textarea
+    id="resumo"
+    rows="6"
+    data-placeholder="summaryPlaceholder"
+    placeholder="Descreva sua experiência, competências e objetivos profissionais..."
+    oninput="updateCV()"></textarea>
+
+    </div>
+    
+<!-- EXPERIÊNCIA -->
+
+<h3
+    class="form-title"
+    data-i18n="experienceSection">
+
+    5. Experiência Profissional
+
+</h3>
+
+<div id="experiencias"></div>
+
+<button
+    type="button"
+    class="btn-primary"
+    onclick="addExperience()"
+    data-i18n="addExperience">
+
+    + Adicionar experiência
+
+</button>
+
+
+<!-- FORMAÇÃO -->
+
+<h3
+    class="form-title"
+    data-i18n="educationSection">
+
+    6. Formação Acadêmica
+
+</h3>
+
+<div id="formacoes"></div>
+
+<button
+    type="button"
+    class="btn-primary"
+    onclick="addEducation()"
+    data-i18n="addEducation">
+
+    + Adicionar formação
+
+</button>
+
+
+<!-- HABILIDADES -->
+
+<h3
+    class="form-title"
+    data-i18n="skillsSection">
+
+    7. Habilidades
+
+</h3>
+
+<div class="form-group">
+
+<textarea
+    id="habilidades"
+    rows="4"
+    data-placeholder="skillsPlaceholder"
+    placeholder="Ex.: JavaScript, liderança, comunicação, Excel..."
+    oninput="updateCV()"></textarea>
+
+</div>
+
+
+<!-- IDIOMAS -->
+
+<h3
+    class="form-title"
+    data-i18n="languagesSection">
+
+    8. Idiomas
+
+</h3>
+
+<div class="form-group">
+
+<textarea
+    id="idiomas"
+    rows="4"
+    data-placeholder="languagesPlaceholder"
+    placeholder="Ex.: Português — Nativo&#10;Inglês — Avançado"
+    oninput="updateCV()"></textarea>
+
+</div>
+
+
+<button
+    class="btn-success"
+    style="width:100%;margin-top:15px;"
+    onclick="downloadPDF()"
+    data-i18n="downloadPDF">
+
+    📄 Baixar currículo em PDF
+
+</button>
+
+</div>
+
+
+<!-- =========================================================
+     PREVIEW
+========================================================= -->
+
+<div id="cv-preview-container">
+
+<div
+    id="cv-output"
+    class="tpl-modern">
+
+
+<div class="cv-header">
+
+<img
+    id="cv-photo"
+    class="cv-photo"
+    alt="Foto de perfil">
+
+
+<div>
+
+<h1 id="cv-name">
+    Seu Nome
+</h1>
+
+<h2 id="cv-job">
+    Cargo desejado
+</h2>
+
+<div class="cv-contact">
+
+<span id="cv-email"></span>
+
+<span id="cv-phone"></span>
+
+<span id="cv-address"></span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div
+    class="cv-section"
+    id="cv-objective-section">
+
+<h3 data-cv="objective">
+    Objetivo profissional
+</h3>
+
+<div class="cv-grid">
+
+<div>
+<strong data-cv="company">
+    Empresa:
+</strong>
+
+<span id="cv-company"></span>
+
+</div>
+
+
+<div>
+
+<strong data-cv="residenceCountry">
+    País de residência:
+</strong>
+
+<span id="cv-live-country"></span>
+
+</div>
+
+
+<div>
+
+<strong data-cv="workCountry">
+    País desejado:
+</strong>
+
+<span id="cv-work-country"></span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div
+    class="cv-section"
+    id="cv-summary-section">
+
+<h3 data-cv="summary">
+    Resumo profissional
+</h3>
+
+<div
+    id="cv-summary"
+    class="cv-text-block">
+</div>
+
+</div>
+
+
+<div
+    class="cv-section"
+    id="cv-experience-section">
+
+<h3 data-cv="experience">
+    Experiência profissional
+</h3>
+
+<div id="cv-experience"></div>
+
+</div>
+
+
+<div
+    class="cv-section"
+    id="cv-education-section">
+
+<h3 data-cv="education">
+    Formação acadêmica
+</h3>
+
+<div id="cv-education"></div>
+
+</div>
+
+
+<div
+    class="cv-section"
+    id="cv-skills-section">
+
+<h3 data-cv="skills">
+    Habilidades
+</h3>
+
+<div
+    id="cv-skills"
+    class="cv-text-block">
+</div>
+
+</div>
+
+
+<div
+    class="cv-section"
+    id="cv-languages-section">
+
+<h3 data-cv="languages">
+    Idiomas
+</h3>
+
+<div
+    id="cv-languages"
+    class="cv-text-block">
+</div>
+
+</div>
+
+
+<div
+    class="cv-section"
+    id="cv-personal-section">
+
+<h3 data-cv="personal">
+    Informações pessoais
+</h3>
+
+<div
+    id="cv-personal"
+    class="cv-grid">
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+<!-- =========================================================
      TERMOS DE USO
 ========================================================= -->
 
@@ -1811,186 +1995,901 @@
     id="terms-modal"
     class="modal">
 
-    <div class="modal-content">
+<div class="modal-content">
 
-        <h2>Termos de Uso — JobNow</h2>
+<h2 data-i18n="termsTitle">
+    Termos de Uso — JobNow
+</h2>
 
-        <p>
-            Ao utilizar o JobNow, você concorda com estes Termos de Uso.
-        </p>
+<h3 data-i18n="terms1Title">
+    1. Utilização da plataforma
+</h3>
 
-        <h3>1. Utilização da plataforma</h3>
+<p data-i18n="terms1">
+    O JobNow disponibiliza ferramentas para criação,
+    edição e exportação de currículos profissionais.
+    O usuário é responsável pelas informações inseridas
+    na plataforma.
+</p>
 
-        <p>
-            O JobNow disponibiliza ferramentas para criação,
-            edição e exportação de currículos profissionais.
-            O usuário é responsável pelas informações inseridas
-            na plataforma.
-        </p>
+<h3 data-i18n="terms2Title">
+    2. Conta do usuário
+</h3>
 
-        <h3>2. Conta do usuário</h3>
+<p data-i18n="terms2">
+    O usuário deve fornecer informações verdadeiras,
+    manter suas credenciais protegidas e não utilizar
+    a conta de terceiros.
+</p>
 
-        <p>
-            O usuário deve fornecer informações verdadeiras,
-            manter suas credenciais protegidas e não utilizar
-            a conta de terceiros.
-        </p>
+<h3 data-i18n="terms3Title">
+    3. Currículos
+</h3>
 
-        <h3>3. Currículos</h3>
+<p data-i18n="terms3">
+    O usuário é responsável pelo conteúdo de seu currículo.
+</p>
 
-        <p>
-            O usuário é responsável pelo conteúdo de seu currículo,
-            incluindo informações pessoais, profissionais,
-            acadêmicas e de contato.
-        </p>
+<h3 data-i18n="terms4Title">
+    4. Uso permitido
+</h3>
 
-        <h3>4. Uso permitido</h3>
+<p data-i18n="terms4">
+    A plataforma não deve ser utilizada para fraude,
+    falsificação de documentos, impersonação ou qualquer
+    atividade ilegal.
+</p>
 
-        <p>
-            A plataforma não deve ser utilizada para fraude,
-            falsificação de documentos, impersonação ou qualquer
-            atividade ilegal.
-        </p>
+<div class="modal-footer">
 
-        <h3>5. Alterações</h3>
+<button
+    class="btn-primary"
+    onclick="closeModal('terms-modal')"
+    data-i18n="close">
 
-        <p>
-            O JobNow poderá atualizar suas funcionalidades e estes
-            termos quando necessário.
-        </p>
+    Fechar
 
-        <div class="modal-footer">
+</button>
 
-            <button
-                class="btn-primary"
-                onclick="closeModal('terms-modal')">
-                Fechar
-            </button>
+</div>
 
-        </div>
-
-    </div>
+</div>
 
 </div>
 
 
 <!-- =========================================================
-     POLÍTICA DE PRIVACIDADE
+     PRIVACIDADE
 ========================================================= -->
 
 <div
     id="privacy-modal"
     class="modal">
 
-    <div class="modal-content">
+<div class="modal-content">
 
-        <h2>Política de Privacidade — JobNow</h2>
+<h2 data-i18n="privacyTitle">
+    Política de Privacidade — JobNow
+</h2>
 
-        <p>
-            Esta política explica como os dados fornecidos pelo
-            usuário são tratados nesta versão da plataforma.
-        </p>
+<h3 data-i18n="privacy1Title">
+    1. Dados coletados
+</h3>
 
-        <h3>1. Dados coletados</h3>
+<p data-i18n="privacy1">
+    O JobNow pode armazenar nome, e-mail, senha,
+    informações profissionais e informações do currículo.
+</p>
 
-        <p>
-            O JobNow pode armazenar nome, e-mail, senha,
-            informações profissionais, localização profissional,
-            currículo e demais informações fornecidas pelo usuário.
-        </p>
+<h3 data-i18n="privacy2Title">
+    2. Armazenamento
+</h3>
 
-        <h3>2. Armazenamento</h3>
+<p data-i18n="privacy2">
+    Nesta versão de demonstração, os dados são armazenados
+    localmente no navegador por meio do localStorage.
+</p>
 
-        <p>
-            Nesta versão de demonstração, os dados são armazenados
-            localmente no navegador por meio do recurso
-            <strong>localStorage</strong>.
-        </p>
+<h3 data-i18n="privacy3Title">
+    3. Uso dos dados
+</h3>
 
-        <h3>3. Uso dos dados</h3>
+<p data-i18n="privacy3">
+    Os dados são utilizados para permitir o funcionamento
+    do gerador de currículos e manter as preferências
+    do usuário.
+</p>
 
-        <p>
-            Os dados são utilizados para permitir o funcionamento
-            do gerador de currículos e manter as preferências
-            do usuário.
-        </p>
+<h3 data-i18n="privacy4Title">
+    4. Segurança
+</h3>
 
-        <h3>4. Senhas</h3>
+<p data-i18n="privacy4">
+    Esta versão é um protótipo. Para produção, senhas devem
+    ser protegidas por um sistema de autenticação no servidor.
+</p>
 
-        <p>
-            Esta versão é um protótipo. Para produção, senhas não
-            devem ser armazenadas diretamente no navegador.
-            Um sistema real deve utilizar servidor, banco de dados,
-            HTTPS e armazenamento seguro com hash de senha.
-        </p>
+<div class="modal-footer">
 
-        <h3>5. Exclusão</h3>
+<button
+    class="btn-primary"
+    onclick="closeModal('privacy-modal')"
+    data-i18n="close">
 
-        <p>
-            O usuário pode apagar os dados locais removendo os
-            dados do site nas configurações do navegador.
-        </p>
+    Fechar
 
-        <div class="modal-footer">
-
-            <button
-                class="btn-primary"
-                onclick="closeModal('privacy-modal')">
-                Fechar
-            </button>
-
-        </div>
-
-    </div>
+</button>
 
 </div>
 
+</div>
+
+    </div>
     <script>
 
 /* =========================================================
-   DADOS DOS PAÍSES
+   TRADUÇÕES
+========================================================= */
+
+const translations = {
+
+pt: {
+
+    homeDescription:
+        "Quer se destacar no mercado de trabalho? O JobNow ajuda você a criar um currículo profissional personalizado para o país e para a empresa onde deseja trabalhar.",
+
+    createAccount:"Criar minha conta",
+    alreadyAccount:"Já tenho uma conta",
+
+    loginTab:"Entrar",
+    registerTab:"Criar conta",
+
+    loginTitle:"Entrar no JobNow",
+    registerTitle:"Criar sua conta",
+
+    email:"E-mail",
+    password:"Senha",
+    fullName:"Nome completo",
+    confirmPassword:"Confirmar senha",
+
+    passwordHelp:
+        "A senha deve possuir pelo menos 8 caracteres.",
+
+    acceptText:"Li e aceito os",
+    termsShort:"Termos de Uso",
+    privacyShort:"Política de Privacidade",
+    and:"e a",
+
+    loginButton:"Entrar",
+
+    back:"← Voltar",
+    account:"Conta:",
+    logout:"Sair",
+
+    configTitle:"Configure seu currículo",
+    configDescription:
+        "Escolha o modelo, a aparência e o idioma.",
+
+    selectModel:"1. Selecione um Modelo",
+
+    modern:"Moderno",
+    modernDescription:
+        "Layout corporativo ideal para tecnologia, finanças e mercado executivo.",
+
+    minimal:"Minimalista",
+    minimalDescription:
+        "Visual clean e direto ao ponto.",
+
+    elegant:"Elegante",
+    elegantDescription:
+        "Estética clássica e tipografia refinada.",
+
+    highlightColor:"2. Cor de Destaque",
+    language:"3. Idioma",
+
+    continue:"Avançar para o preenchimento",
+
+    formTitle:"Preencha seus Dados",
+
+    objectiveSection:"1. Objetivo profissional",
+
+    countryLive:"País onde você mora",
+    countryWork:"País onde deseja trabalhar",
+
+    desiredCompany:
+        "Empresa onde deseja trabalhar",
+
+    desiredPosition:
+        "Cargo desejado",
+
+    companyPlaceholder:
+        "Ex.: Google, Microsoft, Nubank...",
+
+    positionPlaceholder:
+        "Ex.: Desenvolvedor Front-end",
+
+    mainInfo:"2. Informações Principais",
+
+    profilePhoto:"Foto de Perfil (Opcional)",
+    phone:"Telefone",
+    address:"Endereço",
+
+    personalInfo:"3. Informações Pessoais",
+    birthDate:"Data de Nascimento",
+    gender:"Gênero",
+
+    notInform:"Não informar",
+    male:"Masculino",
+    female:"Feminino",
+    other:"Outro",
+
+    birthPlace:"Naturalidade",
+    nationality:"Nacionalidade",
+
+    maritalStatus:"Estado Civil",
+    select:"Selecione...",
+    single:"Solteiro(a)",
+    married:"Casado(a)",
+    divorced:"Divorciado(a)",
+    widowed:"Viúvo(a)",
+
+    children:"Filhos?",
+    no:"Não",
+    yes:"Sim",
+
+    parents:"Filiação",
+
+    summarySection:"4. Resumo Profissional",
+
+    summaryPlaceholder:
+        "Descreva sua experiência, competências e objetivos profissionais...",
+
+    experienceSection:
+        "5. Experiência Profissional",
+
+    addExperience:
+        "+ Adicionar experiência",
+
+    educationSection:
+        "6. Formação Acadêmica",
+
+    addEducation:
+        "+ Adicionar formação",
+
+    skillsSection:"7. Habilidades",
+
+    skillsPlaceholder:
+        "Ex.: JavaScript, liderança, comunicação, Excel...",
+
+    languagesSection:"8. Idiomas",
+
+    languagesPlaceholder:
+        "Ex.: Português — Nativo\nInglês — Avançado",
+
+    save:"💾 Salvar",
+
+    downloadPDF:
+        "📄 Baixar currículo em PDF",
+
+    objective:"Objetivo profissional",
+    company:"Empresa:",
+    residenceCountry:"País de residência:",
+    workCountry:"País desejado:",
+    summary:"Resumo profissional",
+    experience:"Experiência profissional",
+    education:"Formação acadêmica",
+    skills:"Habilidades",
+    languages:"Idiomas",
+    personal:"Informações pessoais",
+
+    termsTitle:"Termos de Uso — JobNow",
+
+    terms1Title:"1. Utilização da plataforma",
+    terms1:
+        "O JobNow disponibiliza ferramentas para criação, edição e exportação de currículos profissionais. O usuário é responsável pelas informações inseridas na plataforma.",
+
+    terms2Title:"2. Conta do usuário",
+    terms2:
+        "O usuário deve fornecer informações verdadeiras, manter suas credenciais protegidas e não utilizar a conta de terceiros.",
+
+    terms3Title:"3. Currículos",
+    terms3:
+        "O usuário é responsável pelo conteúdo de seu currículo.",
+
+    terms4Title:"4. Uso permitido",
+    terms4:
+        "A plataforma não deve ser utilizada para fraude, falsificação de documentos, impersonação ou qualquer atividade ilegal.",
+
+    privacyTitle:"Política de Privacidade — JobNow",
+
+    privacy1Title:"1. Dados coletados",
+    privacy1:
+        "O JobNow pode armazenar nome, e-mail, senha, informações profissionais e informações do currículo.",
+
+    privacy2Title:"2. Armazenamento",
+    privacy2:
+        "Nesta versão de demonstração, os dados são armazenados localmente no navegador por meio do localStorage.",
+
+    privacy3Title:"3. Uso dos dados",
+    privacy3:
+        "Os dados são utilizados para permitir o funcionamento do gerador de currículos e manter as preferências do usuário.",
+
+    privacy4Title:"4. Segurança",
+    privacy4:
+        "Esta versão é um protótipo. Para produção, senhas devem ser protegidas por um sistema de autenticação no servidor.",
+
+    close:"Fechar"
+
+    /* =========================================================
+   ENGLISH
+========================================================= */
+
+en: {
+
+    homeDescription:
+        "Want to stand out in the job market? JobNow helps you create a professional resume customized for the country and company where you want to work.",
+
+    createAccount:"Create my account",
+    alreadyAccount:"I already have an account",
+
+    loginTab:"Log in",
+    registerTab:"Create account",
+
+    loginTitle:"Log in to JobNow",
+    registerTitle:"Create your account",
+
+    email:"Email",
+    password:"Password",
+    fullName:"Full name",
+    confirmPassword:"Confirm password",
+
+    passwordHelp:
+        "Your password must contain at least 8 characters.",
+
+    acceptText:"I have read and agree to the",
+    termsShort:"Terms of Use",
+    privacyShort:"Privacy Policy",
+    and:"and the",
+
+    loginButton:"Log in",
+
+    back:"← Back",
+    account:"Account:",
+    logout:"Log out",
+
+    configTitle:"Configure your resume",
+    configDescription:
+        "Choose the template, appearance and language.",
+
+    selectModel:"1. Select a Template",
+
+    modern:"Modern",
+    modernDescription:
+        "Corporate layout ideal for technology, finance and executive positions.",
+
+    minimal:"Minimalist",
+    minimalDescription:
+        "Clean and straightforward design.",
+
+    elegant:"Elegant",
+    elegantDescription:
+        "Classic aesthetic with refined typography.",
+
+    highlightColor:"2. Highlight Color",
+    language:"3. Language",
+
+    continue:"Continue to resume builder",
+
+    formTitle:"Enter Your Information",
+
+    objectiveSection:"1. Career Objective",
+
+    countryLive:"Country where you live",
+    countryWork:"Country where you want to work",
+
+    desiredCompany:
+        "Company where you want to work",
+
+    desiredPosition:
+        "Desired position",
+
+    companyPlaceholder:
+        "E.g.: Google, Microsoft, Apple...",
+
+    positionPlaceholder:
+        "E.g.: Front-end Developer",
+
+    mainInfo:"2. Main Information",
+
+    profilePhoto:"Profile Photo (Optional)",
+    phone:"Phone",
+    address:"Address",
+
+    personalInfo:"3. Personal Information",
+    birthDate:"Date of Birth",
+    gender:"Gender",
+
+    notInform:"Prefer not to say",
+    male:"Male",
+    female:"Female",
+    other:"Other",
+
+    birthPlace:"Place of Birth",
+    nationality:"Nationality",
+
+    maritalStatus:"Marital Status",
+    select:"Select...",
+    single:"Single",
+    married:"Married",
+    divorced:"Divorced",
+    widowed:"Widowed",
+
+    children:"Children?",
+    no:"No",
+    yes:"Yes",
+
+    parents:"Parents",
+
+    summarySection:"4. Professional Summary",
+
+    summaryPlaceholder:
+        "Describe your experience, skills and career goals...",
+
+    experienceSection:
+        "5. Professional Experience",
+
+    addExperience:
+        "+ Add experience",
+
+    educationSection:
+        "6. Education",
+
+    addEducation:
+        "+ Add education",
+
+    skillsSection:"7. Skills",
+
+    skillsPlaceholder:
+        "E.g.: JavaScript, leadership, communication, Excel...",
+
+    languagesSection:"8. Languages",
+
+    languagesPlaceholder:
+        "E.g.: English — Native\nSpanish — Advanced",
+
+    save:"💾 Save",
+
+    downloadPDF:
+        "📄 Download resume as PDF",
+
+    objective:"Career objective",
+    company:"Company:",
+    residenceCountry:"Country of residence:",
+    workCountry:"Desired country:",
+    summary:"Professional summary",
+    experience:"Professional experience",
+    education:"Education",
+    skills:"Skills",
+    languages:"Languages",
+    personal:"Personal information",
+
+    termsTitle:"Terms of Use — JobNow",
+
+    terms1Title:"1. Platform use",
+    terms1:
+        "JobNow provides tools for creating, editing and exporting professional resumes. Users are responsible for the information they enter.",
+
+    terms2Title:"2. User account",
+    terms2:
+        "Users must provide accurate information, protect their credentials and must not use another person's account.",
+
+    terms3Title:"3. Resumes",
+    terms3:
+        "Users are responsible for the content of their resumes.",
+
+    terms4Title:"4. Permitted use",
+    terms4:
+        "The platform must not be used for fraud, document forgery, impersonation or any illegal activity.",
+
+    privacyTitle:"Privacy Policy — JobNow",
+
+    privacy1Title:"1. Collected data",
+    privacy1:
+        "JobNow may store your name, email, password, professional information and resume information.",
+
+    privacy2Title:"2. Storage",
+    privacy2:
+        "In this demonstration version, data is stored locally in your browser using localStorage.",
+
+    privacy3Title:"3. Use of data",
+    privacy3:
+        "Data is used to operate the resume builder and preserve user preferences.",
+
+    privacy4Title:"4. Security",
+    privacy4:
+        "This version is a prototype. In production, passwords should be protected through a server-side authentication system.",
+
+    close:"Close"
+
+},
+        /* =========================================================
+   ESPAÑOL
+========================================================= */
+
+es: {
+
+    homeDescription:
+        "¿Quieres destacar en el mercado laboral? JobNow te ayuda a crear un currículum profesional personalizado para el país y la empresa donde deseas trabajar.",
+
+    createAccount:"Crear mi cuenta",
+    alreadyAccount:"Ya tengo una cuenta",
+
+    loginTab:"Iniciar sesión",
+    registerTab:"Crear cuenta",
+
+    loginTitle:"Iniciar sesión en JobNow",
+    registerTitle:"Crear tu cuenta",
+
+    email:"Correo electrónico",
+    password:"Contraseña",
+    fullName:"Nombre completo",
+    confirmPassword:"Confirmar contraseña",
+
+    passwordHelp:
+        "La contraseña debe tener al menos 8 caracteres.",
+
+    acceptText:"He leído y acepto los",
+    termsShort:"Términos de Uso",
+    privacyShort:"Política de Privacidad",
+    and:"y la",
+
+    loginButton:"Iniciar sesión",
+
+    back:"← Volver",
+    account:"Cuenta:",
+    logout:"Cerrar sesión",
+
+    configTitle:"Configura tu currículum",
+    configDescription:
+        "Elige la plantilla, el diseño y el idioma.",
+
+    selectModel:"1. Selecciona una plantilla",
+
+    modern:"Moderno",
+    modernDescription:
+        "Diseño corporativo ideal para tecnología, finanzas y puestos ejecutivos.",
+
+    minimal:"Minimalista",
+    minimalDescription:
+        "Diseño limpio y directo.",
+
+    elegant:"Elegante",
+    elegantDescription:
+        "Estética clásica con tipografía refinada.",
+
+    highlightColor:"2. Color destacado",
+    language:"3. Idioma",
+
+    continue:"Continuar al creador de currículum",
+
+    formTitle:"Completa tus datos",
+
+    objectiveSection:"1. Objetivo profesional",
+
+    countryLive:"País donde vives",
+    countryWork:"País donde deseas trabajar",
+
+    desiredCompany:
+        "Empresa donde deseas trabajar",
+
+    desiredPosition:
+        "Puesto deseado",
+
+    companyPlaceholder:
+        "Ej.: Google, Microsoft, Telefónica...",
+
+    positionPlaceholder:
+        "Ej.: Desarrollador Front-end",
+
+    mainInfo:"2. Información principal",
+
+    profilePhoto:"Foto de perfil (Opcional)",
+    phone:"Teléfono",
+    address:"Dirección",
+
+    personalInfo:"3. Información personal",
+    birthDate:"Fecha de nacimiento",
+    gender:"Género",
+
+    notInform:"Prefiero no informar",
+    male:"Masculino",
+    female:"Femenino",
+    other:"Otro",
+
+    birthPlace:"Lugar de nacimiento",
+    nationality:"Nacionalidad",
+
+    maritalStatus:"Estado civil",
+    select:"Selecciona...",
+    single:"Soltero(a)",
+    married:"Casado(a)",
+    divorced:"Divorciado(a)",
+    widowed:"Viudo(a)",
+
+    children:"¿Hijos?",
+    no:"No",
+    yes:"Sí",
+
+    parents:"Padres",
+
+    summarySection:"4. Resumen profesional",
+
+    summaryPlaceholder:
+        "Describe tu experiencia, habilidades y objetivos profesionales...",
+
+    experienceSection:
+        "5. Experiencia profesional",
+
+    addExperience:
+        "+ Añadir experiencia",
+
+    educationSection:
+        "6. Formación académica",
+
+    addEducation:
+        "+ Añadir formación",
+
+    skillsSection:"7. Habilidades",
+
+    skillsPlaceholder:
+        "Ej.: JavaScript, liderazgo, comunicación, Excel...",
+
+    languagesSection:"8. Idiomas",
+
+    languagesPlaceholder:
+        "Ej.: Español — Nativo\nInglés — Avanzado",
+
+    save:"💾 Guardar",
+
+    downloadPDF:
+        "📄 Descargar currículum en PDF",
+
+    objective:"Objetivo profesional",
+    company:"Empresa:",
+    residenceCountry:"País de residencia:",
+    workCountry:"País deseado:",
+    summary:"Resumen profesional",
+    experience:"Experiencia profesional",
+    education:"Formación académica",
+    skills:"Habilidades",
+    languages:"Idiomas",
+    personal:"Información personal",
+
+    termsTitle:"Términos de Uso — JobNow",
+
+    terms1Title:"1. Uso de la plataforma",
+    terms1:
+        "JobNow proporciona herramientas para crear, editar y exportar currículums profesionales. El usuario es responsable de la información introducida.",
+
+    terms2Title:"2. Cuenta del usuario",
+    terms2:
+        "El usuario debe proporcionar información verdadera, proteger sus credenciales y no utilizar la cuenta de otra persona.",
+
+    terms3Title:"3. Currículums",
+    terms3:
+        "El usuario es responsable del contenido de su currículum.",
+
+    terms4Title:"4. Uso permitido",
+    terms4:
+        "La plataforma no debe utilizarse para fraude, falsificación de documentos, suplantación de identidad o actividades ilegales.",
+
+    privacyTitle:"Política de Privacidad — JobNow",
+
+    privacy1Title:"1. Datos recopilados",
+    privacy1:
+        "JobNow puede almacenar tu nombre, correo electrónico, contraseña, información profesional e información del currículum.",
+
+    privacy2Title:"2. Almacenamiento",
+    privacy2:
+        "En esta versión de demostración, los datos se almacenan localmente en el navegador mediante localStorage.",
+
+    privacy3Title:"3. Uso de los datos",
+    privacy3:
+        "Los datos se utilizan para permitir el funcionamiento del creador de currículums y guardar las preferencias del usuario.",
+
+    privacy4Title:"4. Seguridad",
+    privacy4:
+        "Esta versión es un prototipo. En producción, las contraseñas deben protegerse mediante un sistema de autenticación en el servidor.",
+
+    close:"Cerrar"
+
+}
+
+};
+
+        /* =========================================================
+   PAÍSES
 ========================================================= */
 
 const countries = [
-    { code:"BR", flag:"🇧🇷", name:"Brasil" },
-    { code:"US", flag:"🇺🇸", name:"Estados Unidos" },
-    { code:"CA", flag:"🇨🇦", name:"Canadá" },
-    { code:"MX", flag:"🇲🇽", name:"México" },
-    { code:"AR", flag:"🇦🇷", name:"Argentina" },
-    { code:"CL", flag:"🇨🇱", name:"Chile" },
-    { code:"CO", flag:"🇨🇴", name:"Colômbia" },
-    { code:"PE", flag:"🇵🇪", name:"Peru" },
-    { code:"UY", flag:"🇺🇾", name:"Uruguai" },
-    { code:"PT", flag:"🇵🇹", name:"Portugal" },
-    { code:"ES", flag:"🇪🇸", name:"Espanha" },
-    { code:"FR", flag:"🇫🇷", name:"França" },
-    { code:"DE", flag:"🇩🇪", name:"Alemanha" },
-    { code:"IT", flag:"🇮🇹", name:"Itália" },
-    { code:"GB", flag:"🇬🇧", name:"Reino Unido" },
-    { code:"IE", flag:"🇮🇪", name:"Irlanda" },
-    { code:"NL", flag:"🇳🇱", name:"Países Baixos" },
-    { code:"CH", flag:"🇨🇭", name:"Suíça" },
-    { code:"AU", flag:"🇦🇺", name:"Austrália" },
-    { code:"NZ", flag:"🇳🇿", name:"Nova Zelândia" },
-    { code:"JP", flag:"🇯🇵", name:"Japão" },
-    { code:"KR", flag:"🇰🇷", name:"Coreia do Sul" },
-    { code:"CN", flag:"🇨🇳", name:"China" },
-    { code:"IN", flag:"🇮🇳", name:"Índia" },
-    { code:"SG", flag:"🇸🇬", name:"Singapura" },
-    { code:"AE", flag:"🇦🇪", name:"Emirados Árabes Unidos" },
-    { code:"ZA", flag:"🇿🇦", name:"África do Sul" }
+
+    {code:"BR",flag:"🇧🇷",name:{
+        pt:"Brasil",
+        en:"Brazil",
+        es:"Brasil"
+    }},
+
+    {code:"US",flag:"🇺🇸",name:{
+        pt:"Estados Unidos",
+        en:"United States",
+        es:"Estados Unidos"
+    }},
+
+    {code:"CA",flag:"🇨🇦",name:{
+        pt:"Canadá",
+        en:"Canada",
+        es:"Canadá"
+    }},
+
+    {code:"MX",flag:"🇲🇽",name:{
+        pt:"México",
+        en:"Mexico",
+        es:"México"
+    }},
+
+    {code:"AR",flag:"🇦🇷",name:{
+        pt:"Argentina",
+        en:"Argentina",
+        es:"Argentina"
+    }},
+
+    {code:"CL",flag:"🇨🇱",name:{
+        pt:"Chile",
+        en:"Chile",
+        es:"Chile"
+    }},
+
+    {code:"CO",flag:"🇨🇴",name:{
+        pt:"Colômbia",
+        en:"Colombia",
+        es:"Colombia"
+    }},
+
+    {code:"PE",flag:"🇵🇪",name:{
+        pt:"Peru",
+        en:"Peru",
+        es:"Perú"
+    }},
+
+    {code:"UY",flag:"🇺🇾",name:{
+        pt:"Uruguai",
+        en:"Uruguay",
+        es:"Uruguay"
+    }},
+
+    {code:"PT",flag:"🇵🇹",name:{
+        pt:"Portugal",
+        en:"Portugal",
+        es:"Portugal"
+    }},
+
+    {code:"ES",flag:"🇪🇸",name:{
+        pt:"Espanha",
+        en:"Spain",
+        es:"España"
+    }},
+
+    {code:"FR",flag:"🇫🇷",name:{
+        pt:"França",
+        en:"France",
+        es:"Francia"
+    }},
+
+    {code:"DE",flag:"🇩🇪",name:{
+        pt:"Alemanha",
+        en:"Germany",
+        es:"Alemania"
+    }},
+
+    {code:"IT",flag:"🇮🇹",name:{
+        pt:"Itália",
+        en:"Italy",
+        es:"Italia"
+    }},
+
+    {code:"GB",flag:"🇬🇧",name:{
+        pt:"Reino Unido",
+        en:"United Kingdom",
+        es:"Reino Unido"
+    }},
+
+    {code:"IE",flag:"🇮🇪",name:{
+        pt:"Irlanda",
+        en:"Ireland",
+        es:"Irlanda"
+    }},
+
+    {code:"NL",flag:"🇳🇱",name:{
+        pt:"Países Baixos",
+        en:"Netherlands",
+        es:"Países Bajos"
+    }},
+
+    {code:"CH",flag:"🇨🇭",name:{
+        pt:"Suíça",
+        en:"Switzerland",
+        es:"Suiza"
+    }},
+
+    {code:"AU",flag:"🇦🇺",name:{
+        pt:"Austrália",
+        en:"Australia",
+        es:"Australia"
+    }},
+
+    {code:"NZ",flag:"🇳🇿",name:{
+        pt:"Nova Zelândia",
+        en:"New Zealand",
+        es:"Nueva Zelanda"
+    }},
+
+    {code:"JP",flag:"🇯🇵",name:{
+        pt:"Japão",
+        en:"Japan",
+        es:"Japón"
+    }},
+
+    {code:"KR",flag:"🇰🇷",name:{
+        pt:"Coreia do Sul",
+        en:"South Korea",
+        es:"Corea del Sur"
+    }},
+
+    {code:"CN",flag:"🇨🇳",name:{
+        pt:"China",
+        en:"China",
+        es:"China"
+    }},
+
+    {code:"IN",flag:"🇮🇳",name:{
+        pt:"Índia",
+        en:"India",
+        es:"India"
+    }},
+
+    {code:"SG",flag:"🇸🇬",name:{
+        pt:"Singapura",
+        en:"Singapore",
+        es:"Singapur"
+    }},
+
+    {code:"AE",flag:"🇦🇪",name:{
+        pt:"Emirados Árabes Unidos",
+        en:"United Arab Emirates",
+        es:"Emiratos Árabes Unidos"
+    }},
+
+    {code:"ZA",flag:"🇿🇦",name:{
+        pt:"África do Sul",
+        en:"South Africa",
+        es:"Sudáfrica"
+    }}
+
 ];
 
 
 /* =========================================================
-   ESTADO DA APLICAÇÃO
+   ESTADO
 ========================================================= */
 
 let currentUser = null;
 
+let currentLanguage = "pt";
+
 let selectedTemplate = "tpl-modern";
 
 let cvPrimary = "#1a365d";
+
 let cvSecondary = "#2b6cb0";
 
 let profileImage = "";
@@ -2002,9 +2901,11 @@ let profileImage = "";
 
 function navigateTo(screenId) {
 
-    document.querySelectorAll(".screen").forEach(screen => {
-        screen.classList.remove("active");
-    });
+    document
+        .querySelectorAll(".screen")
+        .forEach(screen =>
+            screen.classList.remove("active")
+        );
 
     document
         .getElementById(screenId)
@@ -2013,6 +2914,470 @@ function navigateTo(screenId) {
 
 
 /* =========================================================
+   SISTEMA DE IDIOMAS
+========================================================= */
+
+function changeLanguage(language) {
+
+    if (!translations[language]) {
+        language = "pt";
+    }
+
+    currentLanguage = language;
+
+
+    document.documentElement.lang =
+        language === "pt"
+            ? "pt-BR"
+            : language;
+
+
+    document.getElementById(
+        "global-language"
+    ).value = language;
+
+
+    document.getElementById(
+        "select-language"
+    ).value = language;
+
+
+    /*
+     * Traduz todos os elementos
+     * que possuem data-i18n.
+     */
+
+    document
+        .querySelectorAll("[data-i18n]")
+        .forEach(element => {
+
+            const key =
+                element.dataset.i18n;
+
+            if (
+                translations[language][key]
+            ) {
+
+                element.textContent =
+                    translations[language][key];
+
+            }
+
+        });
+
+
+    /*
+     * Traduz placeholders.
+     */
+
+    document
+        .querySelectorAll("[data-placeholder]")
+        .forEach(element => {
+
+            const key =
+                element.dataset.placeholder;
+
+            if (
+                translations[language][key]
+            ) {
+
+                element.placeholder =
+                    translations[language][key];
+
+            }
+
+        });
+
+
+    /*
+     * Traduz os títulos do currículo.
+     */
+
+    document
+        .querySelectorAll("[data-cv]")
+        .forEach(element => {
+
+            const key =
+                element.dataset.cv;
+
+            if (
+                translations[language][key]
+            ) {
+
+                element.textContent =
+                    translations[language][key];
+
+            }
+
+        });
+
+
+    /*
+     * Atualiza países.
+     */
+
+    populateCountries();
+
+
+    /*
+     * Atualiza campos dinâmicos.
+     */
+
+    refreshDynamicTranslations();
+
+
+    /*
+     * Salva preferência na conta.
+     */
+
+    if (currentUser) {
+
+        currentUser.language =
+            language;
+
+        updateCurrentUser();
+
+    }
+
+
+    updateCV();
+        }
+        /* =========================================================
+   PAÍSES
+========================================================= */
+
+const countries = [
+
+    {code:"BR",flag:"🇧🇷",name:{
+        pt:"Brasil",
+        en:"Brazil",
+        es:"Brasil"
+    }},
+
+    {code:"US",flag:"🇺🇸",name:{
+        pt:"Estados Unidos",
+        en:"United States",
+        es:"Estados Unidos"
+    }},
+
+    {code:"CA",flag:"🇨🇦",name:{
+        pt:"Canadá",
+        en:"Canada",
+        es:"Canadá"
+    }},
+
+    {code:"MX",flag:"🇲🇽",name:{
+        pt:"México",
+        en:"Mexico",
+        es:"México"
+    }},
+
+    {code:"AR",flag:"🇦🇷",name:{
+        pt:"Argentina",
+        en:"Argentina",
+        es:"Argentina"
+    }},
+
+    {code:"CL",flag:"🇨🇱",name:{
+        pt:"Chile",
+        en:"Chile",
+        es:"Chile"
+    }},
+
+    {code:"CO",flag:"🇨🇴",name:{
+        pt:"Colômbia",
+        en:"Colombia",
+        es:"Colombia"
+    }},
+
+    {code:"PE",flag:"🇵🇪",name:{
+        pt:"Peru",
+        en:"Peru",
+        es:"Perú"
+    }},
+
+    {code:"UY",flag:"🇺🇾",name:{
+        pt:"Uruguai",
+        en:"Uruguay",
+        es:"Uruguay"
+    }},
+
+    {code:"PT",flag:"🇵🇹",name:{
+        pt:"Portugal",
+        en:"Portugal",
+        es:"Portugal"
+    }},
+
+    {code:"ES",flag:"🇪🇸",name:{
+        pt:"Espanha",
+        en:"Spain",
+        es:"España"
+    }},
+
+    {code:"FR",flag:"🇫🇷",name:{
+        pt:"França",
+        en:"France",
+        es:"Francia"
+    }},
+
+    {code:"DE",flag:"🇩🇪",name:{
+        pt:"Alemanha",
+        en:"Germany",
+        es:"Alemania"
+    }},
+
+    {code:"IT",flag:"🇮🇹",name:{
+        pt:"Itália",
+        en:"Italy",
+        es:"Italia"
+    }},
+
+    {code:"GB",flag:"🇬🇧",name:{
+        pt:"Reino Unido",
+        en:"United Kingdom",
+        es:"Reino Unido"
+    }},
+
+    {code:"IE",flag:"🇮🇪",name:{
+        pt:"Irlanda",
+        en:"Ireland",
+        es:"Irlanda"
+    }},
+
+    {code:"NL",flag:"🇳🇱",name:{
+        pt:"Países Baixos",
+        en:"Netherlands",
+        es:"Países Bajos"
+    }},
+
+    {code:"CH",flag:"🇨🇭",name:{
+        pt:"Suíça",
+        en:"Switzerland",
+        es:"Suiza"
+    }},
+
+    {code:"AU",flag:"🇦🇺",name:{
+        pt:"Austrália",
+        en:"Australia",
+        es:"Australia"
+    }},
+
+    {code:"NZ",flag:"🇳🇿",name:{
+        pt:"Nova Zelândia",
+        en:"New Zealand",
+        es:"Nueva Zelanda"
+    }},
+
+    {code:"JP",flag:"🇯🇵",name:{
+        pt:"Japão",
+        en:"Japan",
+        es:"Japón"
+    }},
+
+    {code:"KR",flag:"🇰🇷",name:{
+        pt:"Coreia do Sul",
+        en:"South Korea",
+        es:"Corea del Sur"
+    }},
+
+    {code:"CN",flag:"🇨🇳",name:{
+        pt:"China",
+        en:"China",
+        es:"China"
+    }},
+
+    {code:"IN",flag:"🇮🇳",name:{
+        pt:"Índia",
+        en:"India",
+        es:"India"
+    }},
+
+    {code:"SG",flag:"🇸🇬",name:{
+        pt:"Singapura",
+        en:"Singapore",
+        es:"Singapur"
+    }},
+
+    {code:"AE",flag:"🇦🇪",name:{
+        pt:"Emirados Árabes Unidos",
+        en:"United Arab Emirates",
+        es:"Emiratos Árabes Unidos"
+    }},
+
+    {code:"ZA",flag:"🇿🇦",name:{
+        pt:"África do Sul",
+        en:"South Africa",
+        es:"Sudáfrica"
+    }}
+
+];
+
+
+/* =========================================================
+   ESTADO
+========================================================= */
+
+let currentUser = null;
+
+let currentLanguage = "pt";
+
+let selectedTemplate = "tpl-modern";
+
+let cvPrimary = "#1a365d";
+
+let cvSecondary = "#2b6cb0";
+
+let profileImage = "";
+
+
+/* =========================================================
+   NAVEGAÇÃO
+========================================================= */
+
+function navigateTo(screenId) {
+
+    document
+        .querySelectorAll(".screen")
+        .forEach(screen =>
+            screen.classList.remove("active")
+        );
+
+    document
+        .getElementById(screenId)
+        .classList.add("active");
+}
+
+
+/* =========================================================
+   SISTEMA DE IDIOMAS
+========================================================= */
+
+function changeLanguage(language) {
+
+    if (!translations[language]) {
+        language = "pt";
+    }
+
+    currentLanguage = language;
+
+
+    document.documentElement.lang =
+        language === "pt"
+            ? "pt-BR"
+            : language;
+
+
+    document.getElementById(
+        "global-language"
+    ).value = language;
+
+
+    document.getElementById(
+        "select-language"
+    ).value = language;
+
+
+    /*
+     * Traduz todos os elementos
+     * que possuem data-i18n.
+     */
+
+    document
+        .querySelectorAll("[data-i18n]")
+        .forEach(element => {
+
+            const key =
+                element.dataset.i18n;
+
+            if (
+                translations[language][key]
+            ) {
+
+                element.textContent =
+                    translations[language][key];
+
+            }
+
+        });
+
+
+    /*
+     * Traduz placeholders.
+     */
+
+    document
+        .querySelectorAll("[data-placeholder]")
+        .forEach(element => {
+
+            const key =
+                element.dataset.placeholder;
+
+            if (
+                translations[language][key]
+            ) {
+
+                element.placeholder =
+                    translations[language][key];
+
+            }
+
+        });
+
+
+    /*
+     * Traduz os títulos do currículo.
+     */
+
+    document
+        .querySelectorAll("[data-cv]")
+        .forEach(element => {
+
+            const key =
+                element.dataset.cv;
+
+            if (
+                translations[language][key]
+            ) {
+
+                element.textContent =
+                    translations[language][key];
+
+            }
+
+        });
+
+
+    /*
+     * Atualiza países.
+     */
+
+    populateCountries();
+
+
+    /*
+     * Atualiza campos dinâmicos.
+     */
+
+    refreshDynamicTranslations();
+
+
+    /*
+     * Salva preferência na conta.
+     */
+
+    if (currentUser) {
+
+        currentUser.language =
+            language;
+
+        updateCurrentUser();
+
+    }
+
+
+    updateCV();
+        }
+            /* =========================================================
    AUTENTICAÇÃO
 ========================================================= */
 
@@ -2027,34 +3392,65 @@ function openAuth(type) {
 function switchAuth(type) {
 
     const loginForm =
-        document.getElementById("login-form");
+        document.getElementById(
+            "login-form"
+        );
 
     const registerForm =
-        document.getElementById("register-form");
+        document.getElementById(
+            "register-form"
+        );
 
     const loginTab =
-        document.getElementById("tab-login");
+        document.getElementById(
+            "tab-login"
+        );
 
     const registerTab =
-        document.getElementById("tab-register");
+        document.getElementById(
+            "tab-register"
+        );
+
 
     clearAuthMessage();
 
+
     if (type === "login") {
 
-        loginForm.classList.remove("hidden");
-        registerForm.classList.add("hidden");
+        loginForm.classList.remove(
+            "hidden"
+        );
 
-        loginTab.classList.add("active");
-        registerTab.classList.remove("active");
+        registerForm.classList.add(
+            "hidden"
+        );
+
+        loginTab.classList.add(
+            "active"
+        );
+
+        registerTab.classList.remove(
+            "active"
+        );
 
     } else {
 
-        loginForm.classList.add("hidden");
-        registerForm.classList.remove("hidden");
+        loginForm.classList.add(
+            "hidden"
+        );
 
-        loginTab.classList.remove("active");
-        registerTab.classList.add("active");
+        registerForm.classList.remove(
+            "hidden"
+        );
+
+        loginTab.classList.remove(
+            "active"
+        );
+
+        registerTab.classList.add(
+            "active"
+        );
+
     }
 }
 
@@ -2062,7 +3458,9 @@ function switchAuth(type) {
 function getUsers() {
 
     return JSON.parse(
-        localStorage.getItem("jobnow_users") || "[]"
+        localStorage.getItem(
+            "jobnow_users"
+        ) || "[]"
     );
 }
 
@@ -2076,29 +3474,71 @@ function saveUsers(users) {
 }
 
 
-function showAuthMessage(message, type = "error") {
+function updateCurrentUser() {
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    const users =
+        getUsers();
+
+
+    const index =
+        users.findIndex(
+            user =>
+                user.id === currentUser.id
+        );
+
+
+    if (index === -1) {
+        return;
+    }
+
+
+    users[index] =
+        currentUser;
+
+
+    saveUsers(users);
+}
+
+
+function showAuthMessage(
+    message,
+    type = "error"
+) {
 
     const box =
-        document.getElementById("auth-message");
+        document.getElementById(
+            "auth-message"
+        );
 
-    box.textContent = message;
 
-    box.className = "message " + type;
+    box.textContent =
+        message;
+
+
+    box.className =
+        "message " + type;
 }
 
 
 function clearAuthMessage() {
 
     const box =
-        document.getElementById("auth-message");
+        document.getElementById(
+            "auth-message"
+        );
+
 
     box.textContent = "";
 
-    box.className = "message";
-}
-
-
-/* =========================================================
+    box.className =
+        "message";
+        }
+        /* =========================================================
    CADASTRO
 ========================================================= */
 
@@ -2108,32 +3548,52 @@ function handleRegister(event) {
 
     clearAuthMessage();
 
+
     const name =
-        document.getElementById("register-name")
-        .value.trim();
+        document
+            .getElementById(
+                "register-name"
+            )
+            .value
+            .trim();
+
 
     const email =
-        document.getElementById("register-email")
-        .value.trim()
-        .toLowerCase();
+        document
+            .getElementById(
+                "register-email"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
 
     const password =
-        document.getElementById("register-password")
-        .value;
+        document.getElementById(
+            "register-password"
+        ).value;
+
 
     const confirm =
-        document.getElementById("register-password-confirm")
-        .value;
+        document.getElementById(
+            "register-password-confirm"
+        ).value;
+
 
     const terms =
-        document.getElementById("accept-terms")
-        .checked;
+        document.getElementById(
+            "accept-terms"
+        ).checked;
 
 
     if (password.length < 8) {
 
         showAuthMessage(
-            "A senha precisa ter pelo menos 8 caracteres."
+            currentLanguage === "en"
+                ? "The password must contain at least 8 characters."
+                : currentLanguage === "es"
+                    ? "La contraseña debe tener al menos 8 caracteres."
+                    : "A senha precisa ter pelo menos 8 caracteres."
         );
 
         return;
@@ -2143,7 +3603,11 @@ function handleRegister(event) {
     if (password !== confirm) {
 
         showAuthMessage(
-            "As senhas não são iguais."
+            currentLanguage === "en"
+                ? "The passwords do not match."
+                : currentLanguage === "es"
+                    ? "Las contraseñas no coinciden."
+                    : "As senhas não são iguais."
         );
 
         return;
@@ -2153,22 +3617,34 @@ function handleRegister(event) {
     if (!terms) {
 
         showAuthMessage(
-            "Você precisa aceitar os Termos de Uso e a Política de Privacidade."
+            currentLanguage === "en"
+                ? "You must accept the Terms of Use and Privacy Policy."
+                : currentLanguage === "es"
+                    ? "Debes aceptar los Términos de Uso y la Política de Privacidad."
+                    : "Você precisa aceitar os Termos de Uso e a Política de Privacidade."
         );
 
         return;
     }
 
 
-    const users = getUsers();
+    const users =
+        getUsers();
 
 
     if (
-        users.some(user => user.email === email)
+        users.some(
+            user =>
+                user.email === email
+        )
     ) {
 
         showAuthMessage(
-            "Já existe uma conta cadastrada com este e-mail."
+            currentLanguage === "en"
+                ? "An account with this email already exists."
+                : currentLanguage === "es"
+                    ? "Ya existe una cuenta con este correo electrónico."
+                    : "Já existe uma conta cadastrada com este e-mail."
         );
 
         return;
@@ -2184,48 +3660,52 @@ function handleRegister(event) {
 
         email,
 
-        /*
-         * IMPORTANTE:
-         * Em produção, NÃO armazene senhas assim.
-         * Use autenticação no servidor e hash seguro.
-         */
         password,
+
+        language:
+            currentLanguage,
 
         createdAt:
             new Date().toISOString(),
 
-        cvData: {}
+        cvData:{}
 
     };
 
 
-    users.push(newUser);
+    users.push(
+        newUser
+    );
 
-    saveUsers(users);
+
+    saveUsers(
+        users
+    );
 
 
     showAuthMessage(
-        "Conta criada com sucesso! Agora você pode entrar.",
+        currentLanguage === "en"
+            ? "Account created successfully!"
+            : currentLanguage === "es"
+                ? "¡Cuenta creada correctamente!"
+                : "Conta criada com sucesso!",
         "success"
     );
 
 
-    document.getElementById("login-email").value =
+    document.getElementById(
+        "login-email"
+    ).value =
         email;
 
 
-    document.getElementById("login-password").value =
-        "";
-
-
-    setTimeout(() => {
-
-        switchAuth("login");
-
-    }, 800);
-}
-
-    /* =========================================================
+    setTimeout(
+        () =>
+            switchAuth("login"),
+        900
+    );
+        }
+        /* =========================================================
    LOGIN
 ========================================================= */
 
@@ -2235,17 +3715,25 @@ function handleLogin(event) {
 
     clearAuthMessage();
 
+
     const email =
-        document.getElementById("login-email")
-        .value.trim()
-        .toLowerCase();
+        document
+            .getElementById(
+                "login-email"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
 
     const password =
-        document.getElementById("login-password")
-        .value;
+        document.getElementById(
+            "login-password"
+        ).value;
 
 
-    const users = getUsers();
+    const users =
+        getUsers();
 
 
     const user =
@@ -2259,14 +3747,27 @@ function handleLogin(event) {
     if (!user) {
 
         showAuthMessage(
-            "E-mail ou senha incorretos."
+            currentLanguage === "en"
+                ? "Incorrect email or password."
+                : currentLanguage === "es"
+                    ? "Correo electrónico o contraseña incorrectos."
+                    : "E-mail ou senha incorretos."
         );
 
         return;
     }
 
 
-    currentUser = user;
+    currentUser =
+        user;
+
+
+    if (user.language) {
+
+        currentLanguage =
+            user.language;
+
+    }
 
 
     localStorage.setItem(
@@ -2277,13 +3778,21 @@ function handleLogin(event) {
 
     document.getElementById(
         "account-name"
-    ).textContent = user.name;
+    ).textContent =
+        user.name;
+
+
+    changeLanguage(
+        currentLanguage
+    );
 
 
     loadUserCV();
 
 
-    navigateTo("screen-config");
+    navigateTo(
+        "screen-config"
+    );
 }
 
 
@@ -2299,12 +3808,12 @@ function logout() {
         "jobnow_current_user"
     );
 
-    navigateTo("screen-home");
-}
-
-
-/* =========================================================
-   RECUPERAR SESSÃO
+    navigateTo(
+        "screen-home"
+    );
+        }
+        /* =========================================================
+   RESTAURAR SESSÃO
 ========================================================= */
 
 function restoreSession() {
@@ -2314,16 +3823,20 @@ function restoreSession() {
             "jobnow_current_user"
         );
 
+
     if (!userId) {
         return;
     }
 
 
-    const users = getUsers();
+    const users =
+        getUsers();
+
 
     const user =
         users.find(
-            item => item.id === userId
+            item =>
+                item.id === userId
         );
 
 
@@ -2332,12 +3845,27 @@ function restoreSession() {
     }
 
 
-    currentUser = user;
+    currentUser =
+        user;
+
+
+    if (user.language) {
+
+        currentLanguage =
+            user.language;
+
+    }
 
 
     document.getElementById(
         "account-name"
-    ).textContent = user.name;
+    ).textContent =
+        user.name;
+
+
+    changeLanguage(
+        currentLanguage
+    );
 
 
     loadUserCV();
@@ -2345,151 +3873,54 @@ function restoreSession() {
 
 
 /* =========================================================
-   PAÍSES
-========================================================= */
-
-function populateCountries() {
-
-    const live =
-        document.getElementById("country-live");
-
-    const work =
-        document.getElementById("country-work");
-
-
-    live.innerHTML = "";
-    work.innerHTML = "";
-
-
-    countries.forEach(country => {
-
-        const option1 =
-            document.createElement("option");
-
-        option1.value = country.code;
-
-        option1.textContent =
-            `${country.flag} ${country.name}`;
-
-        live.appendChild(option1);
-
-
-        const option2 =
-            document.createElement("option");
-
-        option2.value = country.code;
-
-        option2.textContent =
-            `${country.flag} ${country.name}`;
-
-        work.appendChild(option2);
-
-    });
-
-
-    live.value = "BR";
-
-    work.value = "BR";
-
-
-    updateCountryPreview(
-        "country-live",
-        "live-country-preview"
-    );
-
-
-    updateCountryPreview(
-        "country-work",
-        "work-country-preview"
-    );
-}
-
-
-function getCountry(code) {
-
-    return countries.find(
-        country => country.code === code
-    );
-}
-
-
-function getCountryLabel(code) {
-
-    const country = getCountry(code);
-
-    if (!country) {
-        return "";
-    }
-
-    return `${country.flag} ${country.name}`;
-}
-
-
-function updateCountryPreview(
-    selectId,
-    previewId
-) {
-
-    const select =
-        document.getElementById(selectId);
-
-    const preview =
-        document.getElementById(previewId);
-
-    const country =
-        getCountry(select.value);
-
-
-    if (!country) {
-        preview.style.display = "none";
-        return;
-    }
-
-
-    preview.textContent =
-        `${country.flag} ${country.name}`;
-
-    preview.style.display = "block";
-
-
-    updateCV();
-}
-
-
-/* =========================================================
-   CONFIGURAÇÃO
+   TEMPLATES
 ========================================================= */
 
 function selectTemplate(template) {
 
-    selectedTemplate = template;
-
-
-    document.querySelectorAll(
-        ".template-card"
-    ).forEach(card => {
-
-        card.classList.remove("selected");
-
-    });
+    selectedTemplate =
+        template;
 
 
     document
-        .getElementById("card-" + template)
-        .classList.add("selected");
+        .querySelectorAll(
+            ".template-card"
+        )
+        .forEach(card =>
+            card.classList.remove(
+                "selected"
+            )
+        );
+
+
+    const card =
+        document.getElementById(
+            "card-" + template
+        );
+
+
+    if (card) {
+        card.classList.add(
+            "selected"
+        );
+    }
 
 
     const output =
-        document.getElementById("cv-output");
+        document.getElementById(
+            "cv-output"
+        );
 
 
-    output.className = template;
+    output.className =
+        template;
 
 
     output.style.setProperty(
         "--cv-primary",
         cvPrimary
     );
+
 
     output.style.setProperty(
         "--cv-secondary",
@@ -2498,26 +3929,39 @@ function selectTemplate(template) {
 }
 
 
-function selectColor(primary, secondary, button) {
+function selectColor(
+    primary,
+    secondary,
+    button
+) {
 
-    cvPrimary = primary;
-    cvSecondary = secondary;
+    cvPrimary =
+        primary;
 
-
-    document.querySelectorAll(
-        ".color-btn"
-    ).forEach(btn => {
-
-        btn.classList.remove("active");
-
-    });
+    cvSecondary =
+        secondary;
 
 
-    button.classList.add("active");
+    document
+        .querySelectorAll(
+            ".color-btn"
+        )
+        .forEach(btn =>
+            btn.classList.remove(
+                "active"
+            )
+        );
+
+
+    button.classList.add(
+        "active"
+    );
 
 
     const output =
-        document.getElementById("cv-output");
+        document.getElementById(
+            "cv-output"
+        );
 
 
     output.style.setProperty(
@@ -2525,26 +3969,15 @@ function selectColor(primary, secondary, button) {
         primary
     );
 
+
     output.style.setProperty(
         "--cv-secondary",
         secondary
     );
-}
+        }
 
-
-function selectLanguage(language) {
-
-    /*
-     * O sistema pode ser expandido para trocar
-     * automaticamente todos os textos do currículo.
-     */
-
-    updateCV();
-}
-
-
-/* =========================================================
-   ENTRAR NO GERADOR
+        /* =========================================================
+   GERADOR
 ========================================================= */
 
 function goToGenerator() {
@@ -2557,19 +3990,25 @@ function goToGenerator() {
     }
 
 
-    navigateTo("screen-generator");
+    navigateTo(
+        "screen-generator"
+    );
+
 
     updateCV();
 }
 
-        
+
 /* =========================================================
    IMAGEM
 ========================================================= */
 
 function previewImage(input) {
 
-    if (!input.files || !input.files[0]) {
+    if (
+        !input.files ||
+        !input.files[0]
+    ) {
         return;
     }
 
@@ -2578,26 +4017,32 @@ function previewImage(input) {
         new FileReader();
 
 
-    reader.onload = function(event) {
+    reader.onload =
+        function(event) {
 
-        profileImage =
-            event.target.result;
-
-
-        const image =
-            document.getElementById("cv-photo");
+            profileImage =
+                event.target.result;
 
 
-        image.src =
-            profileImage;
+            const image =
+                document.getElementById(
+                    "cv-photo"
+                );
 
 
-        image.style.display =
-            "block";
-    };
+            image.src =
+                profileImage;
 
 
-    reader.readAsDataURL(input.files[0]);
+            image.style.display =
+                "block";
+
+        };
+
+
+    reader.readAsDataURL(
+        input.files[0]
+    );
 }
 
 
@@ -2605,20 +4050,21 @@ function previewImage(input) {
    EXPERIÊNCIAS
 ========================================================= */
 
-let experienceCount = 0;
-
-
-function addExperience(data = {}) {
-
-    experienceCount++;
-
+function addExperience(
+    data = {}
+) {
 
     const container =
-        document.getElementById("experiencias");
+        document.getElementById(
+            "experiencias"
+        );
 
 
     const box =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     box.className =
         "dynamic-box";
@@ -2627,83 +4073,116 @@ function addExperience(data = {}) {
     box.innerHTML = `
 
         <div class="form-group">
-            <label>Cargo</label>
+
+            <label data-dynamic="experienceRole">
+                ${getDynamicText("experienceRole")}
+            </label>
 
             <input
                 class="exp-role"
                 value="${escapeAttribute(data.role || "")}"
                 oninput="updateCV()">
+
         </div>
 
         <div class="form-group">
-            <label>Empresa</label>
+
+            <label data-dynamic="experienceCompany">
+                ${getDynamicText("experienceCompany")}
+            </label>
 
             <input
                 class="exp-company"
                 value="${escapeAttribute(data.company || "")}"
                 oninput="updateCV()">
+
         </div>
 
         <div class="form-row">
 
             <div class="form-group">
-                <label>Início</label>
+
+                <label data-dynamic="start">
+                    ${getDynamicText("start")}
+                </label>
 
                 <input
                     type="month"
                     class="exp-start"
                     value="${escapeAttribute(data.start || "")}"
                     onchange="updateCV()">
+
             </div>
 
             <div class="form-group">
-                <label>Fim</label>
+
+                <label data-dynamic="end">
+                    ${getDynamicText("end")}
+                </label>
 
                 <input
                     type="month"
                     class="exp-end"
                     value="${escapeAttribute(data.end || "")}"
                     onchange="updateCV()">
+
             </div>
 
         </div>
 
         <div class="form-group">
-            <label>Descrição</label>
+
+            <label data-dynamic="description">
+                ${getDynamicText("description")}
+            </label>
 
             <textarea
                 class="exp-description"
                 rows="4"
                 oninput="updateCV()">${escapeHTML(data.description || "")}</textarea>
+
         </div>
 
         <button
             type="button"
             class="btn-danger"
-            onclick="removeDynamicBox(this)">
-            Remover
+            onclick="removeDynamicBox(this)"
+            data-dynamic="remove">
+
+            ${getDynamicText("remove")}
+
         </button>
+
     `;
 
 
-    container.appendChild(box);
+    container.appendChild(
+        box
+    );
+
 
     updateCV();
-}
+        }
 
-
-/* =========================================================
+        /* =========================================================
    FORMAÇÃO
 ========================================================= */
 
-function addEducation(data = {}) {
+function addEducation(
+    data = {}
+) {
 
     const container =
-        document.getElementById("formacoes");
+        document.getElementById(
+            "formacoes"
+        );
 
 
     const box =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     box.className =
         "dynamic-box";
@@ -2712,43 +4191,59 @@ function addEducation(data = {}) {
     box.innerHTML = `
 
         <div class="form-group">
-            <label>Curso / Formação</label>
+
+            <label>
+                ${getDynamicText("course")}
+            </label>
 
             <input
                 class="edu-course"
                 value="${escapeAttribute(data.course || "")}"
                 oninput="updateCV()">
+
         </div>
 
         <div class="form-group">
-            <label>Instituição</label>
+
+            <label>
+                ${getDynamicText("institution")}
+            </label>
 
             <input
                 class="edu-school"
                 value="${escapeAttribute(data.school || "")}"
                 oninput="updateCV()">
+
         </div>
 
         <div class="form-row">
 
             <div class="form-group">
-                <label>Ano de início</label>
+
+                <label>
+                    ${getDynamicText("startYear")}
+                </label>
 
                 <input
                     type="number"
                     class="edu-start"
                     value="${escapeAttribute(data.start || "")}"
                     oninput="updateCV()">
+
             </div>
 
             <div class="form-group">
-                <label>Ano de conclusão</label>
+
+                <label>
+                    ${getDynamicText("endYear")}
+                </label>
 
                 <input
                     type="number"
                     class="edu-end"
                     value="${escapeAttribute(data.end || "")}"
                     oninput="updateCV()">
+
             </div>
 
         </div>
@@ -2757,57 +4252,185 @@ function addEducation(data = {}) {
             type="button"
             class="btn-danger"
             onclick="removeDynamicBox(this)">
-            Remover
+
+            ${getDynamicText("remove")}
+
         </button>
     `;
 
 
-    container.appendChild(box);
+    container.appendChild(
+        box
+    );
+
 
     updateCV();
 }
 
+        /* =========================================================
+   TRADUÇÕES DINÂMICAS
+========================================================= */
 
-function removeDynamicBox(button) {
+function getDynamicText(key) {
+
+    const dynamic = {
+
+        experienceRole:{
+            pt:"Cargo",
+            en:"Position",
+            es:"Puesto"
+        },
+
+        experienceCompany:{
+            pt:"Empresa",
+            en:"Company",
+            es:"Empresa"
+        },
+
+        start:{
+            pt:"Início",
+            en:"Start",
+            es:"Inicio"
+        },
+
+        end:{
+            pt:"Fim",
+            en:"End",
+            es:"Fin"
+        },
+
+        description:{
+            pt:"Descrição",
+            en:"Description",
+            es:"Descripción"
+        },
+
+        course:{
+            pt:"Curso / Formação",
+            en:"Degree / Education",
+            es:"Curso / Formación"
+        },
+
+        institution:{
+            pt:"Instituição",
+            en:"Institution",
+            es:"Institución"
+        },
+
+        startYear:{
+            pt:"Ano de início",
+            en:"Start year",
+            es:"Año de inicio"
+        },
+
+        endYear:{
+            pt:"Ano de conclusão",
+            en:"Graduation year",
+            es:"Año de finalización"
+        },
+
+        remove:{
+            pt:"Remover",
+            en:"Remove",
+            es:"Eliminar"
+        }
+
+    };
+
+
+    return dynamic[key][
+        currentLanguage
+    ];
+}
+
+
+function refreshDynamicTranslations() {
+
+    document
+        .querySelectorAll(
+            "[data-dynamic]"
+        )
+        .forEach(element => {
+
+            const key =
+                element.dataset.dynamic;
+
+            element.textContent =
+                getDynamicText(key);
+
+        });
+
+}
+
+
+/* =========================================================
+   REMOVER
+========================================================= */
+
+function removeDynamicBox(
+    button
+) {
 
     const box =
-        button.closest(".dynamic-box");
+        button.closest(
+            ".dynamic-box"
+        );
+
 
     if (box) {
         box.remove();
     }
+
 
     updateCV();
 }
 
 
 /* =========================================================
-   ATUALIZAÇÃO DO CURRÍCULO
+   ATUALIZAR CURRÍCULO
 ========================================================= */
 
 function updateCV() {
 
-    const value = id => {
+    const value =
+        id => {
 
-        const element =
-            document.getElementById(id);
+            const element =
+                document.getElementById(
+                    id
+                );
 
-        return element
-            ? element.value.trim()
-            : "";
-    };
+            return element
+                ? element.value.trim()
+                : "";
+
+        };
 
 
     document.getElementById(
         "cv-name"
     ).textContent =
-        value("nome") || "Seu Nome";
+        value("nome") ||
+        (
+            currentLanguage === "en"
+                ? "Your Name"
+                : currentLanguage === "es"
+                    ? "Tu Nombre"
+                    : "Seu Nome"
+        );
 
 
     document.getElementById(
         "cv-job"
     ).textContent =
-        value("vaga") || "Cargo desejado";
+        value("vaga") ||
+        (
+            currentLanguage === "en"
+                ? "Desired position"
+                : currentLanguage === "es"
+                    ? "Puesto deseado"
+                    : "Cargo desejado"
+        );
 
 
     document.getElementById(
@@ -2882,231 +4505,355 @@ function updateCV() {
 function updatePersonalData() {
 
     const container =
-        document.getElementById("cv-personal");
+        document.getElementById(
+            "cv-personal"
+        );
 
 
     container.innerHTML = "";
 
 
+    const labels = {
+
+        birth:{
+            pt:"Nascimento",
+            en:"Date of birth",
+            es:"Fecha de nacimiento"
+        },
+
+        gender:{
+            pt:"Gênero",
+            en:"Gender",
+            es:"Género"
+        },
+
+        birthPlace:{
+            pt:"Naturalidade",
+            en:"Place of birth",
+            es:"Lugar de nacimiento"
+        },
+
+        nationality:{
+            pt:"Nacionalidade",
+            en:"Nationality",
+            es:"Nacionalidad"
+        },
+
+        marital:{
+            pt:"Estado civil",
+            en:"Marital status",
+            es:"Estado civil"
+        },
+
+        children:{
+            pt:"Filhos",
+            en:"Children",
+            es:"Hijos"
+        },
+
+        parents:{
+            pt:"Filiação",
+            en:"Parents",
+            es:"Padres"
+        }
+
+    };
+
+
     const data = [
 
         [
-            "Nascimento",
+            labels.birth[currentLanguage],
             getValue("nascimento")
         ],
 
         [
-            "Gênero",
+            labels.gender[currentLanguage],
             getValue("genero")
         ],
 
         [
-            "Naturalidade",
+            labels.birthPlace[currentLanguage],
             getValue("naturalidade")
         ],
 
         [
-            "Nacionalidade",
+            labels.nationality[currentLanguage],
             getValue("nacionalidade")
         ],
 
         [
-            "Estado civil",
+            labels.marital[currentLanguage],
             getValue("estado_civil")
         ],
 
         [
-            "Filhos",
+            labels.children[currentLanguage],
             getValue("filhos")
         ],
 
         [
-            "Filiação",
+            labels.parents[currentLanguage],
             getValue("filiacao")
         ]
 
     ];
 
 
-    data.forEach(item => {
+    data.forEach(
+        item => {
 
-        if (!item[1]) {
-            return;
+            if (!item[1]) {
+                return;
+            }
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            const strong =
+                document.createElement(
+                    "strong"
+                );
+
+
+            strong.textContent =
+                item[0] + ":";
+
+
+            div.appendChild(
+                strong
+            );
+
+
+            div.append(
+                " " +
+                item[1]
+            );
+
+
+            container.appendChild(
+                div
+            );
+
         }
-
-
-        const div =
-            document.createElement("div");
-
-        div.innerHTML =
-            `<strong>${escapeHTML(item[0])}:</strong>
-             ${escapeHTML(item[1])}`;
-
-        container.appendChild(div);
-
-    });
+    );
 }
 
 
 /* =========================================================
-   EXPERIÊNCIAS NA PRÉVIA
+   EXPERIÊNCIAS — PREVIEW
 ========================================================= */
 
 function updateExperiences() {
 
     const container =
-        document.getElementById("cv-experience");
+        document.getElementById(
+            "cv-experience"
+        );
 
 
     container.innerHTML = "";
 
 
     document
-        .querySelectorAll("#experiencias .dynamic-box")
-        .forEach(box => {
+        .querySelectorAll(
+            "#experiencias .dynamic-box"
+        )
+        .forEach(
+            box => {
 
-            const role =
-                box.querySelector(".exp-role").value.trim();
-
-            const company =
-                box.querySelector(".exp-company").value.trim();
-
-            const start =
-                box.querySelector(".exp-start").value;
-
-            const end =
-                box.querySelector(".exp-end").value;
-
-            const description =
-                box.querySelector(".exp-description").value.trim();
+                const role =
+                    box.querySelector(
+                        ".exp-role"
+                    ).value.trim();
 
 
-            if (
-                !role &&
-                !company &&
-                !description
-            ) {
-                return;
+                const company =
+                    box.querySelector(
+                        ".exp-company"
+                    ).value.trim();
+
+
+                const start =
+                    box.querySelector(
+                        ".exp-start"
+                    ).value;
+
+
+                const end =
+                    box.querySelector(
+                        ".exp-end"
+                    ).value;
+
+
+                const description =
+                    box.querySelector(
+                        ".exp-description"
+                    ).value.trim();
+
+
+                if (
+                    !role &&
+                    !company &&
+                    !description
+                ) {
+                    return;
+                }
+
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "exp-item";
+
+
+                const date =
+                    [start,end]
+                    .filter(Boolean)
+                    .join(" — ");
+
+
+                item.innerHTML = `
+
+                    <div class="exp-head">
+
+                        <div class="exp-title">
+                            ${escapeHTML(role)}
+                        </div>
+
+                        <div class="exp-date">
+                            ${escapeHTML(date)}
+                        </div>
+
+                    </div>
+
+                    <div class="exp-sub">
+                        ${escapeHTML(company)}
+                    </div>
+
+                    <div class="cv-text-block">
+                        ${escapeHTML(description)}
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    item
+                );
+
             }
+        );
+        }
 
-
-            const item =
-                document.createElement("div");
-
-            item.className =
-                "exp-item";
-
-
-            const date =
-                [start, end]
-                .filter(Boolean)
-                .join(" — ");
-
-
-            item.innerHTML = `
-
-                <div class="exp-head">
-
-                    <div class="exp-title">
-                        ${escapeHTML(role)}
-                    </div>
-
-                    <div class="exp-date">
-                        ${escapeHTML(date)}
-                    </div>
-
-                </div>
-
-                <div class="exp-sub">
-                    ${escapeHTML(company)}
-                </div>
-
-                <div class="cv-text-block">
-                    ${escapeHTML(description)}
-                </div>
-
-            `;
-
-
-            container.appendChild(item);
-
-        });
-}
-
-
-/* =========================================================
-   FORMAÇÃO NA PRÉVIA
+        /* =========================================================
+   FORMAÇÃO — PREVIEW
 ========================================================= */
 
 function updateEducation() {
 
     const container =
-        document.getElementById("cv-education");
+        document.getElementById(
+            "cv-education"
+        );
 
 
     container.innerHTML = "";
 
 
     document
-        .querySelectorAll("#formacoes .dynamic-box")
-        .forEach(box => {
+        .querySelectorAll(
+            "#formacoes .dynamic-box"
+        )
+        .forEach(
+            box => {
 
-            const course =
-                box.querySelector(".edu-course").value.trim();
-
-            const school =
-                box.querySelector(".edu-school").value.trim();
-
-            const start =
-                box.querySelector(".edu-start").value;
-
-            const end =
-                box.querySelector(".edu-end").value;
+                const course =
+                    box.querySelector(
+                        ".edu-course"
+                    ).value.trim();
 
 
-            if (!course && !school) {
-                return;
+                const school =
+                    box.querySelector(
+                        ".edu-school"
+                    ).value.trim();
+
+
+                const start =
+                    box.querySelector(
+                        ".edu-start"
+                    ).value;
+
+
+                const end =
+                    box.querySelector(
+                        ".edu-end"
+                    ).value;
+
+
+                if (
+                    !course &&
+                    !school
+                ) {
+                    return;
+                }
+
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "exp-item";
+
+
+                item.innerHTML = `
+
+                    <div class="exp-head">
+
+                        <div class="exp-title">
+                            ${escapeHTML(course)}
+                        </div>
+
+                        <div class="exp-date">
+                            ${escapeHTML(
+                                [start,end]
+                                .filter(Boolean)
+                                .join(" — ")
+                            )}
+                        </div>
+
+                    </div>
+
+                    <div class="exp-sub">
+                        ${escapeHTML(school)}
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    item
+                );
+
             }
+        );
+}
 
 
-            const item =
-                document.createElement("div");
-
-            item.className =
-                "exp-item";
-
-
-            item.innerHTML = `
-
-                <div class="exp-head">
-
-                    <div class="exp-title">
-                        ${escapeHTML(course)}
-                    </div>
-
-                    <div class="exp-date">
-                        ${escapeHTML(
-                            [start, end]
-                            .filter(Boolean)
-                            .join(" — ")
-                        )}
-                    </div>
-
-                </div>
-
-                <div class="exp-sub">
-                    ${escapeHTML(school)}
-                </div>
-
-            `;
-
-
-            container.appendChild(item);
-
-        });
-        }
-                 /* =========================================================
-   SALVAR CURRÍCULO
+/* =========================================================
+   SALVAR
 ========================================================= */
 
 function saveCV() {
@@ -3116,34 +4863,23 @@ function saveCV() {
     }
 
 
-    const users =
-        getUsers();
-
-
-    const index =
-        users.findIndex(
-            user => user.id === currentUser.id
-        );
-
-
-    if (index === -1) {
-        return;
-    }
-
-
-    users[index].cvData =
+    currentUser.cvData =
         collectCVData();
 
 
-    saveUsers(users);
+    currentUser.language =
+        currentLanguage;
 
 
-    currentUser =
-        users[index];
+    updateCurrentUser();
 
 
     alert(
-        "Currículo salvo com sucesso!"
+        currentLanguage === "en"
+            ? "Resume saved successfully!"
+            : currentLanguage === "es"
+                ? "¡Currículum guardado correctamente!"
+                : "Currículo salvo com sucesso!"
     );
 }
 
@@ -3161,77 +4897,121 @@ function collectCVData() {
         .querySelectorAll(
             "#screen-generator input, #screen-generator select, #screen-generator textarea"
         )
-        .forEach(element => {
+        .forEach(
+            element => {
 
-            if (!element.classList.contains("exp-role") &&
-                !element.classList.contains("exp-company") &&
-                !element.classList.contains("exp-start") &&
-                !element.classList.contains("exp-end") &&
-                !element.classList.contains("exp-description") &&
-                !element.classList.contains("edu-course") &&
-                !element.classList.contains("edu-school") &&
-                !element.classList.contains("edu-start") &&
-                !element.classList.contains("edu-end") &&
-                element.type !== "file") {
+                if (
+                    element.type === "file"
+                ) {
+                    return;
+                }
+
+
+                if (
+                    element.classList.contains("exp-role") ||
+                    element.classList.contains("exp-company") ||
+                    element.classList.contains("exp-start") ||
+                    element.classList.contains("exp-end") ||
+                    element.classList.contains("exp-description") ||
+                    element.classList.contains("edu-course") ||
+                    element.classList.contains("edu-school") ||
+                    element.classList.contains("edu-start") ||
+                    element.classList.contains("edu-end")
+                ) {
+                    return;
+                }
+
 
                 if (element.id) {
-                    data[element.id] = element.value;
+
+                    data[element.id] =
+                        element.value;
+
                 }
+
             }
-        });
+        );
 
 
     data.experiencias = [];
 
+
     document
-        .querySelectorAll("#experiencias .dynamic-box")
-        .forEach(box => {
+        .querySelectorAll(
+            "#experiencias .dynamic-box"
+        )
+        .forEach(
+            box => {
 
-            data.experiencias.push({
+                data.experiencias.push({
 
-                role:
-                    box.querySelector(".exp-role").value,
+                    role:
+                        box.querySelector(
+                            ".exp-role"
+                        ).value,
 
-                company:
-                    box.querySelector(".exp-company").value,
+                    company:
+                        box.querySelector(
+                            ".exp-company"
+                        ).value,
 
-                start:
-                    box.querySelector(".exp-start").value,
+                    start:
+                        box.querySelector(
+                            ".exp-start"
+                        ).value,
 
-                end:
-                    box.querySelector(".exp-end").value,
+                    end:
+                        box.querySelector(
+                            ".exp-end"
+                        ).value,
 
-                description:
-                    box.querySelector(".exp-description").value
+                    description:
+                        box.querySelector(
+                            ".exp-description"
+                        ).value
 
-            });
+                });
 
-        });
+            }
+        );
 
 
     data.formacoes = [];
 
+
     document
-        .querySelectorAll("#formacoes .dynamic-box")
-        .forEach(box => {
+        .querySelectorAll(
+            "#formacoes .dynamic-box"
+        )
+        .forEach(
+            box => {
 
-            data.formacoes.push({
+                data.formacoes.push({
 
-                course:
-                    box.querySelector(".edu-course").value,
+                    course:
+                        box.querySelector(
+                            ".edu-course"
+                        ).value,
 
-                school:
-                    box.querySelector(".edu-school").value,
+                    school:
+                        box.querySelector(
+                            ".edu-school"
+                        ).value,
 
-                start:
-                    box.querySelector(".edu-start").value,
+                    start:
+                        box.querySelector(
+                            ".edu-start"
+                        ).value,
 
-                end:
-                    box.querySelector(".edu-end").value
+                    end:
+                        box.querySelector(
+                            ".edu-end"
+                        ).value
 
-            });
+                });
 
-        });
+            }
+        );
 
 
     data.profileImage =
@@ -3250,11 +5030,14 @@ function collectCVData() {
         cvSecondary;
 
 
+    data.language =
+        currentLanguage;
+
+
     return data;
 }
 
-
-/* =========================================================
+        /* =========================================================
    CARREGAR CURRÍCULO
 ========================================================= */
 
@@ -3263,17 +5046,28 @@ function loadUserCV() {
     populateCountries();
 
 
-    if (!currentUser || !currentUser.cvData) {
+    if (
+        !currentUser ||
+        !currentUser.cvData
+    ) {
 
-        document.getElementById("email").value =
+        document.getElementById(
+            "email"
+        ).value =
             currentUser
                 ? currentUser.email
                 : "";
 
-        document.getElementById("nome").value =
+
+        document.getElementById(
+            "nome"
+        ).value =
             currentUser
                 ? currentUser.name
                 : "";
+
+
+        updateCV();
 
         return;
     }
@@ -3283,38 +5077,54 @@ function loadUserCV() {
         currentUser.cvData;
 
 
-    Object.keys(data).forEach(key => {
+    Object.keys(data)
+        .forEach(
+            key => {
 
-        const element =
-            document.getElementById(key);
-
-
-        if (
-            element &&
-            typeof data[key] === "string"
-        ) {
-
-            element.value =
-                data[key];
-
-        }
-
-    });
+                const element =
+                    document.getElementById(
+                        key
+                    );
 
 
-    document.getElementById("experiencias")
-        .innerHTML = "";
+                if (
+                    element &&
+                    typeof data[key] === "string"
+                ) {
 
-    document.getElementById("formacoes")
-        .innerHTML = "";
+                    element.value =
+                        data[key];
+
+                }
+
+            }
+        );
 
 
-    (data.experiencias || [])
-        .forEach(item => addExperience(item));
+    document.getElementById(
+        "experiencias"
+    ).innerHTML = "";
 
 
-    (data.formacoes || [])
-        .forEach(item => addEducation(item));
+    document.getElementById(
+        "formacoes"
+    ).innerHTML = "";
+
+
+    (
+        data.experiencias || []
+    ).forEach(
+        item =>
+            addExperience(item)
+    );
+
+
+    (
+        data.formacoes || []
+    ).forEach(
+        item =>
+            addEducation(item)
+    );
 
 
     if (data.template) {
@@ -3337,21 +5147,6 @@ function loadUserCV() {
         cvSecondary =
             data.secondaryColor;
 
-
-        document.getElementById(
-            "cv-output"
-        ).style.setProperty(
-            "--cv-primary",
-            cvPrimary
-        );
-
-        document.getElementById(
-            "cv-output"
-        ).style.setProperty(
-            "--cv-secondary",
-            cvSecondary
-        );
-
     }
 
 
@@ -3362,27 +5157,18 @@ function loadUserCV() {
 
 
         const image =
-            document.getElementById("cv-photo");
+            document.getElementById(
+                "cv-photo"
+            );
 
 
         image.src =
             profileImage;
 
+
         image.style.display =
             "block";
     }
-
-
-    updateCountryPreview(
-        "country-live",
-        "live-country-preview"
-    );
-
-
-    updateCountryPreview(
-        "country-work",
-        "work-country-preview"
-    );
 
 
     updateCV();
@@ -3399,37 +5185,46 @@ function downloadPDF() {
 
 
     const element =
-        document.getElementById("cv-output");
+        document.getElementById(
+            "cv-output"
+        );
 
 
     const name =
         getValue("nome")
-        .replace(/[^a-zA-Z0-9À-ÿ ]/g, "")
-        .replace(/\s+/g, "_")
-        || "curriculo";
+            .replace(
+                /[^a-zA-Z0-9À-ÿ ]/g,
+                ""
+            )
+            .replace(
+                /\s+/g,
+                "_"
+            )
+        ||
+        "curriculo";
 
 
     const options = {
 
-        margin: 0,
+        margin:0,
 
         filename:
             `JobNow_${name}.pdf`,
 
-        image: {
-            type: "jpeg",
-            quality: 0.98
+        image:{
+            type:"jpeg",
+            quality:.98
         },
 
-        html2canvas: {
-            scale: 2,
-            useCORS: true
+        html2canvas:{
+            scale:2,
+            useCORS:true
         },
 
-        jsPDF: {
-            unit: "mm",
-            format: "a4",
-            orientation: "portrait"
+        jsPDF:{
+            unit:"mm",
+            format:"a4",
+            orientation:"portrait"
         }
 
     };
@@ -3440,7 +5235,7 @@ function downloadPDF() {
         .from(element)
         .save();
         }
-        
+
         /* =========================================================
    MODAIS
 ========================================================= */
@@ -3463,26 +5258,28 @@ function closeModal(id) {
 
 document
     .querySelectorAll(".modal")
-    .forEach(modal => {
+    .forEach(
+        modal => {
 
-        modal.addEventListener(
-            "click",
-            event => {
+            modal.addEventListener(
+                "click",
+                event => {
 
-                if (
-                    event.target === modal
-                ) {
+                    if (
+                        event.target === modal
+                    ) {
 
-                    modal.classList.remove(
-                        "active"
-                    );
+                        modal.classList.remove(
+                            "active"
+                        );
+
+                    }
 
                 }
+            );
 
-            }
-        );
-
-    });
+        }
+    );
 
 
 /* =========================================================
@@ -3503,11 +5300,26 @@ function getValue(id) {
 function escapeHTML(value) {
 
     return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
@@ -3526,6 +5338,10 @@ document.addEventListener(
     () => {
 
         populateCountries();
+
+        changeLanguage(
+            currentLanguage
+        );
 
         restoreSession();
 

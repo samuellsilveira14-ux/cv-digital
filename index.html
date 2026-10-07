@@ -6,10 +6,6 @@
 
     <title>JobNow</title>
 
-    <!-- Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-    <!-- Gerador de PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -21,6 +17,8 @@
             --form-bg: #ffffff;
             --text-main: #2d3748;
             --text-muted: #718096;
+            --danger: #e53e3e;
+            --success: #38a169;
         }
 
         * {
@@ -29,29 +27,18 @@
 
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg-color);
+            background: var(--bg-color);
             margin: 0;
-            padding: 0;
             color: var(--text-main);
             min-height: 100vh;
         }
 
-        /* =========================
-           SISTEMA DE TELAS
-        ========================= */
-
-        .screen {
-            display: none;
-            min-height: 100vh;
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
         }
-
-        .screen.active {
-            display: flex;
-        }
-
-        /* =========================
-           BOTÕES
-        ========================= */
 
         button {
             color: white;
@@ -60,7 +47,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            transition: background 0.2s, transform 0.1s;
+            transition: 0.2s;
             font-size: 0.95em;
         }
 
@@ -68,66 +55,51 @@
             transform: scale(0.98);
         }
 
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .btn-primary {
-            background-color: var(--secondary-color);
+            background: var(--secondary-color);
         }
 
         .btn-primary:hover {
-            background-color: #2c5282;
+            background: #2c5282;
         }
 
         .btn-success {
-            background-color: #38a169;
+            background: var(--success);
         }
 
         .btn-success:hover {
-            background-color: #2f855a;
+            background: #2f855a;
         }
 
         .btn-secondary {
-            background-color: #4a5568;
+            background: #4a5568;
         }
 
         .btn-secondary:hover {
-            background-color: #2d3748;
+            background: #2d3748;
         }
 
-        .btn-google {
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+        }
+
+        .screen {
+            display: none;
+            min-height: 100vh;
             width: 100%;
-            background: white;
-            color: #2d3748;
-            border: 1px solid #cbd5e0;
+        }
+
+        .screen.active {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .btn-google:hover {
-            background: #f7fafc;
-        }
-
-        .google-icon {
-            width: 20px;
-            height: 20px;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 22px 0;
-            color: #718096;
-            font-size: 0.85em;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: #e2e8f0;
         }
 
         /* =========================
@@ -150,90 +122,197 @@
 
         #screen-home h1 {
             font-size: 3rem;
-            margin-bottom: 10px;
-            letter-spacing: -1px;
+            margin: 0 0 10px;
         }
 
         #screen-home p {
             font-size: 1.2rem;
-            max-width: 600px;
+            max-width: 650px;
             color: #e2e8f0;
             margin-bottom: 30px;
             line-height: 1.6;
         }
 
+        .home-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
         /* =========================
-           LOGIN
+           AUTH
         ========================= */
 
-        #screen-login {
+        #screen-auth {
             justify-content: center;
             align-items: center;
-            background-color: #edf2f7;
-            padding: 20px;
+            padding: 30px 15px;
+            background: #edf2f7;
         }
 
-        .login-card {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        .auth-card {
             width: 100%;
-            max-width: 430px;
+            max-width: 460px;
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.08);
         }
 
-        .login-card h2 {
+        .auth-card h2 {
             margin-top: 0;
             color: var(--primary-color);
-            margin-bottom: 10px;
         }
 
-        .login-subtitle {
-            color: var(--text-muted);
+        .auth-tabs {
+            display: flex;
             margin-bottom: 25px;
-            line-height: 1.5;
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        .login-card .form-group {
-            margin-bottom: 20px;
+        .auth-tab {
+            flex: 1;
+            background: transparent;
+            color: #718096;
+            border-radius: 0;
+            border-bottom: 3px solid transparent;
         }
 
-        .login-card label {
+        .auth-tab.active {
+            color: var(--secondary-color);
+            border-bottom-color: var(--secondary-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
-            font-size: 0.9em;
+            font-size: .88em;
+            color: #4a5568;
         }
 
-        .login-card input {
+        input,
+        select,
+        textarea {
             width: 100%;
-            padding: 12px;
+            padding: 11px;
             border: 1px solid #cbd5e0;
             border-radius: 6px;
+            background: white;
+            font-size: .95em;
         }
 
-        .google-user {
-            display: none;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: #f7fafc;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(43,108,176,.08);
         }
 
-        .google-user img {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-        }
-
-        .google-user strong {
-            display: block;
-        }
-
-        .google-user small {
+        .password-help {
             color: var(--text-muted);
+            font-size: .78em;
+            margin-top: 5px;
+        }
+
+        .terms-box {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: .85em;
+        }
+
+        .terms-box input {
+            width: auto;
+            margin-top: 3px;
+        }
+
+        .terms-box label {
+            font-weight: normal;
+            margin: 0;
+        }
+
+        .link-button {
+            background: none;
+            border: none;
+            color: var(--secondary-color);
+            padding: 0;
+            font-weight: normal;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .message {
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: .9em;
+        }
+
+        .message.error {
+            display: block;
+            background: #fff5f5;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .message.success {
+            display: block;
+            background: #f0fff4;
+            color: #276749;
+            border: 1px solid #9ae6b4;
+        }
+
+        /* =========================
+           MODAIS
+        ========================= */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 750px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,.2);
+        }
+
+        .modal-content h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .modal-content h3 {
+            color: var(--primary-color);
+        }
+
+        .modal-footer {
+            text-align: right;
+            margin-top: 20px;
         }
 
         /* =========================
@@ -250,19 +329,35 @@
         .config-container {
             width: 100%;
             max-width: 900px;
-            text-align: center;
         }
 
-        .config-container h2 {
-            font-size: 2rem;
-            color: var(--primary-color);
+        .config-header {
+            text-align: center;
             margin-bottom: 30px;
+        }
+
+        .config-header h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .account-bar {
+            background: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 3px 10px rgba(0,0,0,.04);
         }
 
         .template-grid {
             display: grid;
-            grid-template-columns:
-                repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             margin-bottom: 25px;
         }
@@ -273,8 +368,7 @@
             border-radius: 8px;
             border: 2px solid #e2e8f0;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: .2s;
         }
 
         .template-card:hover {
@@ -284,28 +378,25 @@
 
         .template-card.selected {
             border-color: var(--secondary-color);
-            background-color: #ebf8ff;
-            box-shadow:
-                0 4px 12px rgba(66,153,225,0.15);
+            background: #ebf8ff;
         }
 
         .template-card h4 {
-            margin: 0 0 10px 0;
-            font-size: 1.2rem;
+            margin: 0 0 10px;
             color: var(--primary-color);
         }
 
         .template-card p {
             margin: 0;
-            font-size: 0.9rem;
             color: var(--text-muted);
+            font-size: .9em;
         }
 
         .config-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .config-box {
@@ -313,22 +404,17 @@
             padding: 25px;
             border-radius: 8px;
             border: 1px solid #e2e8f0;
-            text-align: left;
         }
 
         .config-box h3 {
             margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
             color: var(--primary-color);
-            border-bottom: 1px solid #edf2f7;
-            padding-bottom: 5px;
         }
 
         .color-picker-wrapper {
             display: flex;
             gap: 12px;
-            justify-content: flex-start;
+            flex-wrap: wrap;
         }
 
         .color-btn {
@@ -336,23 +422,12 @@
             height: 40px;
             border-radius: 50%;
             border: 3px solid transparent;
-            cursor: pointer;
             padding: 0;
         }
 
         .color-btn.active {
             border-color: #2d3748;
             transform: scale(1.1);
-        }
-
-        .select-lang {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            font-size: 1em;
-            background: white;
-            cursor: pointer;
         }
 
         /* =========================
@@ -363,10 +438,9 @@
             display: none;
             grid-template-columns: 480px 1fr;
             gap: 25px;
-            max-width: 1400px;
+            max-width: 1450px;
             margin-inline: auto;
             padding: 20px;
-            width: 100%;
         }
 
         #screen-generator.active {
@@ -374,37 +448,21 @@
         }
 
         .form-panel {
-            background: var(--form-bg);
+            background: white;
             padding: 25px;
             border-radius: 10px;
-            box-shadow:
-                0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,.05);
             max-height: 92vh;
             overflow-y: auto;
         }
 
-        .form-panel::-webkit-scrollbar,
-        #cv-preview-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .form-panel::-webkit-scrollbar-thumb,
-        #cv-preview-container::-webkit-scrollbar-thumb {
-            background: #cbd5e0;
-            border-radius: 4px;
-        }
-
-        h3.form-title {
+        .form-title {
             color: var(--primary-color);
             font-size: 1.1em;
             margin-top: 25px;
             margin-bottom: 15px;
             border-bottom: 2px solid #edf2f7;
             padding-bottom: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
         }
 
         .form-row {
@@ -418,30 +476,15 @@
             min-width: 140px;
         }
 
-        .form-panel label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            font-size: 0.85em;
-            color: #4a5568;
+        .country-select {
+            font-size: .9em;
         }
 
-        .form-panel input,
-        .form-panel select,
-        .form-panel textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e0;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 0.9em;
-        }
-
-        .form-panel input:focus,
-        .form-panel select:focus,
-        .form-panel textarea:focus {
-            outline: none;
-            border-color: var(--secondary-color);
+        .country-preview {
+            display: none;
+            margin-top: 7px;
+            font-size: .82em;
+            color: var(--text-muted);
         }
 
         .dynamic-box {
@@ -452,58 +495,6 @@
             background: #f7fafc;
         }
 
-        /* =========================
-           PAÍSES
-        ========================= */
-
-        .country-select {
-            font-size: 0.95em !important;
-            background: white;
-        }
-
-        .country-preview {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 7px;
-            font-size: 0.85em;
-            color: var(--text-muted);
-        }
-
-        .flag {
-            font-size: 1.3em;
-        }
-
-        /* =========================
-           EMPRESA
-        ========================= */
-
-        .company-input-wrapper {
-            position: relative;
-        }
-
-        .company-input-wrapper input {
-            padding-right: 40px;
-        }
-
-        .company-icon {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        /* =========================
-           PREVIEW
-        ========================= */
-
-        #cv-preview-container {
-            position: relative;
-            height: 92vh;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
         .action-bar {
             display: flex;
             gap: 10px;
@@ -511,17 +502,22 @@
             top: 0;
             z-index: 100;
             margin-bottom: 15px;
+            background: white;
+            padding-bottom: 5px;
         }
 
-        .btn-print {
+        .action-bar button {
             flex: 1;
-            font-size: 1.1em;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            box-shadow:
-                0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* =========================
+           PREVIEW
+        ========================= */
+
+        #cv-preview-container {
+            height: 92vh;
+            overflow-y: auto;
+            padding-right: 10px;
         }
 
         #cv-output {
@@ -531,8 +527,7 @@
             min-height: 297mm;
             margin: 0 auto;
             color: #2d3748;
-            box-shadow:
-                0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 25px rgba(0,0,0,.08);
             font-size: 10pt;
             line-height: 1.5;
         }
@@ -558,21 +553,8 @@
         .cv-sub-section h4 {
             color: var(--cv-secondary);
             font-size: 10pt;
-            margin: 0 0 5px 0;
+            margin: 0 0 5px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .cv-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px 15px;
-            font-size: 9pt;
-        }
-
-        .cv-grid-item strong {
-            color: #4a5568;
-            margin-right: 5px;
         }
 
         .exp-item {
@@ -582,6 +564,7 @@
         .exp-head {
             display: flex;
             justify-content: space-between;
+            align-items: baseline;
         }
 
         .exp-title {
@@ -590,7 +573,24 @@
         }
 
         .exp-date {
+            font-size: 9pt;
             color: var(--text-muted);
+        }
+
+        .exp-sub {
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .cv-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 15px;
+            font-size: 9pt;
+        }
+
+        .hidden {
+            display: none !important;
         }
 
         /* =========================
@@ -607,17 +607,16 @@
         }
 
         .tpl-modern .cv-header h1 {
-            margin: 0 0 5px 0;
+            margin: 0 0 5px;
             color: var(--cv-primary);
             text-transform: uppercase;
             font-size: 24pt;
         }
 
         .tpl-modern .cv-header h2 {
-            margin: 0 0 10px 0;
+            margin: 0 0 10px;
             color: var(--cv-secondary);
             font-size: 13pt;
-            font-weight: 500;
         }
 
         .tpl-modern .cv-contact {
@@ -638,7 +637,6 @@
             padding-bottom: 4px;
             text-transform: uppercase;
             font-size: 11pt;
-            margin-bottom: 12px;
         }
 
         /* =========================
@@ -655,7 +653,7 @@
         }
 
         .tpl-minimal .cv-header h1 {
-            margin: 0 0 5px 0;
+            margin: 0 0 5px;
             color: #1a202c;
             font-size: 22pt;
             font-weight: 300;
@@ -663,7 +661,6 @@
         }
 
         .tpl-minimal .cv-header h2 {
-            margin: 0 0 12px 0;
             color: var(--cv-primary);
             font-size: 11pt;
             text-transform: uppercase;
@@ -679,13 +676,16 @@
             padding-bottom: 12px;
         }
 
+        .tpl-minimal .cv-section {
+            margin-bottom: 20px;
+        }
+
         .tpl-minimal .cv-section h3 {
             color: #1a202c;
             font-size: 10pt;
             text-transform: uppercase;
             border-left: 3px solid var(--cv-primary);
             padding-left: 8px;
-            margin-bottom: 10px;
         }
 
         /* =========================
@@ -706,7 +706,7 @@
         }
 
         .tpl-elegant .cv-header h2 {
-            margin: 5px 0 10px 0;
+            margin: 5px 0 10px;
             color: #718096;
             font-size: 12pt;
             font-style: italic;
@@ -722,20 +722,14 @@
             font-family: Georgia, serif;
             font-size: 12pt;
             border-bottom: 2px double var(--cv-primary);
-            padding-bottom: 3px;
-            margin-bottom: 12px;
-        }
-
-        .hidden {
-            display: none !important;
         }
 
         /* =========================
-           RESPONSIVO
+           RESPONSIVIDADE
         ========================= */
 
         @media (max-width: 1150px) {
-            #screen-generator {
+            #screen-generator.active {
                 grid-template-columns: 1fr;
             }
 
@@ -744,31 +738,36 @@
             }
         }
 
-        @media (max-width: 650px) {
+        @media (max-width: 700px) {
             .config-row {
                 grid-template-columns: 1fr;
+            }
+
+            .auth-card {
+                padding: 25px;
             }
 
             #screen-home h1 {
                 font-size: 2.3rem;
             }
 
-            .login-card {
-                padding: 25px;
-            }
-
             #cv-output {
                 width: 100%;
                 min-height: auto;
+                padding: 25px;
+            }
+
+            .cv-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
-        </head>
-        <body>
+</head>
+<body>
 
-<!-- ==========================================================
+<!-- =========================================================
      HOME
-========================================================== -->
+========================================================= -->
 
 <div id="screen-home" class="screen active">
 
@@ -776,196 +775,284 @@
 
     <p>
         Quer se destacar no mercado de trabalho?
-        O JobNow é o seu primeiro passo!
-        Crie seu currículo aqui e consiga seu tão sonhado emprego.
+        O JobNow ajuda você a criar um currículo profissional
+        personalizado para o país e para a empresa onde deseja trabalhar.
     </p>
 
-    <button
-        class="btn-primary"
-        style="font-size:1.1em;padding:15px 40px;"
-        onclick="navigateTo('screen-login')"
-    >
-        Acessar a Plataforma
-    </button>
+    <div class="home-buttons">
 
-</div>
+        <button
+            class="btn-primary"
+            onclick="openAuth('register')">
+            Criar minha conta
+        </button>
 
-
-<!-- ==========================================================
-     LOGIN
-========================================================== -->
-
-<div id="screen-login" class="screen">
-
-    <div class="login-card">
-
-        <h2>Identifique-se</h2>
-
-        <p class="login-subtitle">
-            Entre na sua conta para começar a criar seu currículo.
-        </p>
-
-        <!-- Dados do usuário Google -->
-
-        <div id="google-user" class="google-user">
-
-            <img id="google-user-photo" src="" alt="Foto">
-
-            <div>
-                <strong id="google-user-name"></strong>
-                <small id="google-user-email"></small>
-            </div>
-
-        </div>
-
-        <form onsubmit="handleLogin(event)">
-
-            <div class="form-group">
-
-                <label>E-mail</label>
-
-                <input
-                    type="email"
-                    id="login-email"
-                    required
-                    placeholder="seu@email.com"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Senha de Acesso</label>
-
-                <input
-                    type="password"
-                    required
-                    placeholder="••••••••"
-                >
-
-            </div>
-
-            <button
-                type="submit"
-                class="btn-primary"
-                style="width:100%;"
-            >
-                Entrar
-            </button>
-
-        </form>
-
-
-        <div class="divider">
-            ou
-        </div>
-
-
-        <!--
-            GOOGLE OAUTH
-
-            SUBSTITUA:
-            SEU_CLIENT_ID.apps.googleusercontent.com
-
-            PELO CLIENT ID GERADO NO GOOGLE CLOUD.
-        -->
-
-        <div
-            id="g_id_onload"
-            data-client_id="SEU_CLIENT_ID.apps.googleusercontent.com"
-            data-callback="handleGoogleCredential"
-            data-auto_prompt="false">
-        </div>
-
-
-        <div
-            id="google-button-container"
-            style="width:100%;"
-        ></div>
-
-
-        <p
-            style="
-                text-align:center;
-                color:#718096;
-                font-size:.78em;
-                margin-top:15px;
-            "
-        >
-            Ao continuar, você concorda com os termos de uso
-            do JobNow.
-        </p>
+        <button
+            class="btn-secondary"
+            onclick="openAuth('login')">
+            Já tenho uma conta
+        </button>
 
     </div>
 
 </div>
 
 
-<!-- ==========================================================
+<!-- =========================================================
+     LOGIN / CADASTRO
+========================================================= -->
+
+<div id="screen-auth" class="screen">
+
+    <div class="auth-card">
+
+        <div class="auth-tabs">
+
+            <button
+                id="tab-login"
+                class="auth-tab active"
+                onclick="switchAuth('login')">
+                Entrar
+            </button>
+
+            <button
+                id="tab-register"
+                class="auth-tab"
+                onclick="switchAuth('register')">
+                Criar conta
+            </button>
+
+        </div>
+
+        <div id="auth-message" class="message"></div>
+
+
+        <!-- LOGIN -->
+
+        <form id="login-form" onsubmit="handleLogin(event)">
+
+            <h2>Entrar no JobNow</h2>
+
+            <div class="form-group">
+                <label>E-mail</label>
+
+                <input
+                    type="email"
+                    id="login-email"
+                    required
+                    placeholder="seu@email.com">
+            </div>
+
+            <div class="form-group">
+                <label>Senha</label>
+
+                <input
+                    type="password"
+                    id="login-password"
+                    required
+                    placeholder="••••••••">
+            </div>
+
+            <button
+                type="submit"
+                class="btn-primary"
+                style="width:100%;">
+                Entrar
+            </button>
+
+        </form>
+
+
+        <!-- CADASTRO -->
+
+        <form
+            id="register-form"
+            class="hidden"
+            onsubmit="handleRegister(event)">
+
+            <h2>Criar sua conta</h2>
+
+            <div class="form-group">
+                <label>Nome completo</label>
+
+                <input
+                    type="text"
+                    id="register-name"
+                    required
+                    autocomplete="name"
+                    placeholder="Seu nome completo">
+            </div>
+
+            <div class="form-group">
+                <label>E-mail</label>
+
+                <input
+                    type="email"
+                    id="register-email"
+                    required
+                    autocomplete="email"
+                    placeholder="seu@email.com">
+            </div>
+
+            <div class="form-group">
+                <label>Senha</label>
+
+                <input
+                    type="password"
+                    id="register-password"
+                    required
+                    minlength="8"
+                    autocomplete="new-password"
+                    placeholder="Crie uma senha">
+
+                <div class="password-help">
+                    A senha deve possuir pelo menos 8 caracteres.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Confirmar senha</label>
+
+                <input
+                    type="password"
+                    id="register-password-confirm"
+                    required
+                    minlength="8"
+                    autocomplete="new-password">
+            </div>
+
+            <div class="terms-box">
+
+                <input
+                    type="checkbox"
+                    id="accept-terms"
+                    required>
+
+                <label for="accept-terms">
+
+                    Li e aceito os
+
+                    <button
+                        type="button"
+                        class="link-button"
+                        onclick="openModal('terms-modal')">
+                        Termos de Uso
+                    </button>
+
+                    e a
+
+                    <button
+                        type="button"
+                        class="link-button"
+                        onclick="openModal('privacy-modal')">
+                        Política de Privacidade
+                    </button>.
+
+                </label>
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn-success"
+                style="width:100%;">
+                Criar conta
+            </button>
+
+        </form>
+
+        <br>
+
+        <button
+            class="btn-secondary"
+            style="width:100%;"
+            onclick="navigateTo('screen-home')">
+            ← Voltar
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
      CONFIGURAÇÃO
-========================================================== -->
+========================================================= -->
 
 <div id="screen-config" class="screen">
 
     <div class="config-container">
 
-        <h2>
-            Configure as preferências do seu documento
-        </h2>
+        <div class="account-bar">
+
+            <div>
+                <strong>Conta:</strong>
+                <span id="account-name"></span>
+            </div>
+
+            <button
+                class="btn-danger"
+                onclick="logout()">
+                Sair
+            </button>
+
+        </div>
+
+        <div class="config-header">
+
+            <h2>Configure seu currículo</h2>
+
+            <p>
+                Escolha o modelo, a aparência e o idioma.
+            </p>
+
+        </div>
 
 
-        <h3
-            style="
-                text-align:left;
-                margin-bottom:15px;
-                color:var(--primary-color);
-            "
-        >
+        <h3 style="color:var(--primary-color);">
             1. Selecione um Modelo
         </h3>
-
 
         <div class="template-grid">
 
             <div
                 class="template-card selected"
                 id="card-tpl-modern"
-                onclick="selectTemplate('tpl-modern')"
-            >
+                onclick="selectTemplate('tpl-modern')">
+
                 <h4>Moderno</h4>
 
                 <p>
                     Layout corporativo ideal para tecnologia,
                     finanças e mercado executivo.
                 </p>
-            </div>
 
+            </div>
 
             <div
                 class="template-card"
                 id="card-tpl-minimal"
-                onclick="selectTemplate('tpl-minimal')"
-            >
+                onclick="selectTemplate('tpl-minimal')">
+
                 <h4>Minimalista</h4>
 
                 <p>
                     Visual clean e direto ao ponto.
-                    Excelente para engenharia e posições seniores.
                 </p>
-            </div>
 
+            </div>
 
             <div
                 class="template-card"
                 id="card-tpl-elegant"
-                onclick="selectTemplate('tpl-elegant')"
-            >
+                onclick="selectTemplate('tpl-elegant')">
+
                 <h4>Elegante</h4>
 
                 <p>
-                    Foco na estética clássica e tipografia refinada.
-                    Ótimo para áreas humanas ou direito.
+                    Estética clássica e tipografia refinada.
                 </p>
+
             </div>
 
         </div>
@@ -982,62 +1069,32 @@
                     <button
                         class="color-btn active"
                         style="background:#1a365d"
-                        onclick="
-                            selectColor(
-                                '#1a365d',
-                                '#2b6cb0',
-                                this
-                            )
-                        "
-                    ></button>
+                        onclick="selectColor('#1a365d','#2b6cb0',this)">
+                    </button>
 
                     <button
                         class="color-btn"
                         style="background:#2c3e50"
-                        onclick="
-                            selectColor(
-                                '#2c3e50',
-                                '#7f8c8d',
-                                this
-                            )
-                        "
-                    ></button>
+                        onclick="selectColor('#2c3e50','#7f8c8d',this)">
+                    </button>
 
                     <button
                         class="color-btn"
                         style="background:#27ae60"
-                        onclick="
-                            selectColor(
-                                '#27ae60',
-                                '#2ecc71',
-                                this
-                            )
-                        "
-                    ></button>
+                        onclick="selectColor('#27ae60','#2ecc71',this)">
+                    </button>
 
                     <button
                         class="color-btn"
                         style="background:#7b2cbf"
-                        onclick="
-                            selectColor(
-                                '#7b2cbf',
-                                '#9d4edd',
-                                this
-                            )
-                        "
-                    ></button>
+                        onclick="selectColor('#7b2cbf','#9d4edd',this)">
+                    </button>
 
                     <button
                         class="color-btn"
                         style="background:#b7094c"
-                        onclick="
-                            selectColor(
-                                '#b7094c',
-                                '#a01a58',
-                                this
-                            )
-                        "
-                    ></button>
+                        onclick="selectColor('#b7094c','#a01a58',this)">
+                    </button>
 
                 </div>
 
@@ -1050,20 +1107,18 @@
 
                 <select
                     id="select-language"
-                    class="select-lang"
-                    onchange="selectLanguage(this.value)"
-                >
+                    onchange="selectLanguage(this.value)">
 
                     <option value="pt">
-                        Português (Brasil)
+                        🇧🇷 Português (Brasil)
                     </option>
 
                     <option value="en">
-                        English (International)
+                        🇺🇸 English
                     </option>
 
                     <option value="es">
-                        Español
+                        🇪🇸 Español
                     </option>
 
                 </select>
@@ -1075,53 +1130,138 @@
 
         <button
             class="btn-success"
-            style="font-size:1.1em;padding:15px 50px;"
-            onclick="goToGenerator()"
-        >
-            Avançar para o Preenchimento
+            style="font-size:1.05em;padding:15px 50px;"
+            onclick="goToGenerator()">
+
+            Avançar para o preenchimento
+
         </button>
 
     </div>
 
 </div>
 
-
-<!-- ==========================================================
+    <!-- =========================================================
      GERADOR
-========================================================== -->
+========================================================= -->
 
 <div id="screen-generator">
 
-    <!-- FORMULÁRIO -->
-
     <div class="form-panel">
 
-        <button
-            class="btn-secondary"
-            style="
-                margin-bottom:20px;
-                padding:8px 15px;
-                font-size:.85em;
-            "
-            onclick="navigateTo('screen-config')"
-        >
-            ← Voltar
-        </button>
+        <div class="action-bar">
+
+            <button
+                class="btn-secondary"
+                onclick="navigateTo('screen-config')">
+                ← Voltar
+            </button>
+
+            <button
+                class="btn-success"
+                onclick="saveCV()">
+                💾 Salvar
+            </button>
+
+            <button
+                class="btn-danger"
+                onclick="logout()">
+                Sair
+            </button>
+
+        </div>
 
 
-        <h2>
-            Preencha seus Dados
-        </h2>
+        <h2>Preencha seus Dados</h2>
 
 
         <!-- =========================
-             1. INFORMAÇÕES PRINCIPAIS
+             LOCALIZAÇÃO PROFISSIONAL
         ========================== -->
 
         <h3 class="form-title">
-            1. Informações Principais
+            1. Objetivo profissional
         </h3>
 
+        <div class="form-group">
+
+            <label>
+                País onde você mora
+            </label>
+
+            <select
+                id="country-live"
+                class="country-select"
+                onchange="updateCountryPreview('country-live','live-country-preview')">
+
+            </select>
+
+            <div
+                id="live-country-preview"
+                class="country-preview">
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                País onde deseja trabalhar
+            </label>
+
+            <select
+                id="country-work"
+                class="country-select"
+                onchange="updateCountryPreview('country-work','work-country-preview')">
+
+            </select>
+
+            <div
+                id="work-country-preview"
+                class="country-preview">
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Empresa onde deseja trabalhar
+            </label>
+
+            <input
+                type="text"
+                id="empresa"
+                placeholder="Ex.: Google, Microsoft, Nubank..."
+                oninput="updateCV()">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Cargo desejado
+            </label>
+
+            <input
+                type="text"
+                id="vaga"
+                placeholder="Ex.: Desenvolvedor Front-end"
+                oninput="updateCV()">
+
+        </div>
+
+
+        <!-- =========================
+             INFORMAÇÕES PRINCIPAIS
+        ========================== -->
+
+        <h3 class="form-title">
+            2. Informações Principais
+        </h3>
 
         <div class="form-group">
 
@@ -1132,11 +1272,9 @@
             <input
                 type="file"
                 accept="image/*"
-                onchange="previewImage(this)"
-            >
+                onchange="previewImage(this)">
 
         </div>
-
 
         <div class="form-group">
 
@@ -1147,50 +1285,7 @@
             <input
                 type="text"
                 id="nome"
-                oninput="updateCV()"
-            >
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label>
-                Cargo Desejado
-            </label>
-
-            <input
-                type="text"
-                id="vaga"
-                placeholder="Ex.: Desenvolvedor de Software"
-                oninput="updateCV()"
-            >
-
-        </div>
-
-
-        <!-- NOVO: EMPRESA -->
-
-        <div class="form-group">
-
-            <label>
-                Empresa onde quer trabalhar
-            </label>
-
-            <div class="company-input-wrapper">
-
-                <input
-                    type="text"
-                    id="empresa"
-                    placeholder="Ex.: Google, Microsoft, Nubank..."
-                    oninput="updateCV()"
-                >
-
-                <span class="company-icon">
-                    🏢
-                </span>
-
-            </div>
+                oninput="updateCV()">
 
         </div>
 
@@ -1199,26 +1294,27 @@
 
             <div class="form-group">
 
-                <label>E-mail</label>
+                <label>
+                    E-mail
+                </label>
 
                 <input
                     type="email"
                     id="email"
-                    oninput="updateCV()"
-                >
+                    oninput="updateCV()">
 
             </div>
 
-
             <div class="form-group">
 
-                <label>Telefone</label>
+                <label>
+                    Telefone
+                </label>
 
                 <input
                     type="text"
                     id="telefone"
-                    oninput="updateCV()"
-                >
+                    oninput="updateCV()">
 
             </div>
 
@@ -1227,110 +1323,25 @@
 
         <div class="form-group">
 
-            <label>Endereço</label>
+            <label>
+                Endereço
+            </label>
 
             <input
                 type="text"
                 id="endereco"
-                oninput="updateCV()"
-            >
-
-        </div>
-            <!-- =========================
-             NOVO: LOCALIZAÇÃO PROFISSIONAL
-        ========================== -->
-
-        <h3 class="form-title">
-            🌎 Localização profissional
-        </h3>
-
-
-        <div class="form-row">
-
-            <div class="form-group">
-
-                <label>
-                    País onde você vive
-                </label>
-
-                <select
-                    id="pais-vive"
-                    class="country-select"
-                    onchange="updateCountryPreview('pais-vive','flag-vive','nome-pais-vive'); updateCV();"
-                >
-
-                    <option value="">
-                        Selecione o país...
-                    </option>
-
-                </select>
-
-
-                <div class="country-preview">
-
-                    <span
-                        id="flag-vive"
-                        class="flag"
-                    >
-                        🌎
-                    </span>
-
-                    <span id="nome-pais-vive">
-                        Nenhum país selecionado
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    País onde quer trabalhar
-                </label>
-
-                <select
-                    id="pais-trabalhar"
-                    class="country-select"
-                    onchange="updateCountryPreview('pais-trabalhar','flag-trabalhar','nome-pais-trabalhar'); updateCV();"
-                >
-
-                    <option value="">
-                        Selecione o país...
-                    </option>
-
-                </select>
-
-
-                <div class="country-preview">
-
-                    <span
-                        id="flag-trabalhar"
-                        class="flag"
-                    >
-                        🌎
-                    </span>
-
-                    <span id="nome-pais-trabalhar">
-                        Nenhum país selecionado
-                    </span>
-
-                </div>
-
-            </div>
+                oninput="updateCV()">
 
         </div>
 
 
         <!-- =========================
-             2. INFORMAÇÕES PESSOAIS
+             DADOS PESSOAIS
         ========================== -->
 
         <h3 class="form-title">
-            2. Informações Pessoais
+            3. Informações Pessoais
         </h3>
-
 
         <div class="form-row">
 
@@ -1343,11 +1354,9 @@
                 <input
                     type="date"
                     id="nascimento"
-                    oninput="updateCV()"
-                >
+                    onchange="updateCV()">
 
             </div>
-
 
             <div class="form-group">
 
@@ -1357,22 +1366,21 @@
 
                 <select
                     id="genero"
-                    onchange="updateCV()"
-                >
+                    onchange="updateCV()">
 
                     <option value="">
                         Não informar
                     </option>
 
-                    <option value="Masculino">
+                    <option>
                         Masculino
                     </option>
 
-                    <option value="Feminino">
+                    <option>
                         Feminino
                     </option>
 
-                    <option value="Outro">
+                    <option>
                         Outro
                     </option>
 
@@ -1394,11 +1402,9 @@
                 <input
                     type="text"
                     id="naturalidade"
-                    oninput="updateCV()"
-                >
+                    oninput="updateCV()">
 
             </div>
-
 
             <div class="form-group">
 
@@ -1409,8 +1415,7 @@
                 <input
                     type="text"
                     id="nacionalidade"
-                    oninput="updateCV()"
-                >
+                    oninput="updateCV()">
 
             </div>
 
@@ -1426,11 +1431,9 @@
                 <input
                     type="text"
                     id="rg"
-                    oninput="updateCV()"
-                >
+                    oninput="updateCV()">
 
             </div>
-
 
             <div class="form-group">
 
@@ -1439,8 +1442,7 @@
                 <input
                     type="text"
                     id="cpf"
-                    oninput="updateCV()"
-                >
+                    oninput="updateCV()">
 
             </div>
 
@@ -1457,33 +1459,31 @@
 
                 <select
                     id="estado_civil"
-                    onchange="updateCV()"
-                >
+                    onchange="updateCV()">
 
                     <option value="">
                         Selecione...
                     </option>
 
-                    <option value="Solteiro(a)">
+                    <option>
                         Solteiro(a)
                     </option>
 
-                    <option value="Casado(a)">
+                    <option>
                         Casado(a)
                     </option>
 
-                    <option value="Divorciado(a)">
+                    <option>
                         Divorciado(a)
                     </option>
 
-                    <option value="Viúvo(a)">
+                    <option>
                         Viúvo(a)
                     </option>
 
                 </select>
 
             </div>
-
 
             <div class="form-group">
 
@@ -1493,18 +1493,17 @@
 
                 <select
                     id="filhos"
-                    onchange="updateCV()"
-                >
+                    onchange="updateCV()">
 
                     <option value="">
                         Selecione...
                     </option>
 
-                    <option value="Não">
+                    <option>
                         Não
                     </option>
 
-                    <option value="Sim">
+                    <option>
                         Sim
                     </option>
 
@@ -1524,159 +1523,130 @@
             <input
                 type="text"
                 id="filiacao"
-                oninput="updateCV()"
-            >
+                oninput="updateCV()">
 
-    </div>
-                             <!-- =========================
-             3. RESUMO
+        </div>
+        
+        <!-- =========================
+             RESUMO
         ========================== -->
 
         <h3 class="form-title">
-            3. Perfil Profissional
+            4. Resumo Profissional
         </h3>
-
 
         <div class="form-group">
 
-            <label>
-                Resumo profissional
-            </label>
-
             <textarea
                 id="resumo"
-                rows="5"
-                placeholder="Conte brevemente sobre sua experiência, competências e objetivos profissionais."
-                oninput="updateCV()"
-            ></textarea>
+                rows="6"
+                placeholder="Descreva sua experiência, competências e objetivos profissionais..."
+                oninput="updateCV()">
+            </textarea>
 
         </div>
 
 
         <!-- =========================
-             4. EXPERIÊNCIA
+             EXPERIÊNCIA
         ========================== -->
 
         <h3 class="form-title">
-            4. Experiência Profissional
+            5. Experiência Profissional
         </h3>
 
-
         <div id="experiencias"></div>
-
 
         <button
             type="button"
             class="btn-primary"
-            onclick="addExperience()"
-        >
+            onclick="addExperience()">
             + Adicionar experiência
         </button>
 
 
         <!-- =========================
-             5. FORMAÇÃO
+             FORMAÇÃO
         ========================== -->
 
         <h3 class="form-title">
-            5. Formação Acadêmica
+            6. Formação Acadêmica
         </h3>
 
-
         <div id="formacoes"></div>
-
 
         <button
             type="button"
             class="btn-primary"
-            onclick="addEducation()"
-        >
+            onclick="addEducation()">
             + Adicionar formação
         </button>
 
 
         <!-- =========================
-             6. COMPETÊNCIAS
+             HABILIDADES
         ========================== -->
 
         <h3 class="form-title">
-            6. Competências
+            7. Habilidades
         </h3>
-
 
         <div class="form-group">
 
-            <label>
-                Competências profissionais
-            </label>
-
             <textarea
-                id="competencias"
+                id="habilidades"
                 rows="4"
-                placeholder="Ex.: JavaScript, liderança, comunicação, gestão de projetos..."
-                oninput="updateCV()"
-            ></textarea>
+                placeholder="Ex.: JavaScript, liderança, comunicação, Excel..."
+                oninput="updateCV()">
+            </textarea>
 
         </div>
 
 
         <!-- =========================
-             7. IDIOMAS
+             IDIOMAS
         ========================== -->
 
         <h3 class="form-title">
-            7. Idiomas
+            8. Idiomas
         </h3>
-
 
         <div class="form-group">
 
-            <label>
-                Idiomas
-            </label>
-
             <textarea
                 id="idiomas"
-                rows="3"
-                placeholder="Ex.: Português — Nativo&#10;Inglês — Avançado&#10;Espanhol — Intermediário"
-                oninput="updateCV()"
-            ></textarea>
+                rows="4"
+                placeholder="Ex.: Português — Nativo&#10;Inglês — Avançado"
+                oninput="updateCV()">
+            </textarea>
 
         </div>
+
+
+        <button
+            class="btn-success"
+            style="width:100%;margin-top:15px;"
+            onclick="downloadPDF()">
+            📄 Baixar currículo em PDF
+        </button>
 
     </div>
 
 
-    <!-- ======================================================
+    <!-- =========================
          PREVIEW
-    ======================================================= -->
+    ========================== -->
 
     <div id="cv-preview-container">
 
-        <div class="action-bar">
-
-            <button
-                class="btn-success btn-print"
-                onclick="downloadPDF()"
-            >
-                📄 Baixar currículo em PDF
-            </button>
-
-        </div>
-
-
-        <div
-            id="cv-output"
-            class="tpl-modern"
-        >
+        <div id="cv-output" class="tpl-modern">
 
             <div class="cv-header">
 
                 <img
                     id="cv-photo"
                     class="cv-photo"
-                    alt="Foto"
-                >
+                    alt="Foto de perfil">
 
                 <div>
 
@@ -1685,7 +1655,7 @@
                     </h1>
 
                     <h2 id="cv-job">
-                        Cargo Desejado
+                        Cargo desejado
                     </h2>
 
                     <div class="cv-contact">
@@ -1709,9 +1679,9 @@
             </div>
 
 
-            <!-- OBJETIVO -->
-
-            <div class="cv-section">
+            <div
+                class="cv-section"
+                id="cv-objective-section">
 
                 <h3>
                     Objetivo profissional
@@ -1719,32 +1689,19 @@
 
                 <div class="cv-grid">
 
-                    <div class="cv-grid-item">
+                    <div>
                         <strong>Empresa:</strong>
-                        <span id="cv-company">
-                            —
-                        </span>
+                        <span id="cv-company"></span>
                     </div>
 
-                    <div class="cv-grid-item">
-                        <strong>Cargo:</strong>
-                        <span id="cv-job-2">
-                            —
-                        </span>
+                    <div>
+                        <strong>País de residência:</strong>
+                        <span id="cv-live-country"></span>
                     </div>
 
-                    <div class="cv-grid-item">
-                        <strong>País onde vive:</strong>
-                        <span id="cv-country-live">
-                            —
-                        </span>
-                    </div>
-
-                    <div class="cv-grid-item">
+                    <div>
                         <strong>País desejado:</strong>
-                        <span id="cv-country-work">
-                            —
-                        </span>
+                        <span id="cv-work-country"></span>
                     </div>
 
                 </div>
@@ -1752,90 +1709,67 @@
             </div>
 
 
-            <!-- PERFIL -->
-
-            <div class="cv-section">
+            <div
+                class="cv-section"
+                id="cv-summary-section">
 
                 <h3>
-                    Perfil profissional
+                    Resumo profissional
                 </h3>
 
                 <div
                     id="cv-summary"
-                    class="cv-text-block"
-                >
-                    —
+                    class="cv-text-block">
                 </div>
 
             </div>
 
 
-            <!-- INFORMAÇÕES PESSOAIS -->
-
-            <div class="cv-section">
-
-                <h3>
-                    Informações pessoais
-                </h3>
-
-                <div
-                    id="cv-personal"
-                    class="cv-grid"
-                ></div>
-
-            </div>
-
-
-            <!-- EXPERIÊNCIA -->
-
-            <div class="cv-section">
+            <div
+                class="cv-section"
+                id="cv-experience-section">
 
                 <h3>
                     Experiência profissional
                 </h3>
 
-                <div id="cv-experience">
-                    —
-                </div>
+                <div id="cv-experience"></div>
 
             </div>
 
-             <!-- FORMAÇÃO -->
 
-            <div class="cv-section">
+            <div
+                class="cv-section"
+                id="cv-education-section">
 
                 <h3>
                     Formação acadêmica
                 </h3>
 
-                <div id="cv-education">
-                    —
-                </div>
+                <div id="cv-education"></div>
 
             </div>
 
 
-            <!-- COMPETÊNCIAS -->
-
-            <div class="cv-section">
+            <div
+                class="cv-section"
+                id="cv-skills-section">
 
                 <h3>
-                    Competências
+                    Habilidades
                 </h3>
 
                 <div
                     id="cv-skills"
-                    class="cv-text-block"
-                >
-                    —
+                    class="cv-text-block">
                 </div>
 
             </div>
 
 
-            <!-- IDIOMAS -->
-
-            <div class="cv-section">
+            <div
+                class="cv-section"
+                id="cv-languages-section">
 
                 <h3>
                     Idiomas
@@ -1843,9 +1777,23 @@
 
                 <div
                     id="cv-languages"
-                    class="cv-text-block"
-                >
-                    —
+                    class="cv-text-block">
+                </div>
+
+            </div>
+
+
+            <div
+                class="cv-section"
+                id="cv-personal-section">
+
+                <h3>
+                    Informações pessoais
+                </h3>
+
+                <div
+                    id="cv-personal"
+                    class="cv-grid">
                 </div>
 
             </div>
@@ -1855,697 +1803,819 @@
     </div>
 
 </div>
-            <script>
+    <!-- =========================================================
+     TERMOS DE USO
+========================================================= -->
 
-/* ==========================================================
-   CONFIGURAÇÕES GLOBAIS
-========================================================== */
+<div
+    id="terms-modal"
+    class="modal">
 
-let selectedTemplate = "tpl-modern";
+    <div class="modal-content">
 
-let selectedPrimary = "#1a365d";
-let selectedSecondary = "#2b6cb0";
+        <h2>Termos de Uso — JobNow</h2>
 
-let selectedLanguage = "pt";
+        <p>
+            Ao utilizar o JobNow, você concorda com estes Termos de Uso.
+        </p>
 
-let googleUser = null;
+        <h3>1. Utilização da plataforma</h3>
+
+        <p>
+            O JobNow disponibiliza ferramentas para criação,
+            edição e exportação de currículos profissionais.
+            O usuário é responsável pelas informações inseridas
+            na plataforma.
+        </p>
+
+        <h3>2. Conta do usuário</h3>
+
+        <p>
+            O usuário deve fornecer informações verdadeiras,
+            manter suas credenciais protegidas e não utilizar
+            a conta de terceiros.
+        </p>
+
+        <h3>3. Currículos</h3>
+
+        <p>
+            O usuário é responsável pelo conteúdo de seu currículo,
+            incluindo informações pessoais, profissionais,
+            acadêmicas e de contato.
+        </p>
+
+        <h3>4. Uso permitido</h3>
+
+        <p>
+            A plataforma não deve ser utilizada para fraude,
+            falsificação de documentos, impersonação ou qualquer
+            atividade ilegal.
+        </p>
+
+        <h3>5. Alterações</h3>
+
+        <p>
+            O JobNow poderá atualizar suas funcionalidades e estes
+            termos quando necessário.
+        </p>
+
+        <div class="modal-footer">
+
+            <button
+                class="btn-primary"
+                onclick="closeModal('terms-modal')">
+                Fechar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 
-/* ==========================================================
-   PAÍSES
-========================================================== */
+<!-- =========================================================
+     POLÍTICA DE PRIVACIDADE
+========================================================= -->
+
+<div
+    id="privacy-modal"
+    class="modal">
+
+    <div class="modal-content">
+
+        <h2>Política de Privacidade — JobNow</h2>
+
+        <p>
+            Esta política explica como os dados fornecidos pelo
+            usuário são tratados nesta versão da plataforma.
+        </p>
+
+        <h3>1. Dados coletados</h3>
+
+        <p>
+            O JobNow pode armazenar nome, e-mail, senha,
+            informações profissionais, localização profissional,
+            currículo e demais informações fornecidas pelo usuário.
+        </p>
+
+        <h3>2. Armazenamento</h3>
+
+        <p>
+            Nesta versão de demonstração, os dados são armazenados
+            localmente no navegador por meio do recurso
+            <strong>localStorage</strong>.
+        </p>
+
+        <h3>3. Uso dos dados</h3>
+
+        <p>
+            Os dados são utilizados para permitir o funcionamento
+            do gerador de currículos e manter as preferências
+            do usuário.
+        </p>
+
+        <h3>4. Senhas</h3>
+
+        <p>
+            Esta versão é um protótipo. Para produção, senhas não
+            devem ser armazenadas diretamente no navegador.
+            Um sistema real deve utilizar servidor, banco de dados,
+            HTTPS e armazenamento seguro com hash de senha.
+        </p>
+
+        <h3>5. Exclusão</h3>
+
+        <p>
+            O usuário pode apagar os dados locais removendo os
+            dados do site nas configurações do navegador.
+        </p>
+
+        <div class="modal-footer">
+
+            <button
+                class="btn-primary"
+                onclick="closeModal('privacy-modal')">
+                Fechar
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <script>
+
+/* =========================================================
+   DADOS DOS PAÍSES
+========================================================= */
 
 const countries = [
-
-    ["BR","🇧🇷","Brasil"],
-    ["US","🇺🇸","Estados Unidos"],
-    ["CA","🇨🇦","Canadá"],
-    ["MX","🇲🇽","México"],
-
-    ["AR","🇦🇷","Argentina"],
-    ["CL","🇨🇱","Chile"],
-    ["CO","🇨🇴","Colômbia"],
-    ["PE","🇵🇪","Peru"],
-    ["UY","🇺🇾","Uruguai"],
-
-    ["PT","🇵🇹","Portugal"],
-    ["ES","🇪🇸","Espanha"],
-    ["FR","🇫🇷","França"],
-    ["DE","🇩🇪","Alemanha"],
-    ["IT","🇮🇹","Itália"],
-    ["GB","🇬🇧","Reino Unido"],
-    ["IE","🇮🇪","Irlanda"],
-    ["NL","🇳🇱","Países Baixos"],
-    ["BE","🇧🇪","Bélgica"],
-    ["CH","🇨🇭","Suíça"],
-    ["AT","🇦🇹","Áustria"],
-
-    ["SE","🇸🇪","Suécia"],
-    ["NO","🇳🇴","Noruega"],
-    ["DK","🇩🇰","Dinamarca"],
-    ["FI","🇫🇮","Finlândia"],
-    ["PL","🇵🇱","Polônia"],
-    ["CZ","🇨🇿","Tchéquia"],
-    ["GR","🇬🇷","Grécia"],
-
-    ["JP","🇯🇵","Japão"],
-    ["CN","🇨🇳","China"],
-    ["KR","🇰🇷","Coreia do Sul"],
-    ["IN","🇮🇳","Índia"],
-    ["SG","🇸🇬","Singapura"],
-
-    ["AU","🇦🇺","Austrália"],
-    ["NZ","🇳🇿","Nova Zelândia"],
-
-    ["ZA","🇿🇦","África do Sul"],
-    ["EG","🇪🇬","Egito"],
-    ["AE","🇦🇪","Emirados Árabes Unidos"]
-
+    { code:"BR", flag:"🇧🇷", name:"Brasil" },
+    { code:"US", flag:"🇺🇸", name:"Estados Unidos" },
+    { code:"CA", flag:"🇨🇦", name:"Canadá" },
+    { code:"MX", flag:"🇲🇽", name:"México" },
+    { code:"AR", flag:"🇦🇷", name:"Argentina" },
+    { code:"CL", flag:"🇨🇱", name:"Chile" },
+    { code:"CO", flag:"🇨🇴", name:"Colômbia" },
+    { code:"PE", flag:"🇵🇪", name:"Peru" },
+    { code:"UY", flag:"🇺🇾", name:"Uruguai" },
+    { code:"PT", flag:"🇵🇹", name:"Portugal" },
+    { code:"ES", flag:"🇪🇸", name:"Espanha" },
+    { code:"FR", flag:"🇫🇷", name:"França" },
+    { code:"DE", flag:"🇩🇪", name:"Alemanha" },
+    { code:"IT", flag:"🇮🇹", name:"Itália" },
+    { code:"GB", flag:"🇬🇧", name:"Reino Unido" },
+    { code:"IE", flag:"🇮🇪", name:"Irlanda" },
+    { code:"NL", flag:"🇳🇱", name:"Países Baixos" },
+    { code:"CH", flag:"🇨🇭", name:"Suíça" },
+    { code:"AU", flag:"🇦🇺", name:"Austrália" },
+    { code:"NZ", flag:"🇳🇿", name:"Nova Zelândia" },
+    { code:"JP", flag:"🇯🇵", name:"Japão" },
+    { code:"KR", flag:"🇰🇷", name:"Coreia do Sul" },
+    { code:"CN", flag:"🇨🇳", name:"China" },
+    { code:"IN", flag:"🇮🇳", name:"Índia" },
+    { code:"SG", flag:"🇸🇬", name:"Singapura" },
+    { code:"AE", flag:"🇦🇪", name:"Emirados Árabes Unidos" },
+    { code:"ZA", flag:"🇿🇦", name:"África do Sul" }
 ];
 
 
-/* ==========================================================
-   INICIALIZAR PAÍSES
-========================================================== */
+/* =========================================================
+   ESTADO DA APLICAÇÃO
+========================================================= */
 
-function populateCountries() {
+let currentUser = null;
 
-    const selectors = [
-        document.getElementById("pais-vive"),
-        document.getElementById("pais-trabalhar")
-    ];
+let selectedTemplate = "tpl-modern";
 
-    selectors.forEach(select => {
+let cvPrimary = "#1a365d";
+let cvSecondary = "#2b6cb0";
 
-        countries.forEach(country => {
-
-            const option = document.createElement("option");
-
-            option.value = country[0];
-
-            option.textContent =
-                `${country[1]} ${country[2]}`;
-
-            option.dataset.flag = country[1];
-            option.dataset.name = country[2];
-
-            select.appendChild(option);
-
-        });
-
-    });
-
-}
+let profileImage = "";
 
 
-/* ==========================================================
-   ATUALIZAR BANDEIRA
-========================================================== */
-
-function updateCountryPreview(
-    selectId,
-    flagId,
-    nameId
-) {
-
-    const select =
-        document.getElementById(selectId);
-
-    const option =
-        select.options[select.selectedIndex];
-
-    if (!option || !option.value) {
-
-        document.getElementById(flagId)
-            .textContent = "🌎";
-
-        document.getElementById(nameId)
-            .textContent = "Nenhum país selecionado";
-
-        return;
-    }
-
-    document.getElementById(flagId)
-        .textContent = option.dataset.flag;
-
-    document.getElementById(nameId)
-        .textContent = option.dataset.name;
-}
-
-
-/* ==========================================================
+/* =========================================================
    NAVEGAÇÃO
-========================================================== */
+========================================================= */
 
 function navigateTo(screenId) {
 
-    document
-        .querySelectorAll(".screen")
-        .forEach(screen => {
-            screen.classList.remove("active");
-        });
+    document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+    });
 
     document
         .getElementById(screenId)
         .classList.add("active");
-
 }
 
 
-/* ==========================================================
-   LOGIN NORMAL
-========================================================== */
+/* =========================================================
+   AUTENTICAÇÃO
+========================================================= */
+
+function openAuth(type) {
+
+    navigateTo("screen-auth");
+
+    switchAuth(type);
+}
+
+
+function switchAuth(type) {
+
+    const loginForm =
+        document.getElementById("login-form");
+
+    const registerForm =
+        document.getElementById("register-form");
+
+    const loginTab =
+        document.getElementById("tab-login");
+
+    const registerTab =
+        document.getElementById("tab-register");
+
+    clearAuthMessage();
+
+    if (type === "login") {
+
+        loginForm.classList.remove("hidden");
+        registerForm.classList.add("hidden");
+
+        loginTab.classList.add("active");
+        registerTab.classList.remove("active");
+
+    } else {
+
+        loginForm.classList.add("hidden");
+        registerForm.classList.remove("hidden");
+
+        loginTab.classList.remove("active");
+        registerTab.classList.add("active");
+    }
+}
+
+
+function getUsers() {
+
+    return JSON.parse(
+        localStorage.getItem("jobnow_users") || "[]"
+    );
+}
+
+
+function saveUsers(users) {
+
+    localStorage.setItem(
+        "jobnow_users",
+        JSON.stringify(users)
+    );
+}
+
+
+function showAuthMessage(message, type = "error") {
+
+    const box =
+        document.getElementById("auth-message");
+
+    box.textContent = message;
+
+    box.className = "message " + type;
+}
+
+
+function clearAuthMessage() {
+
+    const box =
+        document.getElementById("auth-message");
+
+    box.textContent = "";
+
+    box.className = "message";
+}
+
+
+/* =========================================================
+   CADASTRO
+========================================================= */
+
+function handleRegister(event) {
+
+    event.preventDefault();
+
+    clearAuthMessage();
+
+    const name =
+        document.getElementById("register-name")
+        .value.trim();
+
+    const email =
+        document.getElementById("register-email")
+        .value.trim()
+        .toLowerCase();
+
+    const password =
+        document.getElementById("register-password")
+        .value;
+
+    const confirm =
+        document.getElementById("register-password-confirm")
+        .value;
+
+    const terms =
+        document.getElementById("accept-terms")
+        .checked;
+
+
+    if (password.length < 8) {
+
+        showAuthMessage(
+            "A senha precisa ter pelo menos 8 caracteres."
+        );
+
+        return;
+    }
+
+
+    if (password !== confirm) {
+
+        showAuthMessage(
+            "As senhas não são iguais."
+        );
+
+        return;
+    }
+
+
+    if (!terms) {
+
+        showAuthMessage(
+            "Você precisa aceitar os Termos de Uso e a Política de Privacidade."
+        );
+
+        return;
+    }
+
+
+    const users = getUsers();
+
+
+    if (
+        users.some(user => user.email === email)
+    ) {
+
+        showAuthMessage(
+            "Já existe uma conta cadastrada com este e-mail."
+        );
+
+        return;
+    }
+
+
+    const newUser = {
+
+        id:
+            Date.now().toString(),
+
+        name,
+
+        email,
+
+        /*
+         * IMPORTANTE:
+         * Em produção, NÃO armazene senhas assim.
+         * Use autenticação no servidor e hash seguro.
+         */
+        password,
+
+        createdAt:
+            new Date().toISOString(),
+
+        cvData: {}
+
+    };
+
+
+    users.push(newUser);
+
+    saveUsers(users);
+
+
+    showAuthMessage(
+        "Conta criada com sucesso! Agora você pode entrar.",
+        "success"
+    );
+
+
+    document.getElementById("login-email").value =
+        email;
+
+
+    document.getElementById("login-password").value =
+        "";
+
+
+    setTimeout(() => {
+
+        switchAuth("login");
+
+    }, 800);
+}
+
+    /* =========================================================
+   LOGIN
+========================================================= */
 
 function handleLogin(event) {
 
     event.preventDefault();
 
-    const email =
-        document.getElementById("login-email").value;
+    clearAuthMessage();
 
-    document.getElementById("email").value = email;
+    const email =
+        document.getElementById("login-email")
+        .value.trim()
+        .toLowerCase();
+
+    const password =
+        document.getElementById("login-password")
+        .value;
+
+
+    const users = getUsers();
+
+
+    const user =
+        users.find(
+            item =>
+                item.email === email &&
+                item.password === password
+        );
+
+
+    if (!user) {
+
+        showAuthMessage(
+            "E-mail ou senha incorretos."
+        );
+
+        return;
+    }
+
+
+    currentUser = user;
+
+
+    localStorage.setItem(
+        "jobnow_current_user",
+        user.id
+    );
+
+
+    document.getElementById(
+        "account-name"
+    ).textContent = user.name;
+
+
+    loadUserCV();
+
 
     navigateTo("screen-config");
-
 }
 
 
-/* ==========================================================
-   GOOGLE LOGIN
-========================================================== */
+/* =========================================================
+   LOGOUT
+========================================================= */
 
-/*
-    Esta função recebe a credencial JWT enviada
-    pelo Google Identity Services.
+function logout() {
 
-    Em uma aplicação real, o token deve ser validado
-    também no servidor/backend.
-*/
+    currentUser = null;
 
-function handleGoogleCredential(response) {
+    localStorage.removeItem(
+        "jobnow_current_user"
+    );
 
-    try {
+    navigateTo("screen-home");
+}
 
-        const payload =
-            decodeJwtPayload(response.credential);
 
-        googleUser = payload;
+/* =========================================================
+   RECUPERAR SESSÃO
+========================================================= */
 
-        document.getElementById("google-user")
-            .style.display = "flex";
+function restoreSession() {
 
-        document.getElementById("google-user-name")
-            .textContent =
-            payload.name || "Usuário Google";
-
-        document.getElementById("google-user-email")
-            .textContent =
-            payload.email || "";
-
-        document.getElementById("google-user-photo")
-            .src =
-            payload.picture || "";
-
-        document.getElementById("login-email")
-            .value =
-            payload.email || "";
-
-        /*
-            Preenche automaticamente o formulário
-            do currículo.
-        */
-
-        document.getElementById("nome")
-            .value =
-            payload.name || "";
-
-        document.getElementById("email")
-            .value =
-            payload.email || "";
-
-        updateCV();
-
-        navigateTo("screen-config");
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao autenticar com Google:",
-            error
+    const userId =
+        localStorage.getItem(
+            "jobnow_current_user"
         );
 
-        alert(
-            "Não foi possível concluir o login com o Google."
-        );
-
+    if (!userId) {
+        return;
     }
 
-}
 
+    const users = getUsers();
 
-/* ==========================================================
-   DECODIFICAR JWT
-========================================================== */
-
-function decodeJwtPayload(token) {
-
-    const base64Url =
-        token.split(".")[1];
-
-    const base64 =
-        base64Url
-            .replace(/-/g, "+")
-            .replace(/_/g, "/");
-
-    const jsonPayload =
-        decodeURIComponent(
-            atob(base64)
-                .split("")
-                .map(
-                    c =>
-                        "%" +
-                        (
-                            "00" +
-                            c.charCodeAt(0).toString(16)
-                        ).slice(-2)
-                )
-                .join("")
+    const user =
+        users.find(
+            item => item.id === userId
         );
 
-    return JSON.parse(jsonPayload);
-}
 
-
-/* ==========================================================
-   INICIALIZAR BOTÃO GOOGLE
-========================================================== */
-
-window.onload = function() {
-
-    populateCountries();
-
-    /*
-        Renderiza o botão oficial do Google.
-    */
-
-    if (
-        window.google &&
-        google.accounts &&
-        google.accounts.id
-    ) {
-
-        google.accounts.id.initialize({
-
-            client_id:
-                "8024580193-gkrpjg6ac99rtktf8hq3v8ig46fnb2hv.apps.googleusercontent.com",
-
-            callback:
-                handleGoogleCredential
-
-        });
-
-        google.accounts.id.renderButton(
-
-            document.getElementById(
-                "google-button-container"
-            ),
-
-            {
-                theme: "outline",
-                size: "large",
-                width: 380,
-                text: "continue_with",
-                shape: "rectangular"
-            }
-
-        );
-
+    if (!user) {
+        return;
     }
+
+
+    currentUser = user;
+
+
+    document.getElementById(
+        "account-name"
+    ).textContent = user.name;
+
+
+    loadUserCV();
+}
+
+
+/* =========================================================
+   PAÍSES
+========================================================= */
+
+function populateCountries() {
+
+    const live =
+        document.getElementById("country-live");
+
+    const work =
+        document.getElementById("country-work");
+
+
+    live.innerHTML = "";
+    work.innerHTML = "";
+
+
+    countries.forEach(country => {
+
+        const option1 =
+            document.createElement("option");
+
+        option1.value = country.code;
+
+        option1.textContent =
+            `${country.flag} ${country.name}`;
+
+        live.appendChild(option1);
+
+
+        const option2 =
+            document.createElement("option");
+
+        option2.value = country.code;
+
+        option2.textContent =
+            `${country.flag} ${country.name}`;
+
+        work.appendChild(option2);
+
+    });
+
+
+    live.value = "BR";
+
+    work.value = "BR";
+
+
+    updateCountryPreview(
+        "country-live",
+        "live-country-preview"
+    );
+
+
+    updateCountryPreview(
+        "country-work",
+        "work-country-preview"
+    );
+}
+
+
+function getCountry(code) {
+
+    return countries.find(
+        country => country.code === code
+    );
+}
+
+
+function getCountryLabel(code) {
+
+    const country = getCountry(code);
+
+    if (!country) {
+        return "";
+    }
+
+    return `${country.flag} ${country.name}`;
+}
+
+
+function updateCountryPreview(
+    selectId,
+    previewId
+) {
+
+    const select =
+        document.getElementById(selectId);
+
+    const preview =
+        document.getElementById(previewId);
+
+    const country =
+        getCountry(select.value);
+
+
+    if (!country) {
+        preview.style.display = "none";
+        return;
+    }
+
+
+    preview.textContent =
+        `${country.flag} ${country.name}`;
+
+    preview.style.display = "block";
+
 
     updateCV();
+}
 
-};
 
-                /* ==========================================================
-   TEMPLATE
-========================================================== */
+/* =========================================================
+   CONFIGURAÇÃO
+========================================================= */
 
 function selectTemplate(template) {
 
     selectedTemplate = template;
 
-    document
-        .querySelectorAll(".template-card")
-        .forEach(card =>
-            card.classList.remove("selected")
-        );
+
+    document.querySelectorAll(
+        ".template-card"
+    ).forEach(card => {
+
+        card.classList.remove("selected");
+
+    });
+
 
     document
-        .getElementById(
-            "card-" + template
-        )
+        .getElementById("card-" + template)
         .classList.add("selected");
 
-    document
-        .getElementById("cv-output")
-        .className = template;
 
+    const output =
+        document.getElementById("cv-output");
+
+
+    output.className = template;
+
+
+    output.style.setProperty(
+        "--cv-primary",
+        cvPrimary
+    );
+
+    output.style.setProperty(
+        "--cv-secondary",
+        cvSecondary
+    );
 }
 
 
-/* ==========================================================
-   CORES
-========================================================== */
+function selectColor(primary, secondary, button) {
 
-function selectColor(
-    primary,
-    secondary,
-    element
-) {
+    cvPrimary = primary;
+    cvSecondary = secondary;
 
-    selectedPrimary = primary;
-    selectedSecondary = secondary;
 
-    document
-        .querySelectorAll(".color-btn")
-        .forEach(btn =>
-            btn.classList.remove("active")
-        );
+    document.querySelectorAll(
+        ".color-btn"
+    ).forEach(btn => {
 
-    element.classList.add("active");
+        btn.classList.remove("active");
 
-    document.documentElement
-        .style.setProperty(
-            "--cv-primary",
-            primary
-        );
+    });
 
-    document.documentElement
-        .style.setProperty(
-            "--cv-secondary",
-            secondary
-        );
 
+    button.classList.add("active");
+
+
+    const output =
+        document.getElementById("cv-output");
+
+
+    output.style.setProperty(
+        "--cv-primary",
+        primary
+    );
+
+    output.style.setProperty(
+        "--cv-secondary",
+        secondary
+    );
 }
 
-
-/* ==========================================================
-   IDIOMA
-========================================================== */
 
 function selectLanguage(language) {
 
-    selectedLanguage = language;
-
     /*
-        A estrutura está preparada para expansão
-        das traduções do painel e currículo.
-    */
+     * O sistema pode ser expandido para trocar
+     * automaticamente todos os textos do currículo.
+     */
 
+    updateCV();
 }
 
 
-/* ==========================================================
-   IR PARA GERADOR
-========================================================== */
+/* =========================================================
+   ENTRAR NO GERADOR
+========================================================= */
 
 function goToGenerator() {
+
+    if (!currentUser) {
+
+        openAuth("login");
+
+        return;
+    }
+
 
     navigateTo("screen-generator");
 
     updateCV();
-
 }
 
-
-/* ==========================================================
-   FOTO
-========================================================== */
+        
+/* =========================================================
+   IMAGEM
+========================================================= */
 
 function previewImage(input) {
 
-    const file = input.files[0];
+    if (!input.files || !input.files[0]) {
+        return;
+    }
 
-    if (!file) return;
 
     const reader =
         new FileReader();
 
+
     reader.onload = function(event) {
 
-        const photo =
-            document.getElementById("cv-photo");
-
-        photo.src =
+        profileImage =
             event.target.result;
 
-        photo.style.display =
+
+        const image =
+            document.getElementById("cv-photo");
+
+
+        image.src =
+            profileImage;
+
+
+        image.style.display =
             "block";
-
     };
 
-    reader.readAsDataURL(file);
 
+    reader.readAsDataURL(input.files[0]);
 }
 
 
-/* ==========================================================
-   HELPERS
-========================================================== */
-
-function value(id) {
-
-    return (
-        document.getElementById(id)?.value ||
-        ""
-    );
-
-}
-
-
-function escapeHTML(text) {
-
-    return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-                }
-                /* ==========================================================
-   ATUALIZAR CURRÍCULO
-========================================================== */
-
-function updateCV() {
-
-    document.getElementById("cv-name")
-        .textContent =
-        value("nome") || "Seu Nome";
-
-    document.getElementById("cv-job")
-        .textContent =
-        value("vaga") || "Cargo Desejado";
-
-    document.getElementById("cv-job-2")
-        .textContent =
-        value("vaga") || "—";
-
-    document.getElementById("cv-email")
-        .textContent =
-        value("email") || "E-mail";
-
-    document.getElementById("cv-phone")
-        .textContent =
-        value("telefone") || "Telefone";
-
-    document.getElementById("cv-address")
-        .textContent =
-        value("endereco") || "Endereço";
-
-    document.getElementById("cv-company")
-        .textContent =
-        value("empresa") || "—";
-
-
-    /* País onde vive */
-
-    const live =
-        getCountryData(
-            value("pais-vive")
-        );
-
-    document.getElementById(
-        "cv-country-live"
-    ).textContent =
-        live
-            ? `${live.flag} ${live.name}`
-            : "—";
-
-
-    /* País onde quer trabalhar */
-
-    const work =
-        getCountryData(
-            value("pais-trabalhar")
-        );
-
-    document.getElementById(
-        "cv-country-work"
-    ).textContent =
-        work
-            ? `${work.flag} ${work.name}`
-            : "—";
-
-
-    document.getElementById("cv-summary")
-        .textContent =
-        value("resumo") || "—";
-
-
-    /* Informações pessoais */
-
-    const personal =
-        document.getElementById("cv-personal");
-
-    personal.innerHTML = "";
-
-
-    addPersonalItem(
-        personal,
-        "Nascimento",
-        value("nascimento")
-    );
-
-    addPersonalItem(
-        personal,
-        "Gênero",
-        value("genero")
-    );
-
-    addPersonalItem(
-        personal,
-        "Naturalidade",
-        value("naturalidade")
-    );
-
-    addPersonalItem(
-        personal,
-        "Nacionalidade",
-        value("nacionalidade")
-    );
-
-    addPersonalItem(
-        personal,
-        "RG",
-        value("rg")
-    );
-
-    addPersonalItem(
-        personal,
-        "CPF",
-        value("cpf")
-    );
-
-    addPersonalItem(
-        personal,
-        "Estado civil",
-        value("estado_civil")
-    );
-
-    addPersonalItem(
-        personal,
-        "Filhos",
-        value("filhos")
-    );
-
-    addPersonalItem(
-        personal,
-        "Filiação",
-        value("filiacao")
-    );
-
-
-    document.getElementById("cv-skills")
-        .textContent =
-        value("competencias") || "—";
-
-
-    document.getElementById("cv-languages")
-        .textContent =
-        value("idiomas") || "—";
-
-
-    updateExperiencePreview();
-
-    updateEducationPreview();
-
-}
-
-
-function addPersonalItem(
-    container,
-    label,
-    content
-) {
-
-    if (!content) return;
-
-    const item =
-        document.createElement("div");
-
-    item.className =
-        "cv-grid-item";
-
-    item.innerHTML =
-        `<strong>${escapeHTML(label)}:</strong>
-         ${escapeHTML(content)}`;
-
-    container.appendChild(item);
-
-}
-
-                
-/* ==========================================================
-   PAÍS
-========================================================== */
-
-function getCountryData(code) {
-
-    const country =
-        countries.find(
-            item => item[0] === code
-        );
-
-    if (!country) return null;
-
-    return {
-        code: country[0],
-        flag: country[1],
-        name: country[2]
-    };
-
-}
-
-
-/* ==========================================================
-   EXPERIÊNCIA
-========================================================== */
+/* =========================================================
+   EXPERIÊNCIAS
+========================================================= */
 
 let experienceCount = 0;
 
 
-function addExperience() {
+function addExperience(data = {}) {
 
     experienceCount++;
 
-    const id =
-        experienceCount;
 
     const container =
-        document.getElementById(
-            "experiencias"
-        );
+        document.getElementById("experiencias");
+
 
     const box =
         document.createElement("div");
@@ -2553,187 +2623,84 @@ function addExperience() {
     box.className =
         "dynamic-box";
 
-    box.dataset.id = id;
 
     box.innerHTML = `
 
         <div class="form-group">
-
             <label>Cargo</label>
 
             <input
-                type="text"
-                class="exp-cargo"
-                placeholder="Ex.: Analista de Sistemas"
-                oninput="updateCV()"
-            >
-
+                class="exp-role"
+                value="${escapeAttribute(data.role || "")}"
+                oninput="updateCV()">
         </div>
 
         <div class="form-group">
-
             <label>Empresa</label>
 
             <input
-                type="text"
-                class="exp-empresa"
-                placeholder="Nome da empresa"
-                oninput="updateCV()"
-            >
-
+                class="exp-company"
+                value="${escapeAttribute(data.company || "")}"
+                oninput="updateCV()">
         </div>
 
         <div class="form-row">
 
             <div class="form-group">
-
                 <label>Início</label>
 
                 <input
-                    type="text"
-                    class="exp-inicio"
-                    placeholder="Jan. 2023"
-                    oninput="updateCV()"
-                >
-
+                    type="month"
+                    class="exp-start"
+                    value="${escapeAttribute(data.start || "")}"
+                    onchange="updateCV()">
             </div>
 
             <div class="form-group">
-
                 <label>Fim</label>
 
                 <input
-                    type="text"
-                    class="exp-fim"
-                    placeholder="Atual"
-                    oninput="updateCV()"
-                >
-
+                    type="month"
+                    class="exp-end"
+                    value="${escapeAttribute(data.end || "")}"
+                    onchange="updateCV()">
             </div>
 
         </div>
 
         <div class="form-group">
-
             <label>Descrição</label>
 
             <textarea
-                class="exp-descricao"
-                rows="3"
-                oninput="updateCV()"
-            ></textarea>
-
+                class="exp-description"
+                rows="4"
+                oninput="updateCV()">${escapeHTML(data.description || "")}</textarea>
         </div>
 
         <button
             type="button"
-            class="btn-secondary"
-            onclick="this.parentElement.remove(); updateCV();"
-        >
+            class="btn-danger"
+            onclick="removeDynamicBox(this)">
             Remover
         </button>
-
     `;
+
 
     container.appendChild(box);
 
+    updateCV();
 }
 
 
-function updateExperiencePreview() {
-
-    const boxes =
-        document.querySelectorAll(
-            "#experiencias .dynamic-box"
-        );
-
-    const output =
-        document.getElementById(
-            "cv-experience"
-        );
-
-    output.innerHTML = "";
-
-    if (!boxes.length) {
-
-        output.textContent =
-            "Nenhuma experiência informada.";
-
-        return;
-
-    }
-
-
-    boxes.forEach(box => {
-
-        const cargo =
-            box.querySelector(".exp-cargo").value;
-
-        const empresa =
-            box.querySelector(".exp-empresa").value;
-
-        const inicio =
-            box.querySelector(".exp-inicio").value;
-
-        const fim =
-            box.querySelector(".exp-fim").value;
-
-        const descricao =
-            box.querySelector(".exp-descricao").value;
-
-
-        const item =
-            document.createElement("div");
-
-        item.className =
-            "exp-item";
-
-        item.innerHTML = `
-
-            <div class="exp-head">
-
-                <span class="exp-title">
-                    ${escapeHTML(cargo || "Cargo")}
-                </span>
-
-                <span class="exp-date">
-                    ${escapeHTML(inicio)}
-                    ${inicio || fim ? " — " : ""}
-                    ${escapeHTML(fim)}
-                </span>
-
-            </div>
-
-            <div class="exp-sub">
-                ${escapeHTML(empresa || "Empresa")}
-            </div>
-
-            <div class="cv-text-block">
-                ${escapeHTML(descricao || "")}
-            </div>
-
-        `;
-
-        output.appendChild(item);
-
-    });
-
-                }
-                /* ==========================================================
+/* =========================================================
    FORMAÇÃO
-========================================================== */
+========================================================= */
 
-let educationCount = 0;
-
-
-function addEducation() {
-
-    educationCount++;
+function addEducation(data = {}) {
 
     const container =
-        document.getElementById(
-            "formacoes"
-        );
+        document.getElementById("formacoes");
+
 
     const box =
         document.createElement("div");
@@ -2741,166 +2708,713 @@ function addEducation() {
     box.className =
         "dynamic-box";
 
+
     box.innerHTML = `
 
         <div class="form-group">
-
-            <label>Curso</label>
+            <label>Curso / Formação</label>
 
             <input
-                type="text"
-                class="edu-curso"
-                placeholder="Ex.: Engenharia de Software"
-                oninput="updateCV()"
-            >
-
+                class="edu-course"
+                value="${escapeAttribute(data.course || "")}"
+                oninput="updateCV()">
         </div>
 
         <div class="form-group">
-
             <label>Instituição</label>
 
             <input
-                type="text"
-                class="edu-instituicao"
-                placeholder="Nome da instituição"
-                oninput="updateCV()"
-            >
-
+                class="edu-school"
+                value="${escapeAttribute(data.school || "")}"
+                oninput="updateCV()">
         </div>
 
-        <div class="form-group">
+        <div class="form-row">
 
-            <label>Período</label>
+            <div class="form-group">
+                <label>Ano de início</label>
 
-            <input
-                type="text"
-                class="edu-periodo"
-                placeholder="2022 — 2026"
-                oninput="updateCV()"
-            >
+                <input
+                    type="number"
+                    class="edu-start"
+                    value="${escapeAttribute(data.start || "")}"
+                    oninput="updateCV()">
+            </div>
+
+            <div class="form-group">
+                <label>Ano de conclusão</label>
+
+                <input
+                    type="number"
+                    class="edu-end"
+                    value="${escapeAttribute(data.end || "")}"
+                    oninput="updateCV()">
+            </div>
 
         </div>
 
         <button
             type="button"
-            class="btn-secondary"
-            onclick="this.parentElement.remove(); updateCV();"
-        >
+            class="btn-danger"
+            onclick="removeDynamicBox(this)">
             Remover
         </button>
-
     `;
+
 
     container.appendChild(box);
 
+    updateCV();
 }
 
 
-function updateEducationPreview() {
+function removeDynamicBox(button) {
 
-    const boxes =
-        document.querySelectorAll(
-            "#formacoes .dynamic-box"
+    const box =
+        button.closest(".dynamic-box");
+
+    if (box) {
+        box.remove();
+    }
+
+    updateCV();
+}
+
+
+/* =========================================================
+   ATUALIZAÇÃO DO CURRÍCULO
+========================================================= */
+
+function updateCV() {
+
+    const value = id => {
+
+        const element =
+            document.getElementById(id);
+
+        return element
+            ? element.value.trim()
+            : "";
+    };
+
+
+    document.getElementById(
+        "cv-name"
+    ).textContent =
+        value("nome") || "Seu Nome";
+
+
+    document.getElementById(
+        "cv-job"
+    ).textContent =
+        value("vaga") || "Cargo desejado";
+
+
+    document.getElementById(
+        "cv-email"
+    ).textContent =
+        value("email");
+
+
+    document.getElementById(
+        "cv-phone"
+    ).textContent =
+        value("telefone");
+
+
+    document.getElementById(
+        "cv-address"
+    ).textContent =
+        value("endereco");
+
+
+    document.getElementById(
+        "cv-company"
+    ).textContent =
+        value("empresa");
+
+
+    document.getElementById(
+        "cv-live-country"
+    ).textContent =
+        getCountryLabel(
+            value("country-live")
         );
 
-    const output =
-        document.getElementById(
-            "cv-education"
+
+    document.getElementById(
+        "cv-work-country"
+    ).textContent =
+        getCountryLabel(
+            value("country-work")
         );
 
-    output.innerHTML = "";
 
-    if (!boxes.length) {
+    document.getElementById(
+        "cv-summary"
+    ).textContent =
+        value("resumo");
 
-        output.textContent =
-            "Nenhuma formação informada.";
+
+    document.getElementById(
+        "cv-skills"
+    ).textContent =
+        value("habilidades");
+
+
+    document.getElementById(
+        "cv-languages"
+    ).textContent =
+        value("idiomas");
+
+
+    updatePersonalData();
+
+    updateExperiences();
+
+    updateEducation();
+        }
+
+        /* =========================================================
+   DADOS PESSOAIS
+========================================================= */
+
+function updatePersonalData() {
+
+    const container =
+        document.getElementById("cv-personal");
+
+
+    container.innerHTML = "";
+
+
+    const data = [
+
+        [
+            "Nascimento",
+            getValue("nascimento")
+        ],
+
+        [
+            "Gênero",
+            getValue("genero")
+        ],
+
+        [
+            "Naturalidade",
+            getValue("naturalidade")
+        ],
+
+        [
+            "Nacionalidade",
+            getValue("nacionalidade")
+        ],
+
+        [
+            "Estado civil",
+            getValue("estado_civil")
+        ],
+
+        [
+            "Filhos",
+            getValue("filhos")
+        ],
+
+        [
+            "Filiação",
+            getValue("filiacao")
+        ]
+
+    ];
+
+
+    data.forEach(item => {
+
+        if (!item[1]) {
+            return;
+        }
+
+
+        const div =
+            document.createElement("div");
+
+        div.innerHTML =
+            `<strong>${escapeHTML(item[0])}:</strong>
+             ${escapeHTML(item[1])}`;
+
+        container.appendChild(div);
+
+    });
+}
+
+
+/* =========================================================
+   EXPERIÊNCIAS NA PRÉVIA
+========================================================= */
+
+function updateExperiences() {
+
+    const container =
+        document.getElementById("cv-experience");
+
+
+    container.innerHTML = "";
+
+
+    document
+        .querySelectorAll("#experiencias .dynamic-box")
+        .forEach(box => {
+
+            const role =
+                box.querySelector(".exp-role").value.trim();
+
+            const company =
+                box.querySelector(".exp-company").value.trim();
+
+            const start =
+                box.querySelector(".exp-start").value;
+
+            const end =
+                box.querySelector(".exp-end").value;
+
+            const description =
+                box.querySelector(".exp-description").value.trim();
+
+
+            if (
+                !role &&
+                !company &&
+                !description
+            ) {
+                return;
+            }
+
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "exp-item";
+
+
+            const date =
+                [start, end]
+                .filter(Boolean)
+                .join(" — ");
+
+
+            item.innerHTML = `
+
+                <div class="exp-head">
+
+                    <div class="exp-title">
+                        ${escapeHTML(role)}
+                    </div>
+
+                    <div class="exp-date">
+                        ${escapeHTML(date)}
+                    </div>
+
+                </div>
+
+                <div class="exp-sub">
+                    ${escapeHTML(company)}
+                </div>
+
+                <div class="cv-text-block">
+                    ${escapeHTML(description)}
+                </div>
+
+            `;
+
+
+            container.appendChild(item);
+
+        });
+}
+
+
+/* =========================================================
+   FORMAÇÃO NA PRÉVIA
+========================================================= */
+
+function updateEducation() {
+
+    const container =
+        document.getElementById("cv-education");
+
+
+    container.innerHTML = "";
+
+
+    document
+        .querySelectorAll("#formacoes .dynamic-box")
+        .forEach(box => {
+
+            const course =
+                box.querySelector(".edu-course").value.trim();
+
+            const school =
+                box.querySelector(".edu-school").value.trim();
+
+            const start =
+                box.querySelector(".edu-start").value;
+
+            const end =
+                box.querySelector(".edu-end").value;
+
+
+            if (!course && !school) {
+                return;
+            }
+
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "exp-item";
+
+
+            item.innerHTML = `
+
+                <div class="exp-head">
+
+                    <div class="exp-title">
+                        ${escapeHTML(course)}
+                    </div>
+
+                    <div class="exp-date">
+                        ${escapeHTML(
+                            [start, end]
+                            .filter(Boolean)
+                            .join(" — ")
+                        )}
+                    </div>
+
+                </div>
+
+                <div class="exp-sub">
+                    ${escapeHTML(school)}
+                </div>
+
+            `;
+
+
+            container.appendChild(item);
+
+        });
+        }
+                 /* =========================================================
+   SALVAR CURRÍCULO
+========================================================= */
+
+function saveCV() {
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    const users =
+        getUsers();
+
+
+    const index =
+        users.findIndex(
+            user => user.id === currentUser.id
+        );
+
+
+    if (index === -1) {
+        return;
+    }
+
+
+    users[index].cvData =
+        collectCVData();
+
+
+    saveUsers(users);
+
+
+    currentUser =
+        users[index];
+
+
+    alert(
+        "Currículo salvo com sucesso!"
+    );
+}
+
+
+/* =========================================================
+   COLETAR DADOS
+========================================================= */
+
+function collectCVData() {
+
+    const data = {};
+
+
+    document
+        .querySelectorAll(
+            "#screen-generator input, #screen-generator select, #screen-generator textarea"
+        )
+        .forEach(element => {
+
+            if (!element.classList.contains("exp-role") &&
+                !element.classList.contains("exp-company") &&
+                !element.classList.contains("exp-start") &&
+                !element.classList.contains("exp-end") &&
+                !element.classList.contains("exp-description") &&
+                !element.classList.contains("edu-course") &&
+                !element.classList.contains("edu-school") &&
+                !element.classList.contains("edu-start") &&
+                !element.classList.contains("edu-end") &&
+                element.type !== "file") {
+
+                if (element.id) {
+                    data[element.id] = element.value;
+                }
+            }
+        });
+
+
+    data.experiencias = [];
+
+    document
+        .querySelectorAll("#experiencias .dynamic-box")
+        .forEach(box => {
+
+            data.experiencias.push({
+
+                role:
+                    box.querySelector(".exp-role").value,
+
+                company:
+                    box.querySelector(".exp-company").value,
+
+                start:
+                    box.querySelector(".exp-start").value,
+
+                end:
+                    box.querySelector(".exp-end").value,
+
+                description:
+                    box.querySelector(".exp-description").value
+
+            });
+
+        });
+
+
+    data.formacoes = [];
+
+    document
+        .querySelectorAll("#formacoes .dynamic-box")
+        .forEach(box => {
+
+            data.formacoes.push({
+
+                course:
+                    box.querySelector(".edu-course").value,
+
+                school:
+                    box.querySelector(".edu-school").value,
+
+                start:
+                    box.querySelector(".edu-start").value,
+
+                end:
+                    box.querySelector(".edu-end").value
+
+            });
+
+        });
+
+
+    data.profileImage =
+        profileImage;
+
+
+    data.template =
+        selectedTemplate;
+
+
+    data.primaryColor =
+        cvPrimary;
+
+
+    data.secondaryColor =
+        cvSecondary;
+
+
+    return data;
+}
+
+
+/* =========================================================
+   CARREGAR CURRÍCULO
+========================================================= */
+
+function loadUserCV() {
+
+    populateCountries();
+
+
+    if (!currentUser || !currentUser.cvData) {
+
+        document.getElementById("email").value =
+            currentUser
+                ? currentUser.email
+                : "";
+
+        document.getElementById("nome").value =
+            currentUser
+                ? currentUser.name
+                : "";
 
         return;
+    }
+
+
+    const data =
+        currentUser.cvData;
+
+
+    Object.keys(data).forEach(key => {
+
+        const element =
+            document.getElementById(key);
+
+
+        if (
+            element &&
+            typeof data[key] === "string"
+        ) {
+
+            element.value =
+                data[key];
+
+        }
+
+    });
+
+
+    document.getElementById("experiencias")
+        .innerHTML = "";
+
+    document.getElementById("formacoes")
+        .innerHTML = "";
+
+
+    (data.experiencias || [])
+        .forEach(item => addExperience(item));
+
+
+    (data.formacoes || [])
+        .forEach(item => addEducation(item));
+
+
+    if (data.template) {
+
+        selectTemplate(
+            data.template
+        );
 
     }
 
 
-    boxes.forEach(box => {
+    if (
+        data.primaryColor &&
+        data.secondaryColor
+    ) {
 
-        const curso =
-            box.querySelector(
-                ".edu-curso"
-            ).value;
+        cvPrimary =
+            data.primaryColor;
 
-        const instituicao =
-            box.querySelector(
-                ".edu-instituicao"
-            ).value;
-
-        const periodo =
-            box.querySelector(
-                ".edu-periodo"
-            ).value;
+        cvSecondary =
+            data.secondaryColor;
 
 
-        const item =
-            document.createElement("div");
+        document.getElementById(
+            "cv-output"
+        ).style.setProperty(
+            "--cv-primary",
+            cvPrimary
+        );
 
-        item.className =
-            "exp-item";
+        document.getElementById(
+            "cv-output"
+        ).style.setProperty(
+            "--cv-secondary",
+            cvSecondary
+        );
 
-        item.innerHTML = `
+    }
 
-            <div class="exp-head">
 
-                <span class="exp-title">
-                    ${escapeHTML(curso || "Curso")}
-                </span>
+    if (data.profileImage) {
 
-                <span class="exp-date">
-                    ${escapeHTML(periodo)}
-                </span>
+        profileImage =
+            data.profileImage;
 
-            </div>
 
-            <div class="exp-sub">
-                ${escapeHTML(
-                    instituicao ||
-                    "Instituição"
-                )}
-            </div>
+        const image =
+            document.getElementById("cv-photo");
 
-        `;
 
-        output.appendChild(item);
+        image.src =
+            profileImage;
 
-    });
+        image.style.display =
+            "block";
+    }
 
+
+    updateCountryPreview(
+        "country-live",
+        "live-country-preview"
+    );
+
+
+    updateCountryPreview(
+        "country-work",
+        "work-country-preview"
+    );
+
+
+    updateCV();
 }
 
 
-/* ==========================================================
+/* =========================================================
    PDF
-========================================================== */
+========================================================= */
 
 function downloadPDF() {
 
+    saveCV();
+
+
     const element =
-        document.getElementById(
-            "cv-output"
-        );
+        document.getElementById("cv-output");
 
-    const nome =
-        value("nome")
-            .trim()
-            .replace(/\s+/g, "_")
-            .replace(/[^a-zA-Z0-9_-]/g, "");
 
-    const filename =
-        `JobNow_${nome || "Curriculo"}.pdf`;
+    const name =
+        getValue("nome")
+        .replace(/[^a-zA-Z0-9À-ÿ ]/g, "")
+        .replace(/\s+/g, "_")
+        || "curriculo";
 
 
     const options = {
 
         margin: 0,
 
-        filename: filename,
+        filename:
+            `JobNow_${name}.pdf`,
 
         image: {
             type: "jpeg",
@@ -2925,25 +3439,100 @@ function downloadPDF() {
         .set(options)
         .from(element)
         .save();
+        }
+        
+        /* =========================================================
+   MODAIS
+========================================================= */
 
+function openModal(id) {
+
+    document
+        .getElementById(id)
+        .classList.add("active");
 }
 
 
-/* ==========================================================
+function closeModal(id) {
+
+    document
+        .getElementById(id)
+        .classList.remove("active");
+}
+
+
+document
+    .querySelectorAll(".modal")
+    .forEach(modal => {
+
+        modal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target === modal
+                ) {
+
+                    modal.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+    });
+
+
+/* =========================================================
+   UTILITÁRIOS
+========================================================= */
+
+function getValue(id) {
+
+    const element =
+        document.getElementById(id);
+
+    return element
+        ? element.value.trim()
+        : "";
+}
+
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function escapeAttribute(value) {
+
+    return escapeHTML(value);
+}
+
+
+/* =========================================================
    INICIALIZAÇÃO
-========================================================== */
+========================================================= */
 
-document.documentElement
-    .style.setProperty(
-        "--cv-primary",
-        selectedPrimary
-    );
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-document.documentElement
-    .style.setProperty(
-        "--cv-secondary",
-        selectedSecondary
-    );
+        populateCountries();
+
+        restoreSession();
+
+        updateCV();
+
+    }
+);
 
 </script>
 

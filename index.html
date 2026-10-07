@@ -6,48 +6,794 @@
 
     <title>JobNow</title>
 
-    <link rel="stylesheet" href="style.css">
-
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-    <!-- HTML2PDF -->
+    <!-- Gerador de PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-</head>
 
-<body>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2b6cb0;
+            --accent-color: #319795;
+            --bg-color: #f7fafc;
+            --form-bg: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+        }
 
-<!-- =========================================================
-     TELA INICIAL
-========================================================= -->
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* =========================
+           SISTEMA DE TELAS
+        ========================= */
+
+        .screen {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* =========================
+           BOTÕES
+        ========================= */
+
+        button {
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s, transform 0.1s;
+            font-size: 0.95em;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #2c5282;
+        }
+
+        .btn-success {
+            background-color: #38a169;
+        }
+
+        .btn-success:hover {
+            background-color: #2f855a;
+        }
+
+        .btn-secondary {
+            background-color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background-color: #2d3748;
+        }
+
+        .btn-google {
+            width: 100%;
+            background: white;
+            color: #2d3748;
+            border: 1px solid #cbd5e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn-google:hover {
+            background: #f7fafc;
+        }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 22px 0;
+            color: #718096;
+            font-size: 0.85em;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        /* =========================
+           HOME
+        ========================= */
+
+        #screen-home {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(
+                135deg,
+                #1a365d 0%,
+                #2a4365 100%
+            );
+            color: white;
+        }
+
+        #screen-home h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        #screen-home p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            color: #e2e8f0;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           LOGIN
+        ========================= */
+
+        #screen-login {
+            justify-content: center;
+            align-items: center;
+            background-color: #edf2f7;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 430px;
+        }
+
+        .login-card h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .login-card .form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-card label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+        }
+
+        .google-user {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .google-user img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+        }
+
+        .google-user strong {
+            display: block;
+        }
+
+        .google-user small {
+            color: var(--text-muted);
+        }
+
+        /* =========================
+           CONFIGURAÇÃO
+        ========================= */
+
+        #screen-config {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .config-container {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .config-container h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .template-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .template-card:hover {
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .template-card.selected {
+            border-color: var(--secondary-color);
+            background-color: #ebf8ff;
+            box-shadow:
+                0 4px 12px rgba(66,153,225,0.15);
+        }
+
+        .template-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .template-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .config-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .config-box {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .config-box h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            border-bottom: 1px solid #edf2f7;
+            padding-bottom: 5px;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-start;
+        }
+
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .color-btn.active {
+            border-color: #2d3748;
+            transform: scale(1.1);
+        }
+
+        .select-lang {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* =========================
+           GERADOR
+        ========================= */
+
+        #screen-generator {
+            display: none;
+            grid-template-columns: 480px 1fr;
+            gap: 25px;
+            max-width: 1400px;
+            margin-inline: auto;
+            padding: 20px;
+            width: 100%;
+        }
+
+        #screen-generator.active {
+            display: grid;
+        }
+
+        .form-panel {
+            background: var(--form-bg);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.05);
+            max-height: 92vh;
+            overflow-y: auto;
+        }
+
+        .form-panel::-webkit-scrollbar,
+        #cv-preview-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .form-panel::-webkit-scrollbar-thumb,
+        #cv-preview-container::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+
+        h3.form-title {
+            color: var(--primary-color);
+            font-size: 1.1em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .form-panel label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.85em;
+            color: #4a5568;
+        }
+
+        .form-panel input,
+        .form-panel select,
+        .form-panel textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.9em;
+        }
+
+        .form-panel input:focus,
+        .form-panel select:focus,
+        .form-panel textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .dynamic-box {
+            border: 1px dashed #cbd5e0;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            background: #f7fafc;
+        }
+
+        /* =========================
+           PAÍSES
+        ========================= */
+
+        .country-select {
+            font-size: 0.95em !important;
+            background: white;
+        }
+
+        .country-preview {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 7px;
+            font-size: 0.85em;
+            color: var(--text-muted);
+        }
+
+        .flag {
+            font-size: 1.3em;
+        }
+
+        /* =========================
+           EMPRESA
+        ========================= */
+
+        .company-input-wrapper {
+            position: relative;
+        }
+
+        .company-input-wrapper input {
+            padding-right: 40px;
+        }
+
+        .company-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* =========================
+           PREVIEW
+        ========================= */
+
+        #cv-preview-container {
+            position: relative;
+            height: 92vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin-bottom: 15px;
+        }
+
+        .btn-print {
+            flex: 1;
+            font-size: 1.1em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            box-shadow:
+                0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #cv-output {
+            background: white;
+            padding: 15mm;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            color: #2d3748;
+            box-shadow:
+                0 10px 25px rgba(0,0,0,0.08);
+            font-size: 10pt;
+            line-height: 1.5;
+        }
+
+        .cv-photo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .cv-text-block {
+            white-space: pre-wrap;
+            font-size: 9.5pt;
+            text-align: justify;
+        }
+
+        .cv-sub-section {
+            margin-bottom: 15px;
+        }
+
+        .cv-sub-section h4 {
+            color: var(--cv-secondary);
+            font-size: 10pt;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cv-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 15px;
+            font-size: 9pt;
+        }
+
+        .cv-grid-item strong {
+            color: #4a5568;
+            margin-right: 5px;
+        }
+
+        .exp-item {
+            margin-bottom: 14px;
+        }
+
+        .exp-head {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .exp-title {
+            font-weight: bold;
+            color: var(--cv-primary);
+        }
+
+        .exp-date {
+            color: var(--text-muted);
+        }
+
+        /* =========================
+           TEMPLATE MODERNO
+        ========================= */
+
+        .tpl-modern .cv-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 3px solid var(--cv-primary);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tpl-modern .cv-header h1 {
+            margin: 0 0 5px 0;
+            color: var(--cv-primary);
+            text-transform: uppercase;
+            font-size: 24pt;
+        }
+
+        .tpl-modern .cv-header h2 {
+            margin: 0 0 10px 0;
+            color: var(--cv-secondary);
+            font-size: 13pt;
+            font-weight: 500;
+        }
+
+        .tpl-modern .cv-contact {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px 15px;
+            font-size: 9pt;
+            color: var(--text-muted);
+        }
+
+        .tpl-modern .cv-section {
+            margin-bottom: 22px;
+        }
+
+        .tpl-modern .cv-section h3 {
+            color: var(--cv-primary);
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 4px;
+            text-transform: uppercase;
+            font-size: 11pt;
+            margin-bottom: 12px;
+        }
+
+        /* =========================
+           TEMPLATE MINIMALISTA
+        ========================= */
+
+        .tpl-minimal {
+            font-family: Arial, sans-serif;
+        }
+
+        .tpl-minimal .cv-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .tpl-minimal .cv-header h1 {
+            margin: 0 0 5px 0;
+            color: #1a202c;
+            font-size: 22pt;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .tpl-minimal .cv-header h2 {
+            margin: 0 0 12px 0;
+            color: var(--cv-primary);
+            font-size: 11pt;
+            text-transform: uppercase;
+        }
+
+        .tpl-minimal .cv-contact {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            font-size: 8.5pt;
+            color: #4a5568;
+            border-bottom: 1px solid #cbd5e0;
+            padding-bottom: 12px;
+        }
+
+        .tpl-minimal .cv-section h3 {
+            color: #1a202c;
+            font-size: 10pt;
+            text-transform: uppercase;
+            border-left: 3px solid var(--cv-primary);
+            padding-left: 8px;
+            margin-bottom: 10px;
+        }
+
+        /* =========================
+           TEMPLATE ELEGANTE
+        ========================= */
+
+        .tpl-elegant .cv-header {
+            border-left: 6px solid var(--cv-primary);
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+
+        .tpl-elegant .cv-header h1 {
+            margin: 0;
+            color: var(--cv-primary);
+            font-size: 26pt;
+            font-family: Georgia, serif;
+        }
+
+        .tpl-elegant .cv-header h2 {
+            margin: 5px 0 10px 0;
+            color: #718096;
+            font-size: 12pt;
+            font-style: italic;
+        }
+
+        .tpl-elegant .cv-contact {
+            font-size: 9pt;
+            color: #4a5568;
+        }
+
+        .tpl-elegant .cv-section h3 {
+            color: var(--cv-primary);
+            font-family: Georgia, serif;
+            font-size: 12pt;
+            border-bottom: 2px double var(--cv-primary);
+            padding-bottom: 3px;
+            margin-bottom: 12px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* =========================
+           RESPONSIVO
+        ========================= */
+
+        @media (max-width: 1150px) {
+            #screen-generator {
+                grid-template-columns: 1fr;
+            }
+
+            #cv-preview-container {
+                height: auto;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .config-row {
+                grid-template-columns: 1fr;
+            }
+
+            #screen-home h1 {
+                font-size: 2.3rem;
+            }
+
+            .login-card {
+                padding: 25px;
+            }
+
+            #cv-output {
+                width: 100%;
+                min-height: auto;
+            }
+        }
+    </style>
+        </head>
+        <body>
+
+<!-- ==========================================================
+     HOME
+========================================================== -->
 
 <div id="screen-home" class="screen active">
 
-    <div class="home-content">
+    <h1>JobNow</h1>
 
-        <div class="brand-logo">JobNow</div>
+    <p>
+        Quer se destacar no mercado de trabalho?
+        O JobNow é o seu primeiro passo!
+        Crie seu currículo aqui e consiga seu tão sonhado emprego.
+    </p>
 
-        <h1>Seu próximo emprego começa aqui.</h1>
-
-        <p>
-            Crie um currículo profissional, personalizado e pronto para
-            conquistar novas oportunidades no mercado de trabalho.
-        </p>
-
-        <button
-            class="btn-primary btn-large"
-            onclick="navigateTo('screen-login')">
-            Acessar a Plataforma
-        </button>
-
-    </div>
+    <button
+        class="btn-primary"
+        style="font-size:1.1em;padding:15px 40px;"
+        onclick="navigateTo('screen-login')"
+    >
+        Acessar a Plataforma
+    </button>
 
 </div>
 
 
-<!-- =========================================================
+<!-- ==========================================================
      LOGIN
-========================================================= -->
+========================================================== -->
 
 <div id="screen-login" class="screen">
 
@@ -55,182 +801,243 @@
 
         <h2>Identifique-se</h2>
 
-        <p class="login-description">
+        <p class="login-subtitle">
             Entre na sua conta para começar a criar seu currículo.
         </p>
 
-        <!-- LOGIN GOOGLE -->
+        <!-- Dados do usuário Google -->
 
-        <div
-            id="google-login-button"
-            class="google-login-container">
+        <div id="google-user" class="google-user">
+
+            <img id="google-user-photo" src="" alt="Foto">
+
+            <div>
+                <strong id="google-user-name"></strong>
+                <small id="google-user-email"></small>
+            </div>
+
         </div>
 
-        <div class="login-divider">
-            <span>ou</span>
-        </div>
-
-        <!-- LOGIN TRADICIONAL -->
-
-        <form id="login-form">
+        <form onsubmit="handleLogin(event)">
 
             <div class="form-group">
 
-                <label for="login-email">
-                    E-mail
-                </label>
+                <label>E-mail</label>
 
                 <input
                     type="email"
                     id="login-email"
+                    required
                     placeholder="seu@email.com"
-                    required>
+                >
 
             </div>
 
             <div class="form-group">
 
-                <label for="login-password">
-                    Senha
-                </label>
+                <label>Senha de Acesso</label>
 
                 <input
                     type="password"
-                    id="login-password"
+                    required
                     placeholder="••••••••"
-                    required>
+                >
 
             </div>
 
             <button
                 type="submit"
-                class="btn-primary full-width">
+                class="btn-primary"
+                style="width:100%;"
+            >
                 Entrar
             </button>
 
         </form>
 
-        <button
-            class="btn-link"
-            onclick="navigateTo('screen-home')">
-            ← Voltar
-        </button>
+
+        <div class="divider">
+            ou
+        </div>
+
+
+        <!--
+            GOOGLE OAUTH
+
+            SUBSTITUA:
+            SEU_CLIENT_ID.apps.googleusercontent.com
+
+            PELO CLIENT ID GERADO NO GOOGLE CLOUD.
+        -->
+
+        <div
+            id="g_id_onload"
+            data-client_id="SEU_CLIENT_ID.apps.googleusercontent.com"
+            data-callback="handleGoogleCredential"
+            data-auto_prompt="false">
+        </div>
+
+
+        <div
+            id="google-button-container"
+            style="width:100%;"
+        ></div>
+
+
+        <p
+            style="
+                text-align:center;
+                color:#718096;
+                font-size:.78em;
+                margin-top:15px;
+            "
+        >
+            Ao continuar, você concorda com os termos de uso
+            do JobNow.
+        </p>
 
     </div>
 
 </div>
 
 
-<!-- =========================================================
+<!-- ==========================================================
      CONFIGURAÇÃO
-========================================================= -->
+========================================================== -->
 
 <div id="screen-config" class="screen">
 
     <div class="config-container">
 
-        <h2>Configure seu currículo</h2>
+        <h2>
+            Configure as preferências do seu documento
+        </h2>
 
-        <!-- MODELO -->
 
-        <h3 class="config-title">
-            1. Selecione um modelo
+        <h3
+            style="
+                text-align:left;
+                margin-bottom:15px;
+                color:var(--primary-color);
+            "
+        >
+            1. Selecione um Modelo
         </h3>
+
 
         <div class="template-grid">
 
             <div
                 class="template-card selected"
                 id="card-tpl-modern"
-                onclick="selectTemplate('tpl-modern')">
-
-                <div class="template-icon">▣</div>
-
+                onclick="selectTemplate('tpl-modern')"
+            >
                 <h4>Moderno</h4>
 
                 <p>
                     Layout corporativo ideal para tecnologia,
                     finanças e mercado executivo.
                 </p>
-
             </div>
 
 
             <div
                 class="template-card"
                 id="card-tpl-minimal"
-                onclick="selectTemplate('tpl-minimal')">
-
-                <div class="template-icon">☰</div>
-
+                onclick="selectTemplate('tpl-minimal')"
+            >
                 <h4>Minimalista</h4>
 
                 <p>
                     Visual clean e direto ao ponto.
                     Excelente para engenharia e posições seniores.
                 </p>
-
             </div>
 
 
             <div
                 class="template-card"
                 id="card-tpl-elegant"
-                onclick="selectTemplate('tpl-elegant')">
-
-                <div class="template-icon">◇</div>
-
+                onclick="selectTemplate('tpl-elegant')"
+            >
                 <h4>Elegante</h4>
 
                 <p>
-                    Estética clássica e tipografia refinada.
+                    Foco na estética clássica e tipografia refinada.
                     Ótimo para áreas humanas ou direito.
                 </p>
-
             </div>
 
         </div>
 
 
-        <!-- COR E IDIOMA -->
-
         <div class="config-row">
 
             <div class="config-box">
 
-                <h3>2. Cor de destaque</h3>
+                <h3>2. Cor de Destaque</h3>
 
                 <div class="color-picker-wrapper">
 
                     <button
                         class="color-btn active"
                         style="background:#1a365d"
-                        onclick="selectColor('#1a365d','#2b6cb0',this)">
-                    </button>
+                        onclick="
+                            selectColor(
+                                '#1a365d',
+                                '#2b6cb0',
+                                this
+                            )
+                        "
+                    ></button>
 
                     <button
                         class="color-btn"
                         style="background:#2c3e50"
-                        onclick="selectColor('#2c3e50','#7f8c8d',this)">
-                    </button>
+                        onclick="
+                            selectColor(
+                                '#2c3e50',
+                                '#7f8c8d',
+                                this
+                            )
+                        "
+                    ></button>
 
                     <button
                         class="color-btn"
                         style="background:#27ae60"
-                        onclick="selectColor('#27ae60','#2ecc71',this)">
-                    </button>
+                        onclick="
+                            selectColor(
+                                '#27ae60',
+                                '#2ecc71',
+                                this
+                            )
+                        "
+                    ></button>
 
                     <button
                         class="color-btn"
                         style="background:#7b2cbf"
-                        onclick="selectColor('#7b2cbf','#9d4edd',this)">
-                    </button>
+                        onclick="
+                            selectColor(
+                                '#7b2cbf',
+                                '#9d4edd',
+                                this
+                            )
+                        "
+                    ></button>
 
                     <button
                         class="color-btn"
                         style="background:#b7094c"
-                        onclick="selectColor('#b7094c','#a01a58',this)">
-                    </button>
+                        onclick="
+                            selectColor(
+                                '#b7094c',
+                                '#a01a58',
+                                this
+                            )
+                        "
+                    ></button>
 
                 </div>
 
@@ -243,18 +1050,20 @@
 
                 <select
                     id="select-language"
-                    class="select-lang">
+                    class="select-lang"
+                    onchange="selectLanguage(this.value)"
+                >
 
                     <option value="pt">
-                        🇧🇷 Português (Brasil)
+                        Português (Brasil)
                     </option>
 
                     <option value="en">
-                        🇺🇸 English
+                        English (International)
                     </option>
 
                     <option value="es">
-                        🇪🇸 Español
+                        Español
                     </option>
 
                 </select>
@@ -265,11 +1074,11 @@
 
 
         <button
-            class="btn-success btn-large"
-            onclick="goToGenerator()">
-
-            Avançar para o preenchimento
-
+            class="btn-success"
+            style="font-size:1.1em;padding:15px 50px;"
+            onclick="goToGenerator()"
+        >
+            Avançar para o Preenchimento
         </button>
 
     </div>
@@ -277,9 +1086,9 @@
 </div>
 
 
-<!-- =========================================================
+<!-- ==========================================================
      GERADOR
-========================================================= -->
+========================================================== -->
 
 <div id="screen-generator">
 
@@ -288,38 +1097,43 @@
     <div class="form-panel">
 
         <button
-            class="btn-secondary back-button"
-            onclick="navigateTo('screen-config')">
-
+            class="btn-secondary"
+            style="
+                margin-bottom:20px;
+                padding:8px 15px;
+                font-size:.85em;
+            "
+            onclick="navigateTo('screen-config')"
+        >
             ← Voltar
-
         </button>
 
 
-        <h2 data-i18n="titleForm">
-            Preencha seus dados
+        <h2>
+            Preencha seus Dados
         </h2>
 
 
-        <!-- =================================================
-             INFORMAÇÕES PRINCIPAIS
-        ================================================== -->
+        <!-- =========================
+             1. INFORMAÇÕES PRINCIPAIS
+        ========================== -->
 
         <h3 class="form-title">
-            1. Informações principais
+            1. Informações Principais
         </h3>
 
 
         <div class="form-group">
 
             <label>
-                Foto de perfil (opcional)
+                Foto de Perfil (Opcional)
             </label>
 
             <input
                 type="file"
-                id="foto"
-                accept="image/*">
+                accept="image/*"
+                onchange="previewImage(this)"
+            >
 
         </div>
 
@@ -327,13 +1141,14 @@
         <div class="form-group">
 
             <label>
-                Nome completo
+                Nome Completo
             </label>
 
             <input
                 type="text"
                 id="nome"
-                placeholder="Seu nome completo">
+                oninput="updateCV()"
+            >
 
         </div>
 
@@ -341,27 +1156,41 @@
         <div class="form-group">
 
             <label>
-                Cargo / vaga desejada
+                Cargo Desejado
             </label>
 
             <input
                 type="text"
                 id="vaga"
-                placeholder="Ex: Desenvolvedor Front-End">
+                placeholder="Ex.: Desenvolvedor de Software"
+                oninput="updateCV()"
+            >
 
         </div>
 
 
+        <!-- NOVO: EMPRESA -->
+
         <div class="form-group">
 
             <label>
-                Empresa onde deseja trabalhar
+                Empresa onde quer trabalhar
             </label>
 
-            <input
-                type="text"
-                id="empresa-desejada"
-                placeholder="Ex: Google, Microsoft, Nubank...">
+            <div class="company-input-wrapper">
+
+                <input
+                    type="text"
+                    id="empresa"
+                    placeholder="Ex.: Google, Microsoft, Nubank..."
+                    oninput="updateCV()"
+                >
+
+                <span class="company-icon">
+                    🏢
+                </span>
+
+            </div>
 
         </div>
 
@@ -370,28 +1199,26 @@
 
             <div class="form-group">
 
-                <label>
-                    E-mail
-                </label>
+                <label>E-mail</label>
 
                 <input
                     type="email"
                     id="email"
-                    placeholder="seu@email.com">
+                    oninput="updateCV()"
+                >
 
             </div>
 
 
             <div class="form-group">
 
-                <label>
-                    Telefone / WhatsApp
-                </label>
+                <label>Telefone</label>
 
                 <input
                     type="text"
                     id="telefone"
-                    placeholder="+55 (00) 00000-0000">
+                    oninput="updateCV()"
+                >
 
             </div>
 
@@ -400,67 +1227,21 @@
 
         <div class="form-group">
 
-            <label>
-                Endereço / Localização
-            </label>
+            <label>Endereço</label>
 
             <input
                 type="text"
                 id="endereco"
-                placeholder="Cidade - Estado, País">
+                oninput="updateCV()"
+            >
 
         </div>
-
-
-        <!-- =================================================
-             PAÍSES
-        ================================================== -->
+            <!-- =========================
+             NOVO: LOCALIZAÇÃO PROFISSIONAL
+        ========================== -->
 
         <h3 class="form-title">
-            2. Preferências internacionais
-        </h3>
-
-
-        <div class="country-grid">
-
-            <div class="form-group">
-
-                <label for="pais-vive">
-                    País onde você vive
-                </label>
-
-                <select id="pais-vive">
-                    <option value="">
-                        🌎 Selecione seu país
-                    </option>
-                </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="pais-trabalho">
-                    País onde deseja trabalhar
-                </label>
-
-                <select id="pais-trabalho">
-                    <option value="">
-                        🌎 Selecione um país
-                    </option>
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             DADOS PESSOAIS
-        ================================================== -->
-
-        <h3 class="form-title">
-            3. Informações pessoais
+            🌎 Localização profissional
         </h3>
 
 
@@ -469,12 +1250,101 @@
             <div class="form-group">
 
                 <label>
-                    Data de nascimento
+                    País onde você vive
+                </label>
+
+                <select
+                    id="pais-vive"
+                    class="country-select"
+                    onchange="updateCountryPreview('pais-vive','flag-vive','nome-pais-vive'); updateCV();"
+                >
+
+                    <option value="">
+                        Selecione o país...
+                    </option>
+
+                </select>
+
+
+                <div class="country-preview">
+
+                    <span
+                        id="flag-vive"
+                        class="flag"
+                    >
+                        🌎
+                    </span>
+
+                    <span id="nome-pais-vive">
+                        Nenhum país selecionado
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    País onde quer trabalhar
+                </label>
+
+                <select
+                    id="pais-trabalhar"
+                    class="country-select"
+                    onchange="updateCountryPreview('pais-trabalhar','flag-trabalhar','nome-pais-trabalhar'); updateCV();"
+                >
+
+                    <option value="">
+                        Selecione o país...
+                    </option>
+
+                </select>
+
+
+                <div class="country-preview">
+
+                    <span
+                        id="flag-trabalhar"
+                        class="flag"
+                    >
+                        🌎
+                    </span>
+
+                    <span id="nome-pais-trabalhar">
+                        Nenhum país selecionado
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             2. INFORMAÇÕES PESSOAIS
+        ========================== -->
+
+        <h3 class="form-title">
+            2. Informações Pessoais
+        </h3>
+
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>
+                    Data de Nascimento
                 </label>
 
                 <input
                     type="date"
-                    id="nascimento">
+                    id="nascimento"
+                    oninput="updateCV()"
+                >
 
             </div>
 
@@ -485,7 +1355,10 @@
                     Gênero
                 </label>
 
-                <select id="genero">
+                <select
+                    id="genero"
+                    onchange="updateCV()"
+                >
 
                     <option value="">
                         Não informar
@@ -521,7 +1394,8 @@
                 <input
                     type="text"
                     id="naturalidade"
-                    placeholder="Cidade/Estado">
+                    oninput="updateCV()"
+                >
 
             </div>
 
@@ -535,7 +1409,38 @@
                 <input
                     type="text"
                     id="nacionalidade"
-                    placeholder="Brasileiro(a)">
+                    oninput="updateCV()"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>RG</label>
+
+                <input
+                    type="text"
+                    id="rg"
+                    oninput="updateCV()"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>CPF</label>
+
+                <input
+                    type="text"
+                    id="cpf"
+                    oninput="updateCV()"
+                >
 
             </div>
 
@@ -547,58 +1452,31 @@
             <div class="form-group">
 
                 <label>
-                    RG
+                    Estado Civil
                 </label>
 
-                <input
-                    type="text"
-                    id="rg">
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>
-                    CPF
-                </label>
-
-                <input
-                    type="text"
-                    id="cpf">
-
-            </div>
-
-        </div>
-
-
-        <div class="form-row">
-
-            <div class="form-group">
-
-                <label>
-                    Estado civil
-                </label>
-
-                <select id="estado-civil">
+                <select
+                    id="estado_civil"
+                    onchange="updateCV()"
+                >
 
                     <option value="">
                         Selecione...
                     </option>
 
-                    <option>
+                    <option value="Solteiro(a)">
                         Solteiro(a)
                     </option>
 
-                    <option>
+                    <option value="Casado(a)">
                         Casado(a)
                     </option>
 
-                    <option>
+                    <option value="Divorciado(a)">
                         Divorciado(a)
                     </option>
 
-                    <option>
+                    <option value="Viúvo(a)">
                         Viúvo(a)
                     </option>
 
@@ -613,17 +1491,20 @@
                     Filhos?
                 </label>
 
-                <select id="filhos">
+                <select
+                    id="filhos"
+                    onchange="updateCV()"
+                >
 
                     <option value="">
                         Selecione...
                     </option>
 
-                    <option>
+                    <option value="Não">
                         Não
                     </option>
 
-                    <option>
+                    <option value="Sim">
                         Sim
                     </option>
 
@@ -642,32 +1523,18 @@
 
             <input
                 type="text"
-                id="filiacao">
+                id="filiacao"
+                oninput="updateCV()"
+            >
 
-        </div>
-
-
-        <!-- =================================================
-             EXPERIÊNCIA
-        ================================================== -->
+    </div>
+                             <!-- =========================
+             3. RESUMO
+        ========================== -->
 
         <h3 class="form-title">
-            4. Trajetória profissional
+            3. Perfil Profissional
         </h3>
-
-
-        <div class="form-group">
-
-            <label>
-                Objetivo profissional
-            </label>
-
-            <input
-                type="text"
-                id="objetivo"
-                placeholder="Ex: Atuar na área de tecnologia...">
-
-        </div>
 
 
         <div class="form-group">
@@ -678,64 +1545,111 @@
 
             <textarea
                 id="resumo"
-                rows="4"
-                placeholder="Fale resumidamente sobre sua experiência e conquistas..."></textarea>
+                rows="5"
+                placeholder="Conte brevemente sobre sua experiência, competências e objetivos profissionais."
+                oninput="updateCV()"
+            ></textarea>
 
         </div>
 
 
-        <div id="exp-list"></div>
-
-        <button
-            type="button"
-            class="btn-secondary btn-add"
-            onclick="addExp()">
-
-            + Adicionar experiência
-
-        </button>
-
-
-        <!-- =================================================
-             FORMAÇÃO
-        ================================================== -->
+        <!-- =========================
+             4. EXPERIÊNCIA
+        ========================== -->
 
         <h3 class="form-title">
-            5. Formação acadêmica e competências
+            4. Experiência Profissional
         </h3>
 
 
-        <div id="edu-list"></div>
+        <div id="experiencias"></div>
+
 
         <button
             type="button"
-            class="btn-secondary btn-add"
-            onclick="addEdu()">
-
-            + Adicionar formação
-
+            class="btn-primary"
+            onclick="addExperience()"
+        >
+            + Adicionar experiência
         </button>
 
 
-        <div class="form-group skills-group">
+        <!-- =========================
+             5. FORMAÇÃO
+        ========================== -->
+
+        <h3 class="form-title">
+            5. Formação Acadêmica
+        </h3>
+
+
+        <div id="formacoes"></div>
+
+
+        <button
+            type="button"
+            class="btn-primary"
+            onclick="addEducation()"
+        >
+            + Adicionar formação
+        </button>
+
+
+        <!-- =========================
+             6. COMPETÊNCIAS
+        ========================== -->
+
+        <h3 class="form-title">
+            6. Competências
+        </h3>
+
+
+        <div class="form-group">
 
             <label>
-                Competências, habilidades e idiomas
+                Competências profissionais
             </label>
 
             <textarea
                 id="competencias"
                 rows="4"
-                placeholder="Ex: JavaScript, Python, Excel, Inglês avançado..."></textarea>
+                placeholder="Ex.: JavaScript, liderança, comunicação, gestão de projetos..."
+                oninput="updateCV()"
+            ></textarea>
+
+        </div>
+
+
+        <!-- =========================
+             7. IDIOMAS
+        ========================== -->
+
+        <h3 class="form-title">
+            7. Idiomas
+        </h3>
+
+
+        <div class="form-group">
+
+            <label>
+                Idiomas
+            </label>
+
+            <textarea
+                id="idiomas"
+                rows="3"
+                placeholder="Ex.: Português — Nativo&#10;Inglês — Avançado&#10;Espanhol — Intermediário"
+                oninput="updateCV()"
+            ></textarea>
 
         </div>
 
     </div>
 
 
-    <!-- =====================================================
+    <!-- ======================================================
          PREVIEW
-    ====================================================== -->
+    ======================================================= -->
 
     <div id="cv-preview-container">
 
@@ -743,13 +1657,9 @@
 
             <button
                 class="btn-success btn-print"
-                onclick="baixarPDF()">
-
-                ↓
-                <span>
-                    BAIXAR EM PDF
-                </span>
-
+                onclick="downloadPDF()"
+            >
+                📄 Baixar currículo em PDF
             </button>
 
         </div>
@@ -758,61 +1668,38 @@
         <div
             id="cv-output"
             class="tpl-modern"
-            style="
-                --cv-primary:#1a365d;
-                --cv-secondary:#2b6cb0;
-            ">
-
-            <!-- CABEÇALHO -->
+        >
 
             <div class="cv-header">
 
                 <img
-                    id="out-foto"
+                    id="cv-photo"
                     class="cv-photo"
-                    alt="Foto de perfil">
+                    alt="Foto"
+                >
 
-                <div class="cv-header-content">
+                <div>
 
-                    <h1 id="out-nome">
-                        SEU NOME
+                    <h1 id="cv-name">
+                        Seu Nome
                     </h1>
 
-                    <h2
-                        id="out-vaga"
-                        class="hidden">
+                    <h2 id="cv-job">
+                        Cargo Desejado
                     </h2>
-
-                    <div
-                        id="out-empresa-wrap"
-                        class="cv-target-company hidden">
-
-                        🎯
-                        <span id="out-empresa"></span>
-
-                    </div>
 
                     <div class="cv-contact">
 
-                        <span
-                            id="wrap-email"
-                            class="hidden">
-                            ✉
-                            <span id="out-email"></span>
+                        <span id="cv-email">
+                            E-mail
                         </span>
 
-                        <span
-                            id="wrap-tel"
-                            class="hidden">
-                            ☎
-                            <span id="out-tel"></span>
+                        <span id="cv-phone">
+                            Telefone
                         </span>
 
-                        <span
-                            id="wrap-end"
-                            class="hidden">
-                            📍
-                            <span id="out-endereco"></span>
+                        <span id="cv-address">
+                            Endereço
                         </span>
 
                     </div>
@@ -822,92 +1709,1243 @@
             </div>
 
 
-            <!-- PREFERÊNCIAS INTERNACIONAIS -->
-
-            <div
-                class="cv-section"
-                id="sec-paises">
-
-                <h3>
-                    Preferências profissionais
-                </h3>
-
-                <div class="cv-grid">
-
-                    <div
-                        id="wrap-pais-vive"
-                        class="cv-grid-item hidden">
-
-                        <strong>
-                            País onde vive:
-                        </strong>
-
-                        <span id="out-pais-vive"></span>
-
-                    </div>
-
-
-                    <div
-                        id="wrap-pais-trabalho"
-                        class="cv-grid-item hidden">
-
-                        <strong>
-                            País desejado:
-                        </strong>
-
-                        <span id="out-pais-trabalho"></span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- DADOS PESSOAIS -->
+            <!-- OBJETIVO -->
 
             <div class="cv-section">
 
                 <h3>
-                    Informações Pessoais
+                    Objetivo profissional
                 </h3>
 
                 <div class="cv-grid">
 
-                    <div
-                        class="cv-grid-item hidden"
-                        id="wrap-nasc">
-
-                        <strong>
-                            Nascimento:
-                        </strong>
-
-                        <span id="out-nasc"></span>
-
+                    <div class="cv-grid-item">
+                        <strong>Empresa:</strong>
+                        <span id="cv-company">
+                            —
+                        </span>
                     </div>
 
-
-                    <div
-                        class="cv-grid-item hidden"
-                        id="wrap-gen">
-
-                        <strong>
-                            Gênero:
-                        </strong>
-
-                        <span id="out-gen"></span>
-
+                    <div class="cv-grid-item">
+                        <strong>Cargo:</strong>
+                        <span id="cv-job-2">
+                            —
+                        </span>
                     </div>
 
+                    <div class="cv-grid-item">
+                        <strong>País onde vive:</strong>
+                        <span id="cv-country-live">
+                            —
+                        </span>
+                    </div>
 
-                    <div
-                        class="cv-grid-item hidden"
-                        id="wrap-est">
+                    <div class="cv-grid-item">
+                        <strong>País desejado:</strong>
+                        <span id="cv-country-work">
+                            —
+                        </span>
+                    </div>
 
-                        <strong>
-                            Estado Civil:
-                        </strong>
+                </div>
 
-                        <span id="out-est"></span>
+            </div>
 
-                  
+
+            <!-- PERFIL -->
+
+            <div class="cv-section">
+
+                <h3>
+                    Perfil profissional
+                </h3>
+
+                <div
+                    id="cv-summary"
+                    class="cv-text-block"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <!-- INFORMAÇÕES PESSOAIS -->
+
+            <div class="cv-section">
+
+                <h3>
+                    Informações pessoais
+                </h3>
+
+                <div
+                    id="cv-personal"
+                    class="cv-grid"
+                ></div>
+
+            </div>
+
+
+            <!-- EXPERIÊNCIA -->
+
+            <div class="cv-section">
+
+                <h3>
+                    Experiência profissional
+                </h3>
+
+                <div id="cv-experience">
+                    —
+                </div>
+
+            </div>
+
+             <!-- FORMAÇÃO -->
+
+            <div class="cv-section">
+
+                <h3>
+                    Formação acadêmica
+                </h3>
+
+                <div id="cv-education">
+                    —
+                </div>
+
+            </div>
+
+
+            <!-- COMPETÊNCIAS -->
+
+            <div class="cv-section">
+
+                <h3>
+                    Competências
+                </h3>
+
+                <div
+                    id="cv-skills"
+                    class="cv-text-block"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <!-- IDIOMAS -->
+
+            <div class="cv-section">
+
+                <h3>
+                    Idiomas
+                </h3>
+
+                <div
+                    id="cv-languages"
+                    class="cv-text-block"
+                >
+                    —
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+            <script>
+
+/* ==========================================================
+   CONFIGURAÇÕES GLOBAIS
+========================================================== */
+
+let selectedTemplate = "tpl-modern";
+
+let selectedPrimary = "#1a365d";
+let selectedSecondary = "#2b6cb0";
+
+let selectedLanguage = "pt";
+
+let googleUser = null;
+
+
+/* ==========================================================
+   PAÍSES
+========================================================== */
+
+const countries = [
+
+    ["BR","🇧🇷","Brasil"],
+    ["US","🇺🇸","Estados Unidos"],
+    ["CA","🇨🇦","Canadá"],
+    ["MX","🇲🇽","México"],
+
+    ["AR","🇦🇷","Argentina"],
+    ["CL","🇨🇱","Chile"],
+    ["CO","🇨🇴","Colômbia"],
+    ["PE","🇵🇪","Peru"],
+    ["UY","🇺🇾","Uruguai"],
+
+    ["PT","🇵🇹","Portugal"],
+    ["ES","🇪🇸","Espanha"],
+    ["FR","🇫🇷","França"],
+    ["DE","🇩🇪","Alemanha"],
+    ["IT","🇮🇹","Itália"],
+    ["GB","🇬🇧","Reino Unido"],
+    ["IE","🇮🇪","Irlanda"],
+    ["NL","🇳🇱","Países Baixos"],
+    ["BE","🇧🇪","Bélgica"],
+    ["CH","🇨🇭","Suíça"],
+    ["AT","🇦🇹","Áustria"],
+
+    ["SE","🇸🇪","Suécia"],
+    ["NO","🇳🇴","Noruega"],
+    ["DK","🇩🇰","Dinamarca"],
+    ["FI","🇫🇮","Finlândia"],
+    ["PL","🇵🇱","Polônia"],
+    ["CZ","🇨🇿","Tchéquia"],
+    ["GR","🇬🇷","Grécia"],
+
+    ["JP","🇯🇵","Japão"],
+    ["CN","🇨🇳","China"],
+    ["KR","🇰🇷","Coreia do Sul"],
+    ["IN","🇮🇳","Índia"],
+    ["SG","🇸🇬","Singapura"],
+
+    ["AU","🇦🇺","Austrália"],
+    ["NZ","🇳🇿","Nova Zelândia"],
+
+    ["ZA","🇿🇦","África do Sul"],
+    ["EG","🇪🇬","Egito"],
+    ["AE","🇦🇪","Emirados Árabes Unidos"]
+
+];
+
+
+/* ==========================================================
+   INICIALIZAR PAÍSES
+========================================================== */
+
+function populateCountries() {
+
+    const selectors = [
+        document.getElementById("pais-vive"),
+        document.getElementById("pais-trabalhar")
+    ];
+
+    selectors.forEach(select => {
+
+        countries.forEach(country => {
+
+            const option = document.createElement("option");
+
+            option.value = country[0];
+
+            option.textContent =
+                `${country[1]} ${country[2]}`;
+
+            option.dataset.flag = country[1];
+            option.dataset.name = country[2];
+
+            select.appendChild(option);
+
+        });
+
+    });
+
+}
+
+
+/* ==========================================================
+   ATUALIZAR BANDEIRA
+========================================================== */
+
+function updateCountryPreview(
+    selectId,
+    flagId,
+    nameId
+) {
+
+    const select =
+        document.getElementById(selectId);
+
+    const option =
+        select.options[select.selectedIndex];
+
+    if (!option || !option.value) {
+
+        document.getElementById(flagId)
+            .textContent = "🌎";
+
+        document.getElementById(nameId)
+            .textContent = "Nenhum país selecionado";
+
+        return;
+    }
+
+    document.getElementById(flagId)
+        .textContent = option.dataset.flag;
+
+    document.getElementById(nameId)
+        .textContent = option.dataset.name;
+}
+
+
+/* ==========================================================
+   NAVEGAÇÃO
+========================================================== */
+
+function navigateTo(screenId) {
+
+    document
+        .querySelectorAll(".screen")
+        .forEach(screen => {
+            screen.classList.remove("active");
+        });
+
+    document
+        .getElementById(screenId)
+        .classList.add("active");
+
+}
+
+
+/* ==========================================================
+   LOGIN NORMAL
+========================================================== */
+
+function handleLogin(event) {
+
+    event.preventDefault();
+
+    const email =
+        document.getElementById("login-email").value;
+
+    document.getElementById("email").value = email;
+
+    navigateTo("screen-config");
+
+}
+
+
+/* ==========================================================
+   GOOGLE LOGIN
+========================================================== */
+
+/*
+    Esta função recebe a credencial JWT enviada
+    pelo Google Identity Services.
+
+    Em uma aplicação real, o token deve ser validado
+    também no servidor/backend.
+*/
+
+function handleGoogleCredential(response) {
+
+    try {
+
+        const payload =
+            decodeJwtPayload(response.credential);
+
+        googleUser = payload;
+
+        document.getElementById("google-user")
+            .style.display = "flex";
+
+        document.getElementById("google-user-name")
+            .textContent =
+            payload.name || "Usuário Google";
+
+        document.getElementById("google-user-email")
+            .textContent =
+            payload.email || "";
+
+        document.getElementById("google-user-photo")
+            .src =
+            payload.picture || "";
+
+        document.getElementById("login-email")
+            .value =
+            payload.email || "";
+
+        /*
+            Preenche automaticamente o formulário
+            do currículo.
+        */
+
+        document.getElementById("nome")
+            .value =
+            payload.name || "";
+
+        document.getElementById("email")
+            .value =
+            payload.email || "";
+
+        updateCV();
+
+        navigateTo("screen-config");
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao autenticar com Google:",
+            error
+        );
+
+        alert(
+            "Não foi possível concluir o login com o Google."
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   DECODIFICAR JWT
+========================================================== */
+
+function decodeJwtPayload(token) {
+
+    const base64Url =
+        token.split(".")[1];
+
+    const base64 =
+        base64Url
+            .replace(/-/g, "+")
+            .replace(/_/g, "/");
+
+    const jsonPayload =
+        decodeURIComponent(
+            atob(base64)
+                .split("")
+                .map(
+                    c =>
+                        "%" +
+                        (
+                            "00" +
+                            c.charCodeAt(0).toString(16)
+                        ).slice(-2)
+                )
+                .join("")
+        );
+
+    return JSON.parse(jsonPayload);
+}
+
+
+/* ==========================================================
+   INICIALIZAR BOTÃO GOOGLE
+========================================================== */
+
+window.onload = function() {
+
+    populateCountries();
+
+    /*
+        Renderiza o botão oficial do Google.
+    */
+
+    if (
+        window.google &&
+        google.accounts &&
+        google.accounts.id
+    ) {
+
+        google.accounts.id.initialize({
+
+            client_id:
+                "8024580193-gkrpjg6ac99rtktf8hq3v8ig46fnb2hv.apps.googleusercontent.com",
+
+            callback:
+                handleGoogleCredential
+
+        });
+
+        google.accounts.id.renderButton(
+
+            document.getElementById(
+                "google-button-container"
+            ),
+
+            {
+                theme: "outline",
+                size: "large",
+                width: 380,
+                text: "continue_with",
+                shape: "rectangular"
+            }
+
+        );
+
+    }
+
+    updateCV();
+
+};
+
+                /* ==========================================================
+   TEMPLATE
+========================================================== */
+
+function selectTemplate(template) {
+
+    selectedTemplate = template;
+
+    document
+        .querySelectorAll(".template-card")
+        .forEach(card =>
+            card.classList.remove("selected")
+        );
+
+    document
+        .getElementById(
+            "card-" + template
+        )
+        .classList.add("selected");
+
+    document
+        .getElementById("cv-output")
+        .className = template;
+
+}
+
+
+/* ==========================================================
+   CORES
+========================================================== */
+
+function selectColor(
+    primary,
+    secondary,
+    element
+) {
+
+    selectedPrimary = primary;
+    selectedSecondary = secondary;
+
+    document
+        .querySelectorAll(".color-btn")
+        .forEach(btn =>
+            btn.classList.remove("active")
+        );
+
+    element.classList.add("active");
+
+    document.documentElement
+        .style.setProperty(
+            "--cv-primary",
+            primary
+        );
+
+    document.documentElement
+        .style.setProperty(
+            "--cv-secondary",
+            secondary
+        );
+
+}
+
+
+/* ==========================================================
+   IDIOMA
+========================================================== */
+
+function selectLanguage(language) {
+
+    selectedLanguage = language;
+
+    /*
+        A estrutura está preparada para expansão
+        das traduções do painel e currículo.
+    */
+
+}
+
+
+/* ==========================================================
+   IR PARA GERADOR
+========================================================== */
+
+function goToGenerator() {
+
+    navigateTo("screen-generator");
+
+    updateCV();
+
+}
+
+
+/* ==========================================================
+   FOTO
+========================================================== */
+
+function previewImage(input) {
+
+    const file = input.files[0];
+
+    if (!file) return;
+
+    const reader =
+        new FileReader();
+
+    reader.onload = function(event) {
+
+        const photo =
+            document.getElementById("cv-photo");
+
+        photo.src =
+            event.target.result;
+
+        photo.style.display =
+            "block";
+
+    };
+
+    reader.readAsDataURL(file);
+
+}
+
+
+/* ==========================================================
+   HELPERS
+========================================================== */
+
+function value(id) {
+
+    return (
+        document.getElementById(id)?.value ||
+        ""
+    );
+
+}
+
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+                }
+                /* ==========================================================
+   ATUALIZAR CURRÍCULO
+========================================================== */
+
+function updateCV() {
+
+    document.getElementById("cv-name")
+        .textContent =
+        value("nome") || "Seu Nome";
+
+    document.getElementById("cv-job")
+        .textContent =
+        value("vaga") || "Cargo Desejado";
+
+    document.getElementById("cv-job-2")
+        .textContent =
+        value("vaga") || "—";
+
+    document.getElementById("cv-email")
+        .textContent =
+        value("email") || "E-mail";
+
+    document.getElementById("cv-phone")
+        .textContent =
+        value("telefone") || "Telefone";
+
+    document.getElementById("cv-address")
+        .textContent =
+        value("endereco") || "Endereço";
+
+    document.getElementById("cv-company")
+        .textContent =
+        value("empresa") || "—";
+
+
+    /* País onde vive */
+
+    const live =
+        getCountryData(
+            value("pais-vive")
+        );
+
+    document.getElementById(
+        "cv-country-live"
+    ).textContent =
+        live
+            ? `${live.flag} ${live.name}`
+            : "—";
+
+
+    /* País onde quer trabalhar */
+
+    const work =
+        getCountryData(
+            value("pais-trabalhar")
+        );
+
+    document.getElementById(
+        "cv-country-work"
+    ).textContent =
+        work
+            ? `${work.flag} ${work.name}`
+            : "—";
+
+
+    document.getElementById("cv-summary")
+        .textContent =
+        value("resumo") || "—";
+
+
+    /* Informações pessoais */
+
+    const personal =
+        document.getElementById("cv-personal");
+
+    personal.innerHTML = "";
+
+
+    addPersonalItem(
+        personal,
+        "Nascimento",
+        value("nascimento")
+    );
+
+    addPersonalItem(
+        personal,
+        "Gênero",
+        value("genero")
+    );
+
+    addPersonalItem(
+        personal,
+        "Naturalidade",
+        value("naturalidade")
+    );
+
+    addPersonalItem(
+        personal,
+        "Nacionalidade",
+        value("nacionalidade")
+    );
+
+    addPersonalItem(
+        personal,
+        "RG",
+        value("rg")
+    );
+
+    addPersonalItem(
+        personal,
+        "CPF",
+        value("cpf")
+    );
+
+    addPersonalItem(
+        personal,
+        "Estado civil",
+        value("estado_civil")
+    );
+
+    addPersonalItem(
+        personal,
+        "Filhos",
+        value("filhos")
+    );
+
+    addPersonalItem(
+        personal,
+        "Filiação",
+        value("filiacao")
+    );
+
+
+    document.getElementById("cv-skills")
+        .textContent =
+        value("competencias") || "—";
+
+
+    document.getElementById("cv-languages")
+        .textContent =
+        value("idiomas") || "—";
+
+
+    updateExperiencePreview();
+
+    updateEducationPreview();
+
+}
+
+
+function addPersonalItem(
+    container,
+    label,
+    content
+) {
+
+    if (!content) return;
+
+    const item =
+        document.createElement("div");
+
+    item.className =
+        "cv-grid-item";
+
+    item.innerHTML =
+        `<strong>${escapeHTML(label)}:</strong>
+         ${escapeHTML(content)}`;
+
+    container.appendChild(item);
+
+}
+
+                
+/* ==========================================================
+   PAÍS
+========================================================== */
+
+function getCountryData(code) {
+
+    const country =
+        countries.find(
+            item => item[0] === code
+        );
+
+    if (!country) return null;
+
+    return {
+        code: country[0],
+        flag: country[1],
+        name: country[2]
+    };
+
+}
+
+
+/* ==========================================================
+   EXPERIÊNCIA
+========================================================== */
+
+let experienceCount = 0;
+
+
+function addExperience() {
+
+    experienceCount++;
+
+    const id =
+        experienceCount;
+
+    const container =
+        document.getElementById(
+            "experiencias"
+        );
+
+    const box =
+        document.createElement("div");
+
+    box.className =
+        "dynamic-box";
+
+    box.dataset.id = id;
+
+    box.innerHTML = `
+
+        <div class="form-group">
+
+            <label>Cargo</label>
+
+            <input
+                type="text"
+                class="exp-cargo"
+                placeholder="Ex.: Analista de Sistemas"
+                oninput="updateCV()"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Empresa</label>
+
+            <input
+                type="text"
+                class="exp-empresa"
+                placeholder="Nome da empresa"
+                oninput="updateCV()"
+            >
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Início</label>
+
+                <input
+                    type="text"
+                    class="exp-inicio"
+                    placeholder="Jan. 2023"
+                    oninput="updateCV()"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Fim</label>
+
+                <input
+                    type="text"
+                    class="exp-fim"
+                    placeholder="Atual"
+                    oninput="updateCV()"
+                >
+
+            </div>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Descrição</label>
+
+            <textarea
+                class="exp-descricao"
+                rows="3"
+                oninput="updateCV()"
+            ></textarea>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-secondary"
+            onclick="this.parentElement.remove(); updateCV();"
+        >
+            Remover
+        </button>
+
+    `;
+
+    container.appendChild(box);
+
+}
+
+
+function updateExperiencePreview() {
+
+    const boxes =
+        document.querySelectorAll(
+            "#experiencias .dynamic-box"
+        );
+
+    const output =
+        document.getElementById(
+            "cv-experience"
+        );
+
+    output.innerHTML = "";
+
+    if (!boxes.length) {
+
+        output.textContent =
+            "Nenhuma experiência informada.";
+
+        return;
+
+    }
+
+
+    boxes.forEach(box => {
+
+        const cargo =
+            box.querySelector(".exp-cargo").value;
+
+        const empresa =
+            box.querySelector(".exp-empresa").value;
+
+        const inicio =
+            box.querySelector(".exp-inicio").value;
+
+        const fim =
+            box.querySelector(".exp-fim").value;
+
+        const descricao =
+            box.querySelector(".exp-descricao").value;
+
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "exp-item";
+
+        item.innerHTML = `
+
+            <div class="exp-head">
+
+                <span class="exp-title">
+                    ${escapeHTML(cargo || "Cargo")}
+                </span>
+
+                <span class="exp-date">
+                    ${escapeHTML(inicio)}
+                    ${inicio || fim ? " — " : ""}
+                    ${escapeHTML(fim)}
+                </span>
+
+            </div>
+
+            <div class="exp-sub">
+                ${escapeHTML(empresa || "Empresa")}
+            </div>
+
+            <div class="cv-text-block">
+                ${escapeHTML(descricao || "")}
+            </div>
+
+        `;
+
+        output.appendChild(item);
+
+    });
+
+                }
+                /* ==========================================================
+   FORMAÇÃO
+========================================================== */
+
+let educationCount = 0;
+
+
+function addEducation() {
+
+    educationCount++;
+
+    const container =
+        document.getElementById(
+            "formacoes"
+        );
+
+    const box =
+        document.createElement("div");
+
+    box.className =
+        "dynamic-box";
+
+    box.innerHTML = `
+
+        <div class="form-group">
+
+            <label>Curso</label>
+
+            <input
+                type="text"
+                class="edu-curso"
+                placeholder="Ex.: Engenharia de Software"
+                oninput="updateCV()"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Instituição</label>
+
+            <input
+                type="text"
+                class="edu-instituicao"
+                placeholder="Nome da instituição"
+                oninput="updateCV()"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Período</label>
+
+            <input
+                type="text"
+                class="edu-periodo"
+                placeholder="2022 — 2026"
+                oninput="updateCV()"
+            >
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-secondary"
+            onclick="this.parentElement.remove(); updateCV();"
+        >
+            Remover
+        </button>
+
+    `;
+
+    container.appendChild(box);
+
+}
+
+
+function updateEducationPreview() {
+
+    const boxes =
+        document.querySelectorAll(
+            "#formacoes .dynamic-box"
+        );
+
+    const output =
+        document.getElementById(
+            "cv-education"
+        );
+
+    output.innerHTML = "";
+
+    if (!boxes.length) {
+
+        output.textContent =
+            "Nenhuma formação informada.";
+
+        return;
+
+    }
+
+
+    boxes.forEach(box => {
+
+        const curso =
+            box.querySelector(
+                ".edu-curso"
+            ).value;
+
+        const instituicao =
+            box.querySelector(
+                ".edu-instituicao"
+            ).value;
+
+        const periodo =
+            box.querySelector(
+                ".edu-periodo"
+            ).value;
+
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "exp-item";
+
+        item.innerHTML = `
+
+            <div class="exp-head">
+
+                <span class="exp-title">
+                    ${escapeHTML(curso || "Curso")}
+                </span>
+
+                <span class="exp-date">
+                    ${escapeHTML(periodo)}
+                </span>
+
+            </div>
+
+            <div class="exp-sub">
+                ${escapeHTML(
+                    instituicao ||
+                    "Instituição"
+                )}
+            </div>
+
+        `;
+
+        output.appendChild(item);
+
+    });
+
+}
+
+
+/* ==========================================================
+   PDF
+========================================================== */
+
+function downloadPDF() {
+
+    const element =
+        document.getElementById(
+            "cv-output"
+        );
+
+    const nome =
+        value("nome")
+            .trim()
+            .replace(/\s+/g, "_")
+            .replace(/[^a-zA-Z0-9_-]/g, "");
+
+    const filename =
+        `JobNow_${nome || "Curriculo"}.pdf`;
+
+
+    const options = {
+
+        margin: 0,
+
+        filename: filename,
+
+        image: {
+            type: "jpeg",
+            quality: 0.98
+        },
+
+        html2canvas: {
+            scale: 2,
+            useCORS: true
+        },
+
+        jsPDF: {
+            unit: "mm",
+            format: "a4",
+            orientation: "portrait"
+        }
+
+    };
+
+
+    html2pdf()
+        .set(options)
+        .from(element)
+        .save();
+
+}
+
+
+/* ==========================================================
+   INICIALIZAÇÃO
+========================================================== */
+
+document.documentElement
+    .style.setProperty(
+        "--cv-primary",
+        selectedPrimary
+    );
+
+document.documentElement
+    .style.setProperty(
+        "--cv-secondary",
+        selectedSecondary
+    );
+
+</script>
+
+</body>
+</html>
